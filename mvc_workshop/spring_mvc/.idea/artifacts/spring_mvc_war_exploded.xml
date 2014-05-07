@@ -1,0 +1,27 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="spring_mvc:war exploded">
+    <output-path>$PROJECT_DIR$/target/spring_mvc</output-path>
+    <root id="root">
+      <element id="javaee-facet-resources" facet="spring_mvc/web/Web" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="spring_mvc" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="Maven: cr.prodigious:model:1.0" />
+          <element id="library" level="project" name="Maven: org.springframework:spring-core:4.0.1.RELEASE" />
+          <element id="library" level="project" name="Maven: commons-logging:commons-logging:1.1.1" />
+          <element id="library" level="project" name="Maven: org.springframework:spring-web:4.0.1.RELEASE" />
+          <element id="library" level="project" name="Maven: org.springframework:spring-aop:4.0.1.RELEASE" />
+          <element id="library" level="project" name="Maven: aopalliance:aopalliance:1.0" />
+          <element id="library" level="project" name="Maven: org.springframework:spring-beans:4.0.1.RELEASE" />
+          <element id="library" level="project" name="Maven: org.springframework:spring-context:4.0.1.RELEASE" />
+          <element id="library" level="project" name="Maven: org.springframework:spring-expression:4.0.1.RELEASE" />
+          <element id="library" level="project" name="Maven: org.springframework:spring-webmvc:4.0.1.RELEASE" />
+          <element id="library" level="project" name="Maven: javax.servlet:jstl:1.1.2" />
+          <element id="library" level="project" name="Maven: taglibs:standard:1.1.2" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>

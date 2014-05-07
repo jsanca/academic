@@ -1,0 +1,16 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="workshop-simple:war exploded">
+    <output-path>$PROJECT_DIR$/target/workshop-simple</output-path>
+    <root id="root">
+      <element id="javaee-facet-resources" facet="workshop-simple/web/Web" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="workshop-simple" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="Maven: cr.prodigious:model:1.0" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>
