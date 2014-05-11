@@ -12,6 +12,18 @@ import java.util.ArrayList;
  */
 public class RowResultBean implements Serializable {
 
-    private ArrayList<Object> rows = null;
+    private ArrayList<Object> rows = new ArrayList<Object>();
 
+    public void add (final Object columnValue) {
+
+        this.rows.add(columnValue);
+    }
+
+    public ArrayList<Object> getRows() {
+        return rows;
+    }
+
+    public void setRows(ArrayList<Object> rows) {
+        this.rows = rows;
+    }
 } // E:O:F:RowResultBean.

@@ -12,6 +12,22 @@ import java.util.LinkedHashSet;
  */
 public class ColumnResultBean implements Serializable {
 
-    private LinkedHashSet<String> columnNames;
+    private LinkedHashSet<String> columnNames = new LinkedHashSet<String>();
 
+    /**
+     * Add a column
+     * @param columnName String
+     */
+    public void add (final String columnName) {
+
+        columnNames.add(columnName);
+    } // add.
+
+    public LinkedHashSet<String> getColumnNames() {
+        return columnNames;
+    }
+
+    public void setColumnNames(LinkedHashSet<String> columnNames) {
+        this.columnNames = columnNames;
+    }
 } // E:O:F:ColumnResultBean.

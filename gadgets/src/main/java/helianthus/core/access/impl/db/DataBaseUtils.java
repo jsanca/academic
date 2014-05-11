@@ -1,8 +1,6 @@
 package helianthus.core.access.impl.db;
 
 import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.SQLException;
 
 /**
  * Data base utils methods.
@@ -14,18 +12,20 @@ import java.sql.SQLException;
 public class DataBaseUtils implements Serializable {
 
     /**
-     * Close the connection quiet (without exceptions)
-     * @param connection
+     * Close a list of Auto Closeable keeping the argument order
+     * @param closeables AutoCloseable
      */
-    public void closeQuiet (final Connection connection) {
+    public void closeQuiet (final AutoCloseable... closeables) {
 
-        if (null != connection) {
+        for (AutoCloseable closeable : closeables) {
+            if (null != closeable) {
 
-            try {
+                try {
 
-                connection.close();
-            } catch (SQLException e) {
-                /** quiet */
+                    closeable.close();
+                } catch (Exception e) {
+                    /** quiet */
+                }
             }
         }
     } // closeQuiet.

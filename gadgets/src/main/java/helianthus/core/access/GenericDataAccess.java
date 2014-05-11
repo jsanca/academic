@@ -16,8 +16,12 @@ public interface GenericDataAccess extends Serializable {
 
     /**
      * Executes a query
+     *
      * @param query String
+     * @param params Object array
+     *
      * @return  TableResultBean
      */
-    public TableResultBean executeQuery(String query);
+    public TableResultBean executeQuery(String query, Object... params);
+
 } // E:O:F:GenericDataAccess.
