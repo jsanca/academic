@@ -2,6 +2,7 @@ package helianthus.core.impl;
 
 import helianthus.core.HelianthusService;
 import helianthus.core.access.GenericDataAccess;
+import helianthus.core.bean.QueryMappingResult;
 import helianthus.core.bean.TableResultBean;
 import helianthus.core.util.OperationMappingHelper;
 
@@ -30,20 +31,31 @@ public class OperationMappingHelianthusServiceImpl implements HelianthusService 
 
         TableResultBean tableResultBean = null;
 
-        final String query =
-            this.mappingHelper.getQuery(operationId);
+        final QueryMappingResult queryMappingResult =
+               this.mappingHelper.getQuery(operationId);
 
         logger.log(Level.INFO,
                 MessageFormat.format
                         ("The query returned for the operation id {0} is {1}",
-                            operationId, query));
+                            operationId, queryMappingResult.getQuery()));
 
         tableResultBean =
                  this.genericDataAccess.executeQuery
-                         (query, params);
+                         (queryMappingResult.getQuery(),
+                                 queryMappingResult.getTypeNameArray(),
+                                 queryMappingResult.getDataSource(),
+                                 params);
 
         return tableResultBean;
     } // executeOperation.
 
+    public void setMappingHelper(OperationMappingHelper mappingHelper) {
 
+        this.mappingHelper = mappingHelper;
+    }
+
+    public void setGenericDataAccess(GenericDataAccess genericDataAccess) {
+
+        this.genericDataAccess = genericDataAccess;
+    }
 } // E:O:F:OperationMappingHelianthusServiceImpl.

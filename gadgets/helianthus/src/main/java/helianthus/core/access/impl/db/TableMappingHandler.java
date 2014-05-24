@@ -1,7 +1,5 @@
 package helianthus.core.access.impl.db;
 
-import helianthus.core.bean.ColumnResultBean;
-import helianthus.core.bean.RowResultBean;
 import helianthus.core.bean.TableResultBean;
 
 import java.io.Serializable;
@@ -9,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 
 /**
  * Mapping handler to convert a ResultSet to TableResultBean
@@ -37,17 +36,17 @@ public class TableMappingHandler implements Serializable {
         final int columnCount =
                 resultSetMetaData.getColumnCount();
 
-        final ArrayList<RowResultBean> rowResultBeans =
-                new ArrayList<RowResultBean>() ;
+        final ArrayList<ArrayList<Object>> rowResultBeans =
+                new ArrayList<ArrayList<Object>>() ;
 
-        RowResultBean rowResultBean = null;
+        ArrayList<Object> rowResultBean = null;
 
         this.mapColumns
                 (tableResultBean, resultSetMetaData, columnCount);
 
         while (resultSet.next()) {
 
-            rowResultBean = new RowResultBean();
+            rowResultBean = new ArrayList<Object>();
 
             for (int i = 1; i <= columnCount; ++i) {
 
@@ -66,16 +65,15 @@ public class TableMappingHandler implements Serializable {
              final ResultSetMetaData resultSetMetaData,
              final int columnCount) throws SQLException {
 
-        final ColumnResultBean columnResultBean =
-                new ColumnResultBean();
+        final LinkedHashSet<String> columnNames =
+                new LinkedHashSet<String>();
 
         for (int i = 1; i <= columnCount; ++i) {
 
-            columnResultBean.add
+            columnNames.add
                     (resultSetMetaData.getColumnName(i));
         }
 
-        tableResultBean.setColumnResultBean
-                (columnResultBean);
+        tableResultBean.setColumnNames(columnNames);
     } // mapColumns.
 } // E:O:F:TableMappingHandler.

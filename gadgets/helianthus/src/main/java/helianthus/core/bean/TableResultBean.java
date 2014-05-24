@@ -2,6 +2,7 @@ package helianthus.core.bean;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 
 /**
  * Represents a table result
@@ -14,10 +15,9 @@ public class TableResultBean implements Serializable {
 
     private int rowsCount = 0;
 
+    private LinkedHashSet<String> columnNames;
 
-    private ColumnResultBean columnResultBean;
-
-    private ArrayList<RowResultBean> rowResultBeans;
+    private ArrayList<ArrayList<Object>> rowResultBeans;
 
 
     public int getRowsCount() {
@@ -28,19 +28,20 @@ public class TableResultBean implements Serializable {
         this.rowsCount = rowsCount;
     }
 
-    public ColumnResultBean getColumnResultBean() {
-        return columnResultBean;
+
+    public LinkedHashSet<String> getColumnNames() {
+        return columnNames;
     }
 
-    public void setColumnResultBean(ColumnResultBean columnResultBean) {
-        this.columnResultBean = columnResultBean;
+    public void setColumnNames(LinkedHashSet<String> columnNames) {
+        this.columnNames = columnNames;
     }
 
-    public ArrayList<RowResultBean> getRowResultBeans() {
+    public ArrayList<ArrayList<Object>> getRowResultBeans() {
         return rowResultBeans;
     }
 
-    public void setRowResultBeans(ArrayList<RowResultBean> rowResultBeans) {
+    public void setRowResultBeans(ArrayList<ArrayList<Object>> rowResultBeans) {
         this.rowResultBeans = rowResultBeans;
     }
 } // E:O:F:TableResultBean.

@@ -24,11 +24,13 @@ public class DataBaseGenericDataAccessImpl implements GenericDataAccess {
     private static Logger logger =
             Logger.getLogger(DataBaseGenericDataAccessImpl.class.getName());
 
-    private ConnectionProvider connectionProvider;
+    private ConnectionProviderService connectionProviderService;
 
-    private DataBaseUtils dataBaseUtils;
+    private DataBaseUtils dataBaseUtils =
+            new DataBaseUtils();
 
-    private TableMappingHandler tableMappingHandler;
+    private TableMappingHandler tableMappingHandler =
+            new TableMappingHandler();
 
     /**
      * Executes a query
@@ -39,17 +41,28 @@ public class DataBaseGenericDataAccessImpl implements GenericDataAccess {
     @Override
     public TableResultBean executeQuery(final String query,
                                         final String [] typeNameArray,
+                                        String dataSource,
                                         final Object... params) {
 
         TableResultBean tableResultBean = null;
         Connection connection       = null;
         PreparedStatement statement = null;
         ResultSet resultSet         = null;
+        ConnectionProvider connectionProvider = null;
 
         try {
 
+            if (null == dataSource) {
+
+                dataSource = DEFAULT_DATA_SOURCE;
+            }
+
+            connectionProvider =
+                    this.connectionProviderService.getConnectionProvider
+                            (dataSource);
+
             connection =
-                    this.connectionProvider.getConnection();
+                    connectionProvider.getConnection();
 
             statement =
                     connection.prepareStatement
@@ -102,11 +115,9 @@ public class DataBaseGenericDataAccessImpl implements GenericDataAccess {
     } // setParams.
 
 
-    public void setConnectionProvider(ConnectionProvider connectionProvider) {
-        this.connectionProvider = connectionProvider;
+    public void setConnectionProviderService(ConnectionProviderService connectionProviderService) {
+        this.connectionProviderService = connectionProviderService;
     }
 
-    public void setDataBaseUtils(DataBaseUtils dataBaseUtils) {
-        this.dataBaseUtils = dataBaseUtils;
-    }
+
 } // E:O:F:DataBaseGenericDataAccessImpl.
