@@ -1,7 +1,7 @@
 package helianthus.core.marshall;
 
 import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
+import com.thoughtworks.xstream.io.json.JsonHierarchicalStreamDriver;
 import helianthus.core.bean.TableResultBean;
 
 import java.io.OutputStream;
@@ -14,13 +14,9 @@ import java.io.OutputStream;
  */
 public class JSONMarshallFormatter implements MarshallFormatter {
 
-    protected static XStream xstream = new XStream(new JettisonMappedXmlDriver());
+    protected static XStream xstream = //new XStream(new JettisonMappedXmlDriver());
+            new XStream(new JsonHierarchicalStreamDriver());
 
-    static {
-
-        // copy objects
-        xstream.setMode(XStream.NO_REFERENCES);
-    }
     /**
      * Process the response
      *
@@ -40,10 +36,24 @@ public class JSONMarshallFormatter implements MarshallFormatter {
      * Add an Alias to the mapper
      * @param nodeName   String
      * @param clazz      Class
+     * @param fieldName String
+     */
+    public static void addAlias (final String nodeName,
+                                 final Class clazz,
+                                 final String fieldName) {
+
+        xstream.aliasField(nodeName, clazz, fieldName);
+    } // addAlias.
+
+    /**
+     * Add an Alias to the mapper
+     * @param nodeName   String
+     * @param clazz      Class
      */
     public static void addAlias (String nodeName, Class clazz) {
 
         xstream.alias(nodeName, clazz);
     } // addAlias.
+
 
 } // E:O:F:JsonMarshallFormatter.

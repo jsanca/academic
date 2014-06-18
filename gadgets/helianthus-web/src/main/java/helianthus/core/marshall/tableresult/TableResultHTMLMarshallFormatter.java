@@ -1,6 +1,7 @@
-package helianthus.core.marshall;
+package helianthus.core.marshall.tableresult;
 
 import helianthus.core.bean.TableResultBean;
+import helianthus.core.marshall.MarshallFormatter;
 import helianthus.core.marshall.html.HTMLTableFormatter;
 import helianthus.core.marshall.html.config.HTMLConfig;
 
@@ -8,12 +9,12 @@ import java.io.OutputStream;
 import java.util.HashMap;
 
 /**
- * Json formatter
+ * Table result html formatter
  * Date: 5/11/14
  * Time: 1:09 PM
  * @author jsanca
  */
-public class HTMLMarshallFormatter implements MarshallFormatter {
+public class TableResultHTMLMarshallFormatter implements MarshallFormatter {
 
     private static HTMLTableFormatter htmlTableFormatter = null;
 

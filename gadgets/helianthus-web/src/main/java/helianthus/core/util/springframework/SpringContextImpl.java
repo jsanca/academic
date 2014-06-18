@@ -64,7 +64,7 @@ public class SpringContextImpl implements Serializable, Context {
         for (int i = 0; i < contextConfigLocationArray.length; ++i) {
 
             contextConfigLocationArray [i] =
-                    servletContext.getRealPath
+                    " file:" + servletContext.getRealPath
                             (contextConfigLocationArray[i]);
         }
 

@@ -33,7 +33,7 @@ public class PathHandler implements Serializable {
 
 
             operationPath = path.substring(0, dotIndexOf);
-            format = path.substring(dotIndexOf);
+            format = path.substring(dotIndexOf + 1);
         } else {
 
             operationPath = path;

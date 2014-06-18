@@ -51,11 +51,16 @@ public class TableMappingHandler implements Serializable {
             for (int i = 1; i <= columnCount; ++i) {
 
                 rowResultBean.add
-                        (resultSet.getObject(columnCount));
+                        (resultSet.getObject(i));
             }
 
             rowResultBeans.add(rowResultBean);
         }
+
+        tableResultBean.setRowResultBeans
+                (rowResultBeans);
+        tableResultBean.setRowsCount
+                (rowResultBeans.size());
 
         return tableResultBean;
     } // map.

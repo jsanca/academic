@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!-- valid types: integer, bigdecimal, boolean, byte, date (the default date for us), double, float, long, string -->
+<queries>
+    <query-config name="videos" datasouce="default">
+        <parameters>
+            <parameter name="type" type="integer"/>
+            <parameter name="name" type="string"/>
+        </parameters>
+        <query>
+               SELECT * FROM VIDEOS WHERE TYPE = ? AND NAME = ?;
+        </query>
+    </query-config>
+</queries>

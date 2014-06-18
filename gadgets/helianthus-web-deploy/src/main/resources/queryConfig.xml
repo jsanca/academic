@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!-- valid types: integer, bigdecimal, boolean, byte, date (the default date for us), double, float, long, string -->
+<queries>
+    <query-config name="/all-products">
+        <parameters/>
+        <query>
+            SELECT * FROM classicmodels.products;
+        </query>
+    </query-config>
+    <query-config name="/all-productlines">
+        <parameters/>
+        <query>
+            SELECT * FROM classicmodels.productlines;
+        </query>
+    </query-config>
+    <query-config name="/get-product">
+        <parameters>
+            <parameter name="productCode" type="string"/>
+        </parameters>
+        <query>
+            SELECT * FROM classicmodels.products where productCode = ?;
+        </query>
+    </query-config>
+</queries>

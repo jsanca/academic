@@ -1,7 +1,7 @@
 package helianthus.core.marshall;
 
 import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.StaxDriver;
+import com.thoughtworks.xstream.io.xml.Dom4JDriver;
 import helianthus.core.bean.TableResultBean;
 
 import java.io.OutputStream;
@@ -14,7 +14,7 @@ import java.io.OutputStream;
  */
 public class XMLMarshallFormatter implements MarshallFormatter {
 
-    protected static XStream xstream = new XStream(new StaxDriver());
+    protected static XStream xstream = new XStream(new Dom4JDriver());
 
     static {
 
@@ -44,6 +44,19 @@ public class XMLMarshallFormatter implements MarshallFormatter {
     public static void addAlias (String nodeName, Class clazz) {
 
         xstream.alias(nodeName, clazz);
+    } // addAlias.
+
+    /**
+     * Add an Alias to the mapper
+     * @param nodeName   String
+     * @param clazz      Class
+     * @param fieldName String
+     */
+    public static void addAlias (final String nodeName,
+                                 final Class clazz,
+                                 final String fieldName) {
+
+        xstream.aliasField(nodeName, clazz, fieldName);
     } // addAlias.
 
 

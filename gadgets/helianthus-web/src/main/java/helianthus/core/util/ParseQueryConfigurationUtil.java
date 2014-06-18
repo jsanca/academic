@@ -22,6 +22,8 @@ public class ParseQueryConfigurationUtil implements Serializable {
 
     private static Digester digester = new Digester();
 
+    private static final String[] EMPTY_ARRAY = new String[] {};
+
     static {
 
         digester.addObjectCreate("queries", ArrayList.class);
@@ -31,7 +33,9 @@ public class ParseQueryConfigurationUtil implements Serializable {
         digester.addObjectCreate("queries/query-config/parameters", ArrayList.class);
         digester.addObjectCreate("queries/query-config/parameters/parameter", QueryParameterBean.class);
         digester.addSetProperties("queries/query-config/parameters/parameter");
-        digester.addSetNext("queries/query-config/parameters", "add" ); // add the query parameter
+        digester.addSetNext("queries/query-config/parameters/parameter", "add" ); // add the query parameter
+        digester.addSetNext("queries/query-config/parameters", "setParameters");
+
 
 
         digester.addCallMethod("queries/query-config/query", "setQuery", 1);
@@ -76,15 +80,32 @@ public class ParseQueryConfigurationUtil implements Serializable {
             mapping.put(queryConfigBean.getName(),
                    queryConfigBean.getQuery());
 
-            typeNameMapping.put(queryConfigBean.getName(),
+            if (null != queryConfigBean.getParameters()) {
+
+                typeNameMapping.put(queryConfigBean.getName(),
                     this.getTypeNames(queryConfigBean.getParameters()));
+            } else {
 
-            parameterListMapping.put(queryConfigBean.getName(),
+                typeNameMapping.put(queryConfigBean.getName(),
+                        EMPTY_ARRAY);
+            }
+
+            if (null != queryConfigBean.getParameters()) {
+
+                parameterListMapping.put(queryConfigBean.getName(),
                     this.getParameterList(queryConfigBean.getParameters()));
+            } else {
 
-            dataSourceMapping.put(queryConfigBean.getName(),
+                parameterListMapping.put(queryConfigBean.getName(),
+                        EMPTY_ARRAY);
+            }
+
+            if (null != queryConfigBean.getDatasource()) {
+
+                dataSourceMapping.put(queryConfigBean.getName(),
                     queryConfigBean.getDatasource()
                     );
+            }
         }
 
         operationMappingHelper.setMapping(mapping);

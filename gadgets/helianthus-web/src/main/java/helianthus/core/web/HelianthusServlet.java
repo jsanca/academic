@@ -97,6 +97,7 @@ public class HelianthusServlet extends HttpServlet {
             }
         } catch (Exception e) {
 
+            e.printStackTrace(); // todo print the exception in an expected a documented format.
             // todo: error handling.
         }
     } // doAction.
