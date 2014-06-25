@@ -1,4 +1,4 @@
-package helianthus.core.marshall.html;
+package helianthus.core.marshall.csv;
 
 import helianthus.core.FormatterException;
 import helianthus.core.marshall.html.config.HTMLConfig;
@@ -14,20 +14,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * HTML Table Formatter formatter
+ * CSV Table Formatter formatter based on open csv
+ *
  * Date: 5/11/14
  * Time: 1:09 PM
  * @author jsanca
  */
-public class HTMLTableFormatter implements HTMLFormatter {
+public class CSVTableFormatter implements CSVFormatter {
 
     private HashMap<HTMLConfig, String> configMap =
             new HashMap<HTMLConfig, String>();
 
-    public HTMLTableFormatter() {
+    public CSVTableFormatter() {
     }
 
-    public HTMLTableFormatter(final HashMap<HTMLConfig, String> configMap) {
+    public CSVTableFormatter(final HashMap<HTMLConfig, String> configMap) {
 
         this.configMap.putAll(configMap);
     }

@@ -40,6 +40,9 @@ http://www.springframework.org/schema/context/spring-context-3.0.xsd">
                 <entry key="xml">
                     <bean class="helianthus.core.marshall.tableresult.TableResultXMLMarshallFormatter"/>
                 </entry>
+                <entry key="bin">
+                    <bean class="helianthus.core.marshall.BinaryMarshallFormater"/>
+                </entry>
             </map>
         </property>
     </bean>
