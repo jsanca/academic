@@ -1,0 +1,31 @@
+<!DOCTYPE web-app PUBLIC
+ "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+ "http://java.sun.com/dtd/web-app_2_3.dtd" >
+
+<web-app>
+  <display-name>Archetype Created Web Application</display-name>
+
+    <servlet>
+        <servlet-name>helianthus-servlet</servlet-name>
+        <servlet-class>
+            helianthus.core.web.HelianthusServlet
+        </servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>helianthus-servlet</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+
+
+    <context-param>
+        <param-name>contextClassPath</param-name>
+        <param-value>helianthus.core.util.springframework.SpringContextImpl</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>/WEB-INF/applicationContextExample.xml,/WEB-INF/applicationContextCore.xml</param-value>
+    </context-param>
+</web-app>
