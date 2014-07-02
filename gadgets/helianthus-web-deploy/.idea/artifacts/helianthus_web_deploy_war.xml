@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="war" name="helianthus-web-deploy:war">
-    <output-path>$PROJECT_DIR$/target</output-path>
-    <root id="archive" name="helianthus.war">
-      <element id="artifact" artifact-name="helianthus-web-deploy:war exploded" />
-    </root>
-  </artifact>
-</component>

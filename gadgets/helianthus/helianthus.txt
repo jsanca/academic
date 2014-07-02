@@ -1,3 +1,0 @@
-Helianthus, it is not only the genus of the sunflower, but also it is a tool to make queries
-(for instance to databases) and provide the result as a beans in Json, XML or HTML.
-This is the core project.
