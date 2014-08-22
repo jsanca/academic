@@ -31,20 +31,27 @@ public class TabLiParserTest {
                 this.getClass()
                         .getClassLoader().
                         getResourceAsStream(file);
+        try {
+            final List<Item<String>> items =
+                    tabLiParser.parser(stream);
 
-        final List<Item<String>> items =
-                tabLiParser.parser(stream);
+            org.junit.Assert.assertNotNull(items);
+            org.junit.Assert.assertTrue(items.size() == 7);
 
-        org.junit.Assert.assertNotNull(items);
-        org.junit.Assert.assertTrue(items.size() == 7);
+            org.junit.Assert.assertTrue("A".equals(items.get(0).getValue()));
+            org.junit.Assert.assertTrue("B".equals(items.get(1).getValue()));
+            org.junit.Assert.assertTrue("C".equals(items.get(2).getValue()));
+            org.junit.Assert.assertTrue("D".equals(items.get(3).getValue()));
+            org.junit.Assert.assertTrue("E".equals(items.get(4).getValue()));
+            org.junit.Assert.assertTrue("F".equals(items.get(5).getValue()));
+            org.junit.Assert.assertTrue("J".equals(items.get(6).getValue()));
+        } finally {
 
-        org.junit.Assert.assertTrue("A".equals(items.get(0).getValue()));
-        org.junit.Assert.assertTrue("B".equals(items.get(1).getValue()));
-        org.junit.Assert.assertTrue("C".equals(items.get(2).getValue()));
-        org.junit.Assert.assertTrue("D".equals(items.get(3).getValue()));
-        org.junit.Assert.assertTrue("E".equals(items.get(4).getValue()));
-        org.junit.Assert.assertTrue("F".equals(items.get(5).getValue()));
-        org.junit.Assert.assertTrue("J".equals(items.get(6).getValue()));
+            if (null != stream) {
+
+                stream.close();
+            }
+        }
 
     } // parser.
 
