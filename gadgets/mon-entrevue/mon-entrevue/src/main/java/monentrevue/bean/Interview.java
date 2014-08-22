@@ -57,6 +57,17 @@ public class Interview implements Serializable {
         return questions;
     }
 
+    public void addQuestion(Question question) {
+
+        if (null == this.questions) {
+
+            this.questions =
+                    new ArrayList<Question>();
+        }
+
+        this.questions.add(question);
+    }
+
     public void setQuestions(List<Question> questions) {
         this.questions = questions;
     }
