@@ -1,6 +1,7 @@
 package monentrevue.search;
 
 import monentrevue.bean.Interview;
+import monentrevue.bean.Question;
 
 import java.io.Serializable;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.List;
  */
 public interface InterviewSearchService extends Serializable {
 
+    // TODO: include optimize and close.
     /**
      * Do the index of an interview.
      * Returns an Interview Index Key to recovery later the interview
@@ -34,7 +36,7 @@ public interface InterviewSearchService extends Serializable {
      * probably not all of them.
      *
      * @param searchTerm String
-     * @return List of Interview
+     * @return List of Question
      */
-    public abstract List<Interview> search(String searchTerm);
+    public abstract List<Question> search(String searchTerm);
 } // E:O:F:InterviewSearchService.
