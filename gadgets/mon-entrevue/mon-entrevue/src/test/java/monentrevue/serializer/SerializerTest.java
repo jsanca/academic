@@ -137,6 +137,8 @@ public class SerializerTest {
 
         question1.setChoices(choices);
 
+        questions.add(question1);
+
         interview.setQuestions(questions, true);
 
         final InterviewScore interviewScore =

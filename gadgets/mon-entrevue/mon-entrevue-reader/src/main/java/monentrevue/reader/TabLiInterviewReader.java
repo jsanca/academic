@@ -1,5 +1,6 @@
 package monentrevue.reader;
 
+import monentrevue.bean.Choice;
 import monentrevue.bean.Interview;
 import monentrevue.bean.Question;
 import tagliparser.bean.Item;
@@ -7,6 +8,7 @@ import tagliparser.converter.StringConverter;
 import tagliparser.parser.TabLiParser;
 
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -82,10 +84,78 @@ public class TabLiInterviewReader implements InterviewReader {
 
         final String questionLine = item.getValue();
 
-        this.evalQuestionLine(interview, questionLine);
+        final Question question =
+                this.evalQuestionLine(interview, questionLine);
+
+        if (null != item.getList()) {
+
+            this.evalQuestionChoices(question, item.getList());
+        }
     } // evalQuestion.
 
-    private void evalQuestionLine(final Interview interview,
+    private void evalQuestionChoices(final Question question,
+                                     final List<Item<String>> list) {
+
+        Choice choice = null;
+        List<Choice> choiceList =
+                new ArrayList<Choice>();
+
+        for (Item<String> choiceItem : list) {
+
+            choice =
+                this.evalQuestionChoiceLine
+                        (choiceItem.getValue());
+
+            choiceList.add(choice);
+        }
+
+        question.setChoices(choiceList);
+    } // evalQuestionChoices.
+
+    private Choice evalQuestionChoiceLine(String choiceLine) {
+
+        String [] questionArray = null;
+        final Choice choice = new Choice();
+
+        choiceLine =
+                this.cleanComment(choiceLine);
+
+        questionArray =
+                choiceLine.split("\\|");
+
+        if (4 == questionArray.length) {
+
+            choice.setValid
+                    ("xxx".equalsIgnoreCase(questionArray[3].trim()));
+        }
+
+        if (3 <= questionArray.length) {
+
+            choice.setNote(questionArray[2].trim());
+        }
+
+        if (2 <= questionArray.length) {
+
+            try {
+
+                choice.setSuggestedScore
+                    (Integer.parseInt
+                            (questionArray[1].trim()));
+            } catch (NumberFormatException e) {
+
+                choice.setSuggestedScore(0);
+            }
+        }
+
+        if (1 <= questionArray.length) {
+
+            choice.setText(questionArray[0].trim());
+        }
+
+        return choice;
+    } // evalQuestionChoiceLine.
+
+    private Question evalQuestionLine(final Interview interview,
                                   String questionLine) {
 
         String [] questionArray = null;
@@ -126,6 +196,8 @@ public class TabLiInterviewReader implements InterviewReader {
         }
 
         interview.addQuestion(question);
+
+        return question;
     } // evalQuestion.
 
     private boolean evalNote(final Interview interview, final String line) {
