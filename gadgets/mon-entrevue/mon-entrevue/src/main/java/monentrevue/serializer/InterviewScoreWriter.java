@@ -30,7 +30,7 @@ public class InterviewScoreWriter implements Serializable {
             objectOutputStream.flush();
         } catch (IOException e) {
 
-            // todo: throw an exception.
+            throw new InterviewScoreException(e);
         }
     } // write.
 

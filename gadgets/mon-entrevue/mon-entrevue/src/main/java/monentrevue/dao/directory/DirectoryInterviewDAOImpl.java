@@ -7,6 +7,7 @@ import monentrevue.dao.DataAccessException;
 import monentrevue.dao.InterviewDAO;
 import monentrevue.reader.InterviewReader;
 import monentrevue.util.NameUtil;
+import org.apache.commons.io.IOUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -151,16 +152,7 @@ public class DirectoryInterviewDAOImpl implements InterviewDAO {
                     throw new DataAccessException(e);
                 } finally {
 
-                    if (null != inputStream) {
-
-                        try {
-
-                            inputStream.close();
-                        } catch (IOException e) {
-
-                            // quiet.
-                        }
-                    }
+                    IOUtils.closeQuietly(inputStream);
                 }
             } else {
 

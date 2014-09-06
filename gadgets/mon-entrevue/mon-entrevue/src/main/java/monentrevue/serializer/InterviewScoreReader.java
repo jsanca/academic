@@ -29,10 +29,10 @@ public class InterviewScoreReader implements Serializable {
                     (InterviewScore)objectInputStream.readObject();
         } catch (IOException e) {
 
-            // todo: throw an exception.
+            throw new InterviewScoreException(e);
         } catch (ClassNotFoundException e) {
 
-            // todo: throw an exception.
+            throw new InterviewScoreException(e);
         }
 
         return interviewScore;
