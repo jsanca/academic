@@ -25,6 +25,8 @@
 
 
     <bean name="authenticationWebService" class="monentrevue.web.services.AuthenticationWebService" /-->
+
+    <!-- REST MVC dependencies -->
     <mvc:annotation-driven content-negotiation-manager="contentNegotiationManager"/>
     <context:component-scan base-package="monentrevue.web.services"/>
     <bean id="contentNegotiationManager"
@@ -41,9 +43,42 @@
             </map>
         </property>
     </bean>
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        
+        <property name="maxUploadSize" value="50000000"/>
+    </bean>
 
 
+    <!-- **** MY CLASSES ***** -->
+    <context:property-placeholder location='WEB-INF/monentrevue-config.properties'/>
+
+    <bean name="baseDirectory" class="java.io.File">
+        <constructor-arg value="${base.interview.directory}"/>
+    </bean>
+
+    <!-- SERVICES -->
     <bean name="userService" class="monentrevue.service.impl.DummyFixedUserServiceImpl"/>
+
+    <bean name="interviewDriveService" class="monentrevue.service.impl.InterviewDriveServiceImpl">
+        <property name="baseDirectory" ref="baseDirectory"/>
+        <property name="interviewDAO" ref="interviewDAO"/>
+    </bean>
+
+    <bean name="passwordComparatorStrategy" class="monentrevue.service.impl.PasswordComparatorStrategyImpl"/>
+
+    <!-- DATA ACCESS -->
+    <bean name="interviewDAO" class="monentrevue.dao.directory.DirectoryInterviewDAOImpl">
+        <property name="baseDirectory" ref="baseDirectory"/>
+        <property name="extensions" >
+            <array value-type="java.lang.String">
+                <value>.q</value>
+            </array>
+        </property>
+        <property name="interviewReader">
+            <bean class="monentrevue.reader.TabLiInterviewReader"/>
+        </property>
+    </bean>
 
 
 </beans>

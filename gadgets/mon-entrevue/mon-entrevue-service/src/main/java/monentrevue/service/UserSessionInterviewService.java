@@ -4,6 +4,7 @@ import monentrevue.bean.Question;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This is kind of a Facade per user session.
@@ -49,5 +50,17 @@ public interface UserSessionInterviewService extends Serializable {
     public Question random();
 
 
+    /**
+     * Find Questions by type
+     * @param questionType  String
+     * @return Question List
+     */
+    public List<Question> findByType (final String questionType);
+
+    /**
+     * Get all the question types
+     * @return Set of questions.
+     */
+    public Set<String> getQuestionTypes ();
 
 } // E:O:F:UserSessionInterviewService.

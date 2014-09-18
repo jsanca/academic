@@ -14,7 +14,7 @@ import java.io.Serializable;
 @XmlRootElement
 public class UUDIMessage implements Serializable {
 
-    private String uudi;
+    private String uuid;
 
     public UUDIMessage() {
 
@@ -22,15 +22,15 @@ public class UUDIMessage implements Serializable {
     }
 
     public UUDIMessage(String uudi) {
-        this.uudi = uudi;
+        this.uuid = uudi;
     }
 
     @XmlAttribute
-    public String getUudi() {
-        return uudi;
+    public String getUuid() {
+        return uuid;
     }
 
-    public void setUudi(String uudi) {
-        this.uudi = uudi;
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 } // E:O:F:UUDIMessage.

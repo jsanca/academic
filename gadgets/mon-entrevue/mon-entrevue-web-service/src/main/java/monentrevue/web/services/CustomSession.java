@@ -11,7 +11,9 @@ import java.util.HashMap;
  */
 public class CustomSession implements Serializable {
 
-    public static final String USER_OBJECT = "user_object";
+    public static final String USER_OBJECT = "userObject";
+
+    public static final String USER_INTERVIEW_SERVICE = "UserSessionInterviewService";
 
     private HashMap<String, Object> sessionMap =
             new HashMap<String, Object>();

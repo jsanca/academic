@@ -60,6 +60,4 @@ public class AuthenticationUtil {
         httpSession.invalidate();
     } // hardLogout
 
-
-
 } // E:O:F:AuthenticationUtil.

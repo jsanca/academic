@@ -1,12 +1,14 @@
 package monentrevue.web.services;
 
 import monentrevue.bean.User;
+import monentrevue.service.PasswordComparatorStrategy;
 import monentrevue.service.UserService;
 import monentrevue.web.services.bean.BooleanMessage;
 import monentrevue.web.services.bean.StringMessage;
 import monentrevue.web.services.bean.UUDIMessage;
 import monentrevue.web.services.util.AuthenticationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,6 +25,33 @@ import java.util.UUID;
 /**
  * Provides the Authentication service.
  *
+ * current services :
+ *
+ * Ping
+ * /mon-entrevue-web-service/auth/ping.json
+ *
+ * {"message":"hello word"}
+ *
+ * ********
+ * Authentication (returns an uudi associated to the current session created)
+ * /mon-entrevue-web-service/auth/entication.json?u={username}&p={password}
+ *
+ * {"uudi":"48a94b5f-7e79-4155-9a67-b8002ecf66ab"}
+ *
+ * ********
+ * Still authenticated (returns true if your uuid still alive)
+ * /mon-entrevue-web-service/auth/still.json?uuid=48a94b5f-7e79-4155-9a67-b8002ecf66ab
+ *
+ * {"value":true}
+ *
+ *
+ * ********
+ * Clean up just delete the current session associate to the uuid
+ * /mon-entrevue-web-service/auth/cleanUp.json?uuid=48a94b5f-7e79-4155-9a67-b8002ecf66ab
+ *
+ * {"value":true}
+ *
+ *
  * Date: 9/3/14
  * Time: 11:33 PM
  * @author jsanca
@@ -34,6 +63,11 @@ public class AuthenticationWebService implements Serializable {
 
     @Autowired
     private UserService userService = null;
+
+    @Autowired
+    @Qualifier("passwordComparatorStrategy")
+    private PasswordComparatorStrategy passwordComparatorStrategy;
+
 
     public AuthenticationWebService() {
 
@@ -73,7 +107,7 @@ public class AuthenticationWebService implements Serializable {
 
         if (null != user) {
 
-            if (user.getPassword().equals(password)) { // todo: change this in order to use a strategy
+            if (this.passwordComparatorStrategy.compare(user, password)) {
 
                 // context.getMessageContext().put(javax.xml.ws.BindingProvider.SESSION_MAINTAIN_PROPERTY, true)
                 session = request.getSession();

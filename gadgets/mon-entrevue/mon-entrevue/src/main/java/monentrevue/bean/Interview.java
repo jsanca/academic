@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Defines an interview, it has a title a list of questions and their choices & answers
@@ -103,6 +104,15 @@ public class Interview implements Serializable {
             questionByTypeList.add(question);
         }
     } // indexQuestionsByType.
+
+    /**
+     * Get all the question types.
+     * @return Set of strings
+     */
+    public Set<String> getQuestionTypes () {
+
+        return this.questionByType.keySet();
+    } // getQuestionTypes.
 
     public Question findById (final String questionNameId) {
 

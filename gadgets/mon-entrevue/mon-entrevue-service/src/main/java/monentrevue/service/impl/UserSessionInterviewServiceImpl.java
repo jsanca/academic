@@ -3,11 +3,12 @@ package monentrevue.service.impl;
 import monentrevue.bean.Interview;
 import monentrevue.bean.Question;
 import monentrevue.search.impl.SessionMemoryInterviewSearchService;
-import monentrevue.service.InterviewService;
 import monentrevue.service.UserSessionInterviewService;
 import org.apache.commons.lang.math.RandomUtils;
 
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Default implementation
@@ -18,20 +19,23 @@ import java.util.List;
  */
 public class UserSessionInterviewServiceImpl implements UserSessionInterviewService {
 
-    private InterviewService interviewService;
-
     private SessionMemoryInterviewSearchService sessionMemoryInterviewSearchService;
 
-    private Interview interview = null;
+    private volatile Interview interview = null;
 
     private int indexIterator = 0;
 
-    public void setInterviewService(InterviewService interviewService) {
-        this.interviewService = interviewService;
+    public UserSessionInterviewServiceImpl() {
+
+         this.sessionMemoryInterviewSearchService =
+                 new SessionMemoryInterviewSearchService();
     }
 
-    public void setSessionMemoryInterviewSearchService(SessionMemoryInterviewSearchService sessionMemoryInterviewSearchService) {
-        this.sessionMemoryInterviewSearchService = sessionMemoryInterviewSearchService;
+    public UserSessionInterviewServiceImpl(Interview interview) {
+
+        this.sessionMemoryInterviewSearchService =
+                new SessionMemoryInterviewSearchService();
+        this.setInterview(interview);
     }
 
     public void setInterview(Interview interview) {
@@ -118,5 +122,28 @@ public class UserSessionInterviewServiceImpl implements UserSessionInterviewServ
 
         return question;
     } // random.
+
+    /**
+     * Find Questions by type
+     *
+     * @param questionType String
+     * @return Question List
+     */
+    @Override
+    public List<Question> findByType(final String questionType) {
+
+        return this.interview.findByType(questionType);
+    } // findByType.
+
+    /**
+     * Get all the question types
+     *
+     * @return Set of questions.
+     */
+    @Override
+    public Set<String> getQuestionTypes() {
+
+        return new TreeSet<String>(this.interview.getQuestionTypes());
+    }
 
 } // E:O:F:UserSessionInterviewServiceImpl.
