@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <!-- Constructor examples -->
+    <bean id="constructorExample1" class="spring.tutorial.ConstructorExample">
+        <constructor-arg type="int">
+            <value>33</value>
+        </constructor-arg>
+    </bean>
+
+    <bean id="constructorExample2" class="spring.tutorial.ConstructorExample">
+        <constructor-arg type="java.lang.String">
+            <value>33</value>
+        </constructor-arg>
+    </bean>
+
+    <!-- Property example -->
+    <bean id="propertyExample" class="spring.tutorial.PropertyExample">
+        <property name="name">
+            <value>Jsanca</value>
+        </property>
+        <property name="isDeveloper">
+            <value>true</value>
+        </property>
+        <property name="birthDate">
+            <!-- MM/dd/2014 -->
+            <value>04/10/2014</value>
+        </property>
+        <property name="height">
+            <value>1.76</value>
+        </property>
+        <property name="yearsWorking">
+            <value>2</value>
+        </property>
+        <property name="aObject" ref="constructorExample1" />
+    </bean>
+
+    <!-- Collection example -->
+    <bean id="mapCollectionExample" class="spring.tutorial.MapCollectionExample">
+        <property name="map">
+            <map>
+                <entry key="One" value="1"/>
+                <entry key="Two" value="2"/>
+            </map>
+        </property>
+
+        <property name="properties">
+            <props>
+                <prop key="key1">Value1</prop>
+                <prop key="key2">Value1</prop>
+            </props>
+        </property>
+
+        <property name="set">
+            <set>
+                <value>Value1</value>
+                <ref local="constructorExample1"/>
+            </set>
+        </property>
+
+        <property name="list">
+            <list>
+                <value>Hello World!</value>
+                <ref local="constructorExample1"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- Alias in the same bean -->
+    <bean id="date1" name="birthdate, anniversary" class="java.util.Date"/>
+</beans>
