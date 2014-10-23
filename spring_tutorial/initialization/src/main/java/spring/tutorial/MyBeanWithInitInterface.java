@@ -1,8 +1,9 @@
 package spring.tutorial;
 
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-public class MyBeanWithInitInterface implements InitializingBean {
+public class MyBeanWithInitInterface implements InitializingBean, DisposableBean {
 
     private String name;
 
@@ -42,5 +43,18 @@ public class MyBeanWithInitInterface implements InitializingBean {
         sb.append("name='").append(name).append('\'');
         sb.append('}');
         return sb.toString();
+    }
+
+    /**
+     * Invoked by a BeanFactory on destruction of a singleton.
+     *
+     * @throws Exception in case of shutdown errors.
+     *                   Exceptions will get logged but not rethrown to allow
+     *                   other beans to release their resources too.
+     */
+    @Override
+    public void destroy() throws Exception {
+
+        System.out.println("Destroying my bean with interface...");
     }
 }

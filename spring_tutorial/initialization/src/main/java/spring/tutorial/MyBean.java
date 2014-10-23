@@ -21,6 +21,11 @@ public class MyBean {
         }
     }
 
+    public void destroy() {
+
+        System.out.println("Destroying my bean...");
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("MyBean{");
@@ -28,4 +33,6 @@ public class MyBean {
         sb.append('}');
         return sb.toString();
     }
+
+
 }

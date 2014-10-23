@@ -27,4 +27,16 @@
 
     </bean>
 
+    <!-- /////////////////////// -->
+
+    <bean id="myBeanDestroy" class="spring.tutorial.MyBean" destroy-method="destroy">
+        <property name="name">
+            <value>I am a simple bean</value>
+        </property>
+    </bean>
+
+    <bean id="myBeanDestroyWithInitInterface" class="spring.tutorial.MyBeanWithInitInterface">
+
+    </bean>
+
 </beans>
