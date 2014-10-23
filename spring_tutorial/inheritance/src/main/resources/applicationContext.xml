@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="baseClass" class="spring.tutorial.BaseClass">
+        <property name="name" value="Base Class"/>
+        <property name="lastName" value="Base Class Last Name"/>
+    </bean>
+
+    <bean id="subClass" class="spring.tutorial.SubClass" parent="baseClass">
+        <property name="alias" value="The Clazz"/>
+    </bean>
+
+    <!-- ///////// -->
+
+    <bean id="abstractClass" class="spring.tutorial.AbstractClass" abstract="true">
+        <property name="name" value="Abstract Class"/>
+        <property name="lastName" value="Abstract Class Last Name"/>
+    </bean>
+
+    <bean id="concreteClass" class="spring.tutorial.ConcreteClass" parent="abstractClass">
+        <property name="alias" value="The Clazz Concrete"/>
+    </bean>
+
+    <bean id="concreteOverrideClass" class="spring.tutorial.ConcreteClass" parent="abstractClass">
+        <property name="alias" value="The Clazz Concrete"/>
+        <property name="lastName" value="Override Class Last Name"/>
+    </bean>
+
+
+</beans>
