@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="aWonderfullBeanNameYeah" class="spring.tutorial.BeanNameAware"/>
+
+    <bean id="shutdownHookBean" class="spring.tutorial.ShutdownHookBean"/>
+
+    <!-- FACTORY -->
+    <bean id="sayHelloEng" class="spring.tutorial.command.SayHelloCommandEng"/>
+
+    <bean id="sayHelloEsp" class="spring.tutorial.command.SayHelloCommandEsp"/>
+
+    <bean id="sayHelloFr" class="spring.tutorial.command.SayHelloCommandFr"/>
+
+    <bean id="sayHelloPor" class="spring.tutorial.command.SayHelloCommandPor"/>
+
+    <bean id="sayHelloFactory" class="spring.tutorial.SayHelloFactory">
+
+    </bean>
+
+</beans>
