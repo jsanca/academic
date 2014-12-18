@@ -1,0 +1,194 @@
+<html>
+<head>
+    <script>
+
+        var uuid = 1;
+
+        function executeChart (button) {
+
+            var form           = button.form;
+            var skillText      = document.getElementById("skillText");
+            var porcentageText = document.getElementById("porcentageText");
+            var div            = document.getElementById("charts");
+
+            if (skillText && porcentageText && div) {
+
+                var skillValue      = skillText.value;
+                var porcentageValue = porcentageText.value;
+
+                if (skillValue && porcentageValue) {
+
+                    // add to the form a new hidden type
+                    var hidden = document.createElement("input");
+                    hidden.setAttribute("type",  "hidden");
+                    hidden.setAttribute("name",  "skillporcentage" + uuid++);
+                    hidden.setAttribute("value", skillValue + " --- " + porcentageValue);
+                    form.appendChild(hidden);
+
+                    // add to the div a new paragraph, so the user can see the result in the html
+                    var p = document.createElement("p");
+                    p.innerText = skillValue + ": " + porcentageValue + "%";
+
+                    div.appendChild(p)
+                }
+            }
+
+            return false;
+        } // executeChart.
+
+        function execute (button) {
+
+            if (button) {
+
+                var name = button.name;
+
+                if (name) {
+
+                    var form      = button.form;
+                    var inputText = document.getElementById(name + "Text");
+                    var div       = document.getElementById(name);
+
+                    if (inputText && div) {
+
+                        var value = inputText.value;
+
+                        if (value) {
+
+                            // add to the form a new hidden type
+                            var hidden = document.createElement("input");
+                            hidden.setAttribute("type",  "hidden");
+                            hidden.setAttribute("name",  name + uuid++);
+                            hidden.setAttribute("value", value);
+                            form.appendChild(hidden);
+
+                            // add to the div a new paragraph, so the user can see the result in the html
+                            var p = document.createElement("p");
+                            p.innerText = value;
+
+                            div.appendChild(p)
+                        }
+                    }
+                }
+            }
+
+            return false;
+        } // execute.
+    </script>
+</head>
+<body>
+<h2>Add a new Case!</h2>
+
+<form name="casesForm" action="/teamshowcase/team/add-cases.json" method="post">
+    <table>
+        <tr>
+            <th>Brand:</th>
+            <td>
+                <input name="brand" type="text" />
+            </td>
+
+        </tr>
+        <tr>
+            <th>Description:</th>
+            <td>
+                <input name="description" type="text" size="100" />
+            </td>
+        </tr>
+        <tr>
+            <th>Image:</th>
+            <td>
+                <input name="image" type="text" />
+            </td>
+        </tr>
+        <tr>
+            <th>Input Text:</th>
+            <td>
+                <input name="inputText" type="text" size="100" />
+            </td>
+        </tr>
+        <tr>
+            <th>Challenge Text:</th>
+            <td>
+                <input id="challengeText" type="text" size="100" /> <input type="button" name="challenge" value="Add Challenge" onclick="return execute(this);" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                <div id="challenge"></div>
+            </td>
+        </tr>
+        <tr>
+            <th>What We do Text:</th>
+            <td>
+                <input id="whatwedoText" type="text" size="100" /> <input type="button" name="whatwedo" value="Add What we do"  onclick="return execute(this);" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                <div id="whatwedo"></div>
+            </td>
+        </tr>
+        <tr>
+            <th>Results:</th>
+            <td>
+                <input id="resultsText" type="text" size="100" /> <input type="button" name="results" value="Add Result"  onclick="return execute(this);" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                <div id="results"></div>
+            </td>
+        </tr>
+        <tr>
+            <th>Excecution Time:</th>
+            <td>
+                <input name="excecutionTime" type="text"  />
+            </td>
+        </tr>
+        <tr>
+            <th>Charts</th>
+            <td>
+                Skill: <input id="skillText" type="text" /> <br/>
+                Porcentage: <input id="porcentageText" type="text" /> <input type="button" value="Add Chart"   onclick="return executeChart(this);" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                <div id="charts"></div>
+            </td>
+        </tr>
+        <tr>
+            <th>Key tools:</th>
+            <td>
+                <input id="keytoolText" type="text" size="100" /> <input type="button" name="keytool" value="Add Key Tool"  onclick="return execute(this);"/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                <div id="keytool"></div>
+            </td>
+        </tr>
+
+
+    </table>
+
+
+    <input type="submit" value="Store" />
+</form>
+
+</body>
+</html>

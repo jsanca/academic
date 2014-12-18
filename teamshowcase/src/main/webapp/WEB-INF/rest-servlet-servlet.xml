@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation=" http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-4.0.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+">
+
+    <!-- REST MVC dependencies -->
+    <mvc:annotation-driven content-negotiation-manager="contentNegotiationManager"/>
+    <context:component-scan base-package="cr.prodigious.controller"/>
+    <bean id="contentNegotiationManager"
+          class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
+        <property name="favorPathExtension" value="true"/>
+        <property name="ignoreAcceptHeader" value="true"/>
+        <property name="defaultContentType" value="application/json"/>
+        <property name="useJaf" value="false"/>
+        <property name="mediaTypes">
+            <map>
+                <entry key="json" value="application/json"/>
+                <entry key="html" value="text/html"/>
+                <entry key="xml" value="application/xml"/>
+            </map>
+        </property>
+    </bean>
+
+    <!-- **** MY CLASSES ***** -->
+    <context:property-placeholder location='WEB-INF/config.properties'/>
+
+    <bean name="capabilityTeamMapping" class="cr.prodigious.bean.CapabilityTeamMapping">
+        <property name="capabilityTeamMap">
+            <map>
+                <entry key="PM" value="2"/>
+                <entry key="FE" value="3"/>
+                <entry key="CM" value="4"/>
+                <entry key="BE" value="5"/>
+                <entry key="QA" value="6"/>
+                <entry key="STUDIO" value="7"/>
+            </map>
+        </property>
+    </bean>
+
+
+
+    <!-- DAO -->
+    <bean name="dataBase" class="cr.prodigious.dao.SpringDataBaseHelper" scope="singleton">
+        <property name="dataBasePath" value="${database.path:./WEB-INF/database/prodigiousdb}"/>
+    </bean>
+
+    <bean name="baseDAO" abstract="true" class="cr.prodigious.dao.BaseDAO">
+        <property name="dataBase" ref="dataBase"/>
+    </bean>
+
+    <bean name="casesDAO" class="cr.prodigious.dao.CasesDAO" parent="baseDAO"/>
+    <bean name="teamDAO"  class="cr.prodigious.dao.TeamDAO"  parent="baseDAO"/>
+    <bean name="workDAO"  class="cr.prodigious.dao.WorkDAO"  parent="baseDAO"/>
+
+    <!-- SERVICES -->
+    <bean name="teamWebSiteService" class="cr.prodigious.service.TeamWebSiteFacadeServiceImpl">
+        <property name="casesDAO" ref="casesDAO"/>
+        <property name="teamDAO"  ref="teamDAO"/>
+        <property name="workDAO"  ref="workDAO"/>
+    </bean>
+
+</beans>
