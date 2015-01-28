@@ -1,7 +1,9 @@
 package cr.prodigious.bean;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Keeps the relationship between the capability names and the database ids
@@ -18,5 +20,15 @@ public class CapabilityTeamMapping implements Serializable {
 
     public void setCapabilityTeamMap(Map<String, Long> capabilityTeamMap) {
         this.capabilityTeamMap = capabilityTeamMap;
+    }
+
+    public Collection<Long> getAllIds () {
+
+        return capabilityTeamMap.values();
+    }
+
+    public Set<String> getAllCapabilityNames() {
+
+        return this.capabilityTeamMap.keySet();
     }
 } // E:O:F:CapabilityTeamMapping.

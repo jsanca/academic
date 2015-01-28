@@ -24,9 +24,19 @@ public abstract class BaseDAO<T extends Entity> implements Serializable {
 
     public T selectById (final Long entityId) {
 
-        return this.dataBase.selectById(entityId,
+         T t = this.dataBase.selectById(entityId,
                 this.getEntityClass());
+
+        if (null != t) {
+
+            // you need to activate the object in order to
+            // get fill out the composite objects
+            this.dataBase.activate(t, getDepth());
+        }
+
+        return t;
     }
 
+    protected abstract int getDepth ();
     protected abstract Class<T> getEntityClass ();
 } // E:O:F:CasesDAO.

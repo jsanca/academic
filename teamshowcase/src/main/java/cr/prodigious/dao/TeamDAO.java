@@ -9,6 +9,12 @@ import cr.prodigious.bean.team.TeamBean;
 public class TeamDAO extends BaseDAO<TeamBean> {
 
     @Override
+    protected int getDepth() {
+
+        return 8;
+    }
+
+    @Override
     protected Class<TeamBean> getEntityClass() {
 
         return TeamBean.class;

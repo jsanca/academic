@@ -10,6 +10,12 @@ import cr.prodigious.bean.work.WorkBean;
 public class WorkDAO extends BaseDAO<WorkBean> {
 
     @Override
+    protected int getDepth() {
+
+       return 5;
+    }
+
+    @Override
     protected Class<WorkBean> getEntityClass() {
 
         return WorkBean.class;

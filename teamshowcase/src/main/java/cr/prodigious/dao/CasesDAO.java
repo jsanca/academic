@@ -9,6 +9,11 @@ import cr.prodigious.bean.cases.CasesBean;
 public class CasesDAO extends BaseDAO<CasesBean> {
 
     @Override
+    protected int getDepth() {
+        return 5;
+    }
+
+    @Override
     protected Class<CasesBean> getEntityClass() {
 
         return CasesBean.class;

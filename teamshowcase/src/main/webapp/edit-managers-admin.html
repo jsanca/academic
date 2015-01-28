@@ -1,0 +1,140 @@
+<html>
+<head>
+    <script src="js/core.js"></script>
+    <script>
+
+        var managersJson = null;
+
+
+        function load () {
+
+            var url     = '/teamshowcase/team/managers.json';
+            getJson(url, loadJSONManagers);
+            var addLink =
+                    document.getElementById("add");
+
+            addLink.onclick = addLinkAction;
+
+            var addManagerLink =
+                    document.getElementById("addManagerLink");
+
+            addManagerLink.onclick =
+                    addManagerLinkAction;
+        }
+
+        function addManagerLinkAction (event) {
+
+            var addModal =
+                    document.getElementById("addModal");
+
+            var managerNameText =
+                    document.getElementById("managerNameText");
+
+            var ul = document.getElementById("managerList");
+
+            if (isNotBlank (managerNameText.value)) {
+
+                addNewManager(ul, managerNameText.value);
+                addNewManagerToJsonObject (managerNameText.value);
+                postManagerListToBackend();
+
+                managerNameText.placeholder =
+                        "Write here the new manager name";
+                setHide (addModal);
+            } else {
+
+                message("Please write a new name for the new manager");
+            }
+        }
+
+        function postManagerListToBackend () {
+
+            postJson("/teamshowcase/team/managers.json", this.managersJson, function(jsonResponse) {
+
+                if (jsonResponse.value) {
+
+                    message("Manager added");
+                } else {
+
+                    message("Manager was not added");
+                }
+            });
+        }
+
+        function addLinkAction (event) {
+
+            var addModal =
+                    document.getElementById("addModal");
+
+            setVisible (addModal);
+            return false;
+        }
+
+        function addNewManager (ul, name) {
+
+            var li = document.createElement("li");
+            li.innerText = name;
+            ul.appendChild(li);
+        }
+
+        function addNewManagerToJsonObject(managerName) {
+
+            var managerOrder = managersJson.length;
+            this.managersJson[managerOrder] =
+                        {name: managerName, order: (managerOrder + 1)};
+
+            console.log(this.managersJson);
+        }
+
+        function loadJSONManagers (managersJSON) {
+
+            var divManagers =
+                      document.getElementById("managers");
+
+            var ul = document.createElement("ul");
+            ul.id = "managerList";
+
+            divManagers.appendChild(ul);
+
+            this.managersJson = managersJSON;
+
+            console.log("managers Json", this.managersJson);
+
+            if (managersJSON) {
+
+                managersJSON.forEach(
+                        function(manager) {
+
+                            addNewManager(ul, manager.name)
+                        }
+                );
+            }
+        }
+
+
+    </script>
+</head>
+<body onload="load();">
+<h2>Edit the Manager List!</h2>
+
+
+
+
+    <div id="managers">
+        <div >
+            <a href="index.html"  title="Go back to the main menu">Main Menu</a>
+        </div>
+        <div >
+            <a href="#" id="add" title="Add a new manager to the list">+ Add Manager</a>
+        </div>
+    </div>
+
+    <div id="addModal" style="display: none;">
+
+         Name:
+         <input id="managerNameText" placeholder="Write here the new manager name" size="40"/><br/><br/>
+         <a href="#" id="addManagerLink">Add a new Manager to the List</a>
+    </div>
+
+</body>
+</html>

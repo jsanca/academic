@@ -1,0 +1,141 @@
+<html>
+<head>
+    <script src="js/core.js"></script>
+    <script>
+
+        var regionsJson = null;
+
+
+        function load () {
+
+            var url     = '/teamshowcase/team/regions.json';
+            getJson(url, loadJSONRegions);
+            var addLink =
+                    document.getElementById("add");
+
+            addLink.onclick = addLinkAction;
+
+            var addRegionLink =
+                    document.getElementById("addRegionLink");
+
+            addRegionLink.onclick =
+                    addRegionLinkAction;
+        }
+
+        function addRegionLinkAction (event) {
+
+            var addModal =
+                    document.getElementById("addModal");
+
+            var regionNameText =
+                    document.getElementById("regionNameText");
+
+            var ul = document.getElementById("regionList");
+
+            if (isNotBlank (regionNameText.value)) {
+
+                addNewRegion(ul, regionNameText.value);
+                addNewRegionToJsonObject (regionNameText.value);
+                postRegionListToBackend();
+
+                regionNameText.placeholder =
+                        "Write here the new region name";
+                setHide (addModal);
+            } else {
+
+                message("Please write a new name for the new region");
+            }
+        }
+
+        function postRegionListToBackend () {
+
+            postJson("/teamshowcase/team/regions.json", this.regionsJson, function(jsonResponse) {
+
+                if (jsonResponse.value) {
+
+                    message("Region added");
+                } else {
+                    message("Region was not added");
+                }
+            });
+        }
+
+        function addLinkAction (event) {
+
+            var addModal =
+                    document.getElementById("addModal");
+
+            setVisible (addModal);
+            return false;
+        }
+
+        function addNewRegion (ul, name) {
+
+            var li = document.createElement("li");
+            li.innerText = name;
+            ul.appendChild(li);
+        }
+
+        function addNewRegionToJsonObject(regionName) {
+
+            var regionOrder = regionsJson.length;
+            this.regionsJson[regionOrder] =
+                        {name: regionName, order: (regionOrder + 1)};
+
+            console.log(this.regionsJson);
+        }
+
+        function loadJSONRegions (regionsJSON) {
+
+            var divRegions =
+                      document.getElementById("regions");
+
+            var ul = document.createElement("ul");
+            ul.id = "regionList";
+
+            divRegions.appendChild(ul);
+
+            this.regionsJson = regionsJSON;
+
+            console.log("region Json", this.regionsJson);
+
+            if (regionsJSON) {
+
+                regionsJSON.forEach(
+                        function(region) {
+
+                            addNewRegion(ul, region.name)
+                        }
+                );
+            }
+        }
+
+
+    </script>
+</head>
+<body onload="load();">
+<h2>Edit Region List!</h2>
+
+
+
+
+    <div id="regions">
+        <div >
+            <a href="index.html"  title="Go back to the main menu">Main Menu</a>
+        </div>
+        <div >
+            <a href="#" id="add" title="Add a new region to the list">+ Add Region</a>
+        </div>
+    </div>
+
+    <div id="addModal" style="display: none;">
+
+         Name:
+         <input id="regionNameText" placeholder="Write here the new region name" size="40"/><br/><br/>
+         <a href="#" id="addRegionLink">Add a new Region to the List</a>
+    </div>
+
+
+
+</body>
+</html>

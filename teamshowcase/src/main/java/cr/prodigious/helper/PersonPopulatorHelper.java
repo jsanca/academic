@@ -27,6 +27,8 @@ public class PersonPopulatorHelper implements Serializable {
                                      final String imageLocal,
                                      final String email,
                                      final String regionproject,
+                                     final String employeeNumber,
+                                     final String manager,
                                      final HttpServletRequest request) {
 
         final Person person = new Person();
@@ -36,6 +38,8 @@ public class PersonPopulatorHelper implements Serializable {
         person.setPhoto(imageLocal);
         person.setEmail(email);
         person.setRegionProject(regionproject);
+        person.setEmployeeNumber(employeeNumber);
+        person.setManager(manager);
 
         populateSkills(person, request);
 

@@ -1,0 +1,1154 @@
+<html>
+<head>
+    <script>
+
+        var queryParametersMap = new Array();
+
+        function loadQueryParameters() {
+            var query = window.location.search.substring(1);
+            var parms = query.split('&');
+            for (var i=0; i<parms.length; i++) {
+                var pos = parms[i].indexOf('=');
+                if (pos > 0) {
+                    var key = parms[i].substring(0,pos);
+                    var val = parms[i].substring(pos+1);
+                    queryParametersMap[key] = val;
+                }
+            }
+        } // loadQueryParameters.
+
+
+        function addSkill () {
+
+            var skillSelect =
+                    document.getElementById("skillSelect");
+
+            var skillDivId  = skillSelect.options[skillSelect.selectedIndex].value;
+
+            console.log("skillDivId: " + skillDivId);
+
+            var skillDiv    =
+                    document.getElementById(skillDivId);
+
+            if (skillDiv) {
+
+                skillDiv.style.display = 'block';
+            }
+
+            skillSelect.options[skillSelect.selectedIndex].disabled = true;
+
+            return false;
+        }
+
+        function loadPerson () {
+
+            var capability = queryParametersMap['capability'];
+            var email      = queryParametersMap['email'];
+
+            if (capability && email) {
+
+                console.log("Capability: " + capability + ", email: " + email +
+                                " are valid")
+
+                var url     = '/teamshowcase/team/person/capability/' +
+                        encodeURIComponent(capability) + '/email/' +
+                        encodeURIComponent(email) + '.json';
+
+                console.log("url: " + url)
+
+                var request = new XMLHttpRequest();
+                request.open('GET', url, true);
+                request.onreadystatechange = function (event) {
+
+                    console.log("event: " + event +
+                            " readyState: " + request.readyState +
+                            " status: " + request.status);
+                    if (4 == request.readyState) {
+                        if (200 == request.status) {
+
+                             loadJSONPerson(JSON.parse(request.responseText));
+                        } else {
+
+                            alert("Please check the parameters or try later")
+                        }
+                    }
+                };
+
+                request.send(null);
+            } else {
+
+                console.log("Capability: " + capability + ", email: " + email +
+                        " are invalid")
+            }
+        }
+
+        function loadJSONPerson (personJSON) {
+
+            console.log(personJSON);
+
+            document.forms['teamMemberForm'].elements['name'].value =
+                    personJSON.name;
+
+            document.forms['teamMemberForm'].elements['position'].value =
+                    personJSON.position;
+
+            document.forms['teamMemberForm'].elements['regionproject'].value =
+                    personJSON.regionProject;
+
+            document.forms['teamMemberForm'].elements['imageLocal'].value =
+                    personJSON.photo;
+
+            document.forms['teamMemberForm'].elements['email'].value =
+                    personJSON.email;
+
+
+        }
+
+    </script>
+</head>
+<body onload="loadQueryParameters(); loadPerson();">
+<h2>Add a new Team Member!</h2>
+
+<form name="teamMemberForm" action="/teamshowcase/team/add-team.json" method="post">
+    <table>
+        <tr>
+            <th>Name:</th>
+            <td>
+                <input name="name" type="text" />
+            </td>
+
+        </tr>
+        <tr>
+            <th>Position:</th>
+            <td>
+                <select name="position">
+
+                    <option value="Studio / Creative Lead">Studio / Creative Lead</option>
+                    <option value="Studio / Senior Creative Designer">Studio / Senior Creative Designer</option>
+                    <option value="Studio / Senior Flash Developer">Studio / Senior Flash Developer</option>
+                    <option value="Studio / Senior Flash Designer">Studio / Senior Flash Designer</option>
+                    <option value="Studio / Senior Flash Designer Hybrid">Studio / Senior Flash Designer Hybrid</option>
+
+                    <option value="PM / Project Manager">PM / Project Manager</option>
+                    <option value="PM / Senior Project Manager">PM / Senior Project Manager</option>
+                    <option value="PM / Client Director">PM / Client Director</option>
+
+                    <option value="FE / Presentation Layer Engineer">FE / Presentation Layer Engineer</option>
+                    <option value="FE / Senior Presentation Layer Engineer">FE / Senior Presentation Layer Engineer</option>
+                    <option value="FE / Principal Presentation Layer Engineer">FE / Principal Presentation Layer Engineer</option>
+                    <option value="FE / Presentation Layer Architect">FE / Presentation Layer Architect</option>
+
+                    <option value="CM / Web Content Manager">CM / Web Content Manager</option>
+                    <option value="CM / Web Content Manager">CM / Web Content Manager</option>
+
+                    <option value="BE / Software Engineer">BE / Software Engineer</option>
+                    <option value="BE / Senior Software Engineer">BE / Senior Software Engineer</option>
+                    <option value="BE / Principal Software Engineer">BE / Principal Software Engineer</option>
+                    <option value="BE / Technical Architect">BE / Technical Architect</option>
+                    <option value="BE / Senior Technical Architect">BE / Senior Technical Architect</option>
+
+                    <option value="QA / QA Analyst">QA / QA Analyst</option>
+                    <option value="QA / Senior QA Analyst">QA / Senior QA Analyst</option>
+                    <option value="QA / QA Lead">QA / QA Lead</option>
+                </select>
+
+
+
+
+            </td>
+        </tr>
+        <tr>
+            <th>Region/Project:</th>
+            <td>
+                <select name="regionproject">
+                    <option value="East">East</option>
+                    <option value="Central">Central</option>
+                    <option value="West">West</option>
+                    <option value="DE">DE</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <th>Image Local Name:</th>
+            <td>
+                <input name="imageLocal" type="text" />
+            </td>
+        </tr>
+        <tr>
+            <th>Email:</th>
+            <td>
+                <input name="email" type="text"  />
+            </td>
+        </tr>
+
+        <tr>
+            <th>Add skill:</th>
+            <td>
+                <select id="skillSelect" name="skillSelect">
+
+                    <option value="MOTION">MOTION</option>
+                    <option value="DESIGN">DESIGN</option>
+                    <option value="STUDIODEV">STUDIO DEV</option>
+                    <option value="PROJECTMANANGEMENT">PROJECT MANANGEMENT</option>
+
+                    <option value="METRICS">METRICS</option>
+                    <option value="BACKGROUND">BACKGROUND</option>
+
+                    <option value="FRONTEND">FRONTEND</option>
+
+                    <option value="HTML5">HTML5</option>
+                    <option value="JAVASCRIPT">JAVASCRIPT</option>
+                    <option value="CSS">CSS</option>
+                    <option value="DESIGNTOOLS">DESIGN TOOLS</option>
+                    <option value="AUTOMATIONTOOLS">AUTOMATION TOOLS</option>
+                    <option value="CMS">CMS</option>
+                    <option value="CMHTML">CM HTML</option>
+                    <option value="CMCSS">CM CSS</option>
+                    <option value="CMCMS">CM CMS</option>
+                    <option value="CMSQL">CM SQL</option>
+                    <option value="CMSEO">CM SEO</option>
+                    <option value="CMDESIGNTOOLS">CM DESIGN TOOLS</option>
+                    <option value="CMJAVASCRIPT">CM JAVASCRIPT</option>
+                    <option value="CMMOTION">CM MOTION</option>
+                    <option value="BACKEND">BACKEND</option>
+                    <option value="JAVA">JAVA</option>
+                    <option value=".NET">.NET</option>
+                    <option value="ECOMMERCE">E COMMERCE</option>
+                    <option value="FUNCTIONALTESTING">FUNCTIONAL TESTING</option>
+                    <option value="CREATIVETESTING">CREATIVE TESTING</option>
+                    <option value="MOBILETESTING">MOBILE TESTING</option>
+                    <option value="TESTAUTOMATION">TEST AUTOMATION</option>
+                    <option value="TOOLS">TOOLS</option>
+                    <option value="TECHNOLOGIESTESTED">TECHNOLOGIES TESTED</option>
+                    <option value="LIFECYCLES">LIFECYCLES</option>
+                    <option value="CMSTESTED">CMS TESTED</option>
+                </select>
+
+                <input type="button" value="Add Skill" onclick="return addSkill();" />
+            </td>
+        </tr>
+
+    </table>
+
+    <!---- SKILLS ---->
+
+    <div style="display:none" id="MOTION">
+
+        <h2>MOTION</h2>
+        <table>
+            <tr>
+                <td>2D ANIMATION</td>
+                <td><input name="SKILL-MOTION-2D ANIMATION" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>3D ANIMATION</td>
+                <td><input name="SKILL-MOTION-3D ANIMATION" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>VIDEO PRODUCTION</td>
+                <td><input name="SKILL-MOTION-VIDEO PRODUCTION" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>VIDEO EDITING</td>
+                <td><input name="SKILL-MOTION-VIDEO EDITING" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>VIDEO FX</td>
+                <td><input name="SKILL-MOTION-VIDEO FX" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>FLASH ANIMATION</td>
+                <td><input name="SKILL-MOTION-FLASH ANIMATION" type="text"  /></td>
+            </tr>
+        </table>
+
+    </div>
+
+    <div style="display:none" id="DESIGN">
+
+        <h2>DESIGN</h2>
+        <table>
+            <tr>
+                <td>2D ANIMATION</td>
+                <td><input name="SKILL-DESIGN-ICONOGRAPHY" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>3D ANIMATION</td>
+                <td><input name="SKILL-DESIGN-3D MODELING" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>VIDEO PRODUCTION</td>
+                <td><input name="SKILL-DESIGN-UI DESIGN" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>VIDEO EDITING</td>
+                <td><input name="SKILL-DESIGN-GRAPHIC OPTIMIZATION" type="text"  /></td>
+            </tr>
+        </table>
+
+    </div>
+
+    <div style="display:none" id="STUDIODEV">
+
+        <h2>STUDIO DEV</h2>
+        <table>
+            <tr>
+                <td>FLASH DEVELOPMENT AS2/AS3</td>
+                <td><input name="SKILL-STUDIO DEV-FLASH DEVELOPMENT AS2/AS3" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>INTERACTIVITY</td>
+                <td><input name="SKILL-STUDIO DEV-INTERACTIVITY" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>RICHMEDIA</td>
+                <td><input name="SKILL-STUDIO DEV-RICHMEDIA" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>HTML5</td>
+                <td><input name="SKILL-STUDIO DEV-HTML5" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>JAVASCRIPT</td>
+                <td><input name="SKILL-STUDIO DEV-JAVASCRIPT" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>CSS2/CSS3</td>
+                <td><input name="SKILL-STUDIO DEV-CSS2/CSS3" type="text"  /></td>
+            </tr>
+
+        </table>
+
+    </div>
+
+    <div style="display:none" id="PROJECTMANANGEMENT">
+
+        <h2>PROJECT MANANGEMENT</h2>
+        <table>
+            <tr>
+                <td>WATERFALL</td>
+                <td><input name="SKILL-PROJECT MANANGEMENT-WATERFALL" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>AGILE</td>
+                <td><input name="SKILL-PROJECT MANANGEMENT-AGILE" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>SCRUM</td>
+                <td><input name="SKILL-PROJECT MANANGEMENT-SCRUM" type="text"  /></td>
+            </tr>
+
+        </table>
+
+    </div>
+
+    <div style="display:none" id="METRICS">
+
+        <h2>METRICS</h2>
+        <table>
+            <tr>
+                <td>SIX SIGMA</td>
+                <td><input name="SKILL-METRICS-SIX SIGMA" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>ROOT CAUSE ANALYSIS</td>
+                <td><input name="SKILL-METRICS-ROOT CAUSE ANALYSIS" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>REPORTING</td>
+                <td><input name="SKILL-METRICS-REPORTING" type="text"  /></td>
+            </tr>
+
+        </table>
+
+    </div>
+
+    <div style="display:none" id="BACKGROUND">
+
+        <h2>BACKGROUND</h2>
+        <table>
+            <tr>
+                <td>DESIGN</td>
+                <td><input name="SKILL-BACKGROUND-DESIGN" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>STUDIO-MOTION</td>
+                <td><input name="SKILL-BACKGROUND-STUDIO-MOTION" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>BACK END</td>
+                <td><input name="SKILL-BACKGROUND-BACK END" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>FRONT END</td>
+                <td><input name="SKILL-BACKGROUND-FRONT END" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>QA</td>
+                <td><input name="SKILL-BACKGROUND-QA" type="text"  /></td>
+            </tr>
+
+        </table>
+
+    </div>
+
+    <div style="display:none" id="FRONTEND">
+
+        <h2>FRONTEND</h2>
+        <table>
+            <tr>
+                <td>HTML5</td>
+                <td><input name="SKILL-FRONTEND-HTML5" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>RESPONSIVE WEB DESIGN</td>
+                <td><input name="SKILL-FRONTEND-RESPONSIVE WEB DESIGN" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>SEO APIs IMPLEMENTATION</td>
+                <td><input name="SKILL-FRONTEND-SEO APIs IMPLEMENTATION" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>PHP</td>
+                <td><input name="SKILL-FRONTEND-PHP" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>PYTHON</td>
+                <td><input name="SKILL-FRONTEND-PYTHON" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>RUBY ON RAILS</td>
+                <td><input name="SKILL-FRONTEND-RUBY ON RAILS" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>ACCESSIBILITY (WAI-ARIA)</td>
+                <td><input name="SKILL-FRONTEND-ACCESSIBILITY (WAI ARIA)" type="text"  /></td>
+            </tr>
+
+        </table>
+
+    </div>
+
+    <div style="display:none" id="HTML5">
+
+        <h2>HTML5</h2>
+        <table>
+            <tr>
+                <td>HTML5</td>
+                <td><input name="SKILL-HTML5-WEBGL" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>HTML5 APIs (Canvas, Geolocation, Video, etc.)</td>
+                <td><input name="SKILL-HTML5-HTML5 APIs (Canvas, Geolocation, Video, etc.)" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>SVG</td>
+                <td><input name="SKILL-HTML5-SVG" type="text"  /></td>
+            </tr>
+
+
+        </table>
+
+    </div>
+
+    <div style="display:none" id="JAVASCRIPT">
+
+        <h2>JAVASCRIPT</h2>
+        <table>
+            <tr>
+                <td>JQUERY</td>
+                <td><input name="SKILL-JAVASCRIPT-JQUERY" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>AJAX</td>
+                <td><input name="SKILL-JAVASCRIPT-AJAX" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>ANGULARJS</td>
+                <td><input name="SKILL-JAVASCRIPT-ANGULARJS" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>BACKBONE</td>
+                <td><input name="SKILL-JAVASCRIPT-BACKBONE" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>NODE.JS</td>
+                <td><input name="SKILL-JAVASCRIPT-NODE.JS" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>DESIGN PATTERNS</td>
+                <td><input name="SKILL-JAVASCRIPT-DESIGN PATTERNS" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>OOP - JS</td>
+                <td><input name="SKILL-JAVASCRIPT-OOP JS" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>UNIT TESTING</td>
+                <td><input name="SKILL-JAVASCRIPT-UNIT TESTING" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>SENCHA</td>
+                <td><input name="SKILL-JAVASCRIPT-SENCHA" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>COFFEE SCRIPT</td>
+                <td><input name="SKILL-JAVASCRIPT-COFFEE SCRIPT" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>WEB SERVICES</td>
+                <td><input name="SKILL-JAVASCRIPT-WEB SERVICES" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>ANIMATION</td>
+                <td><input name="SKILL-JAVASCRIPT-ANIMATION" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>MVC</td>
+                <td><input name="SKILL-JAVASCRIPT-MVC" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>SOCIAL NETWORK APIs IMPLEMENTATION</td>
+                <td><input name="SKILL-JAVASCRIPT-SOCIAL NETWORK APIs IMPLEMENTATION" type="text"  /></td>
+            </tr>
+
+        </table>
+
+    </div>
+
+
+    <div style="display:none" id="CSS">
+
+        <h2>CSS</h2>
+        <table>
+            <tr>
+                <td>CSS2</td>
+                <td><input name="SKILL-CSS-CSS2" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>CSS3</td>
+                <td><input name="SKILL-CSS-CSS3" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>ANIMATION</td>
+                <td><input name="SKILL-CSS-ANIMATION" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>PREPROCESORS (SASS/LESS)</td>
+                <td><input name="SKILL-CSS-PREPROCESORS (SASS/LESS)" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>BOOTSTRAP</td>
+                <td><input name="SKILL-CSS-BOOTSTRAP" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>FOUNDATION</td>
+                <td><input name="SKILL-CSS-FOUNDATION" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>SPRITES</td>
+                <td><input name="SKILL-CSS-SPRITES" type="text"  /></td>
+            </tr>
+        </table>
+
+    </div>
+
+
+
+    <div style="display:none" id="DESIGNTOOLS">
+
+        <h2>DESIGN TOOLS</h2>
+        <table>
+            <tr>
+                <td>PHOTOSHOP</td>
+                <td><input name="SKILL-DESIGN TOOLS-PHOTOSHOP" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>ILLUSTRATOR</td>
+                <td><input name="SKILL-DESIGN TOOLS-ILLUSTRATOR" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>FIREWORKS</td>
+                <td><input name="SKILL-DESIGN TOOLS-FIREWORKS" type="text"  /></td>
+            </tr>
+        </table>
+
+    </div>
+
+    <div style="display:none" id="AUTOMATIONTOOLS">
+
+        <h2>AUTOMATION TOOLS</h2>
+        <table>
+            <tr>
+                <td>GRUNT</td>
+                <td><input name="SKILL-AUTOMATION TOOLS-GRUNT" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>GULP</td>
+                <td><input name="SKILL-AUTOMATION TOOLS-GULP" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>NODE PACKAGE MANAGERS</td>
+                <td><input name="SKILL-AUTOMATION TOOLS-NODE PACKAGE MANAGERS" type="text"  /></td>
+            </tr>
+
+        </table>
+
+    </div>
+
+
+    <div style="display:none" id="CMS">
+
+        <h2>CMS</h2>
+        <table>
+            <tr>
+                <td>ADOBE CQ5/AEM</td>
+                <td><input name="SKILL-CMS-ADOBE CQ5/AEM" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>ALFRESCO</td>
+                <td><input name="SKILL-CMS-ALFRESCO" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>WORDPRESS</td>
+                <td><input name="SKILL-CMS-WORDPRESS" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>JOOMLA</td>
+                <td><input name="SKILL-CMS-JOOMLA" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>DRUPAL</td>
+                <td><input name="SKILL-CMS-DRUPAL" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>TEAMSITE</td>
+                <td><input name="SKILL-CMS-TEAMSITE" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>APACHE JACKRABBIT</td>
+                <td><input name="SKILL-CMS-APACHE JACKRABBIT" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>APACHE SLING</td>
+                <td><input name="SKILL-CMS-APACHE SLING" type="text"  /></td>
+            </tr>
+
+        </table>
+
+    </div>
+
+    <div style="display:none" id="CMHTML">
+
+        <h2>CM HTML</h2>
+        <table>
+            <tr>
+                <td>HTML4, HTML5</td>
+                <td><input name="SKILL-CM HTML-HTML4, HTML5" type="text"  /></td>
+            </tr>
+
+        </table>
+
+    </div>
+
+    <div style="display:none" id="CMCSS">
+
+        <h2>CM CSS</h2>
+        <table>
+            <tr>
+                <td>CSS2, CSS3</td>
+                <td><input name="SKILL-CM CSS-CSS2, CSS3" type="text"  /></td>
+            </tr>
+
+        </table>
+
+    </div>
+
+    <div style="display:none" id="CMCMS">
+
+        <h2>CM CMS</h2>
+        <table>
+            <tr>
+                <td>WORDPRESS</td>
+                <td><input name="SKILL-CM CMS-WORDPRESS" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>CQ5</td>
+                <td><input name="SKILL-CM CMS-CQ5" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>CQ4</td>
+                <td><input name="SKILL-CM CMS-CQ4" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>JOOMLA</td>
+                <td><input name="SKILL-CM CMS-JOOMLA" type="text"  /></td>
+            </tr>
+
+        </table>
+
+    </div>
+
+    <div style="display:none" id="CMSQL">
+
+        <h2>CM SQL</h2>
+        <table>
+            <tr>
+                <td>SERVER APPLICATIONS</td>
+                <td><input name="SKILL-CM SQL-SERVER APPLICATIONS" type="text"  /></td>
+            </tr>
+
+        </table>
+
+    </div>
+
+    <div style="display:none" id="CMSEO">
+
+        <h2>CM SEO</h2>
+        <table>
+            <tr>
+                <td>SEO</td>
+                <td><input name="SKILL-CM SEO-SEO" type="text"  /></td>
+            </tr>
+
+        </table>
+
+    </div>
+
+    <div style="display:none" id="CMDESIGNTOOLS">
+
+        <h2>CM DESIGN TOOLS</h2>
+        <table>
+            <tr>
+                <td>PHOTOSHOP</td>
+                <td><input name="SKILL-CM DESIGN TOOLS-PHOTOSHOP" type="text"  /></td>
+            </tr>
+
+            <tr>
+                <td>ILLUSTRATOR</td>
+                <td><input name="SKILL-CM DESIGN TOOLS-ILLUSTRATOR" type="text"  /></td>
+            </tr>
+
+            <tr>
+                <td>DREAMWEAVER</td>
+                <td><input name="SKILL-CM DESIGN TOOLS-DREAMWEAVER" type="text"  /></td>
+            </tr>
+
+        </table>
+
+    </div>
+
+    <div style="display:none" id="CMJAVASCRIPT">
+
+        <h2>CM JAVASCRIPT</h2>
+        <table>
+            <tr>
+                <td>AJAX</td>
+                <td><input name="SKILL-CM JAVASCRIPT-AJAX" type="text"  /></td>
+            </tr>
+
+            <tr>
+                <td>JQUERY</td>
+                <td><input name="SKILL-CM JAVASCRIPT-JQUERY" type="text"  /></td>
+            </tr>
+
+            <tr>
+                <td>NODE.JS</td>
+                <td><input name="SKILL-CM JAVASCRIPT-NODE.JS" type="text"  /></td>
+            </tr>
+
+        </table>
+
+    </div>
+
+    <div style="display:none" id="CMMOTION">
+
+        <h2>CM MOTION</h2>
+        <table>
+            <tr>
+                <td>FINAL CUT</td>
+                <td><input name="SKILL-CM MOTION-FINAL CUT" type="text"  /></td>
+            </tr>
+
+            <tr>
+                <td>ADOBE PREMIER</td>
+                <td><input name="SKILL-CM MOTION-ADOBE PREMIER" type="text"  /></td>
+            </tr>
+
+        </table>
+
+    </div>
+
+    <div style="display:none" id="BACKEND">
+
+        <h2>BACK-END</h2>
+        <table>
+            <tr>
+                <td>WEB SERVERS</td>
+                <td><input name="SKILL-BACKEND-WEB SERVERS" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>TEST DRIVEN DEVELOPMENT</td>
+                <td><input name="SKILL-BACKEND-TEST DRIVEN DEVELOPMENT" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>SEARCH AND INDEXINGs</td>
+                <td><input name="SKILL-BACKEND-SEARCH AND INDEXING" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>NoSQL</td>
+                <td><input name="SKILL-BACKEND-NoSQL" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>BIG DATA</td>
+                <td><input name="SKILL-BACKEND-BIG DATA" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>RELATIONAL DATABASES</td>
+                <td><input name="SKILL-BACKEND-RELATIONAL DATABASES" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>ORM</td>
+                <td><input name="SKILL-BACKEND-ORM" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>DEPENDENCY INJECTION</td>
+                <td><input name="SKILL-BACKEND-DEPENDENCY INJECTION" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>CLOUD COMPUTING</td>
+                <td><input name="SKILL-BACKEND-CLOUD COMPUTING" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>CACHING</td>
+                <td><input name="SKILL-BACKEND-CACHING" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>CONTINUOUS INTEGRATION</td>
+                <td><input name="SKILL-BACKEND-CONTINUOUS INTEGRATION" type="text"  /></td>
+            </tr>
+        </table>
+
+    </div>
+
+    <div style="display:none" id="JAVA">
+
+        <h2>JAVA</h2>
+        <table>
+            <tr>
+                <td>APPLICATION SERVERS</td>
+                <td><input name="SKILL-JAVA-APPLICATION SERVERS" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>WEB APPLICATIONS</td>
+                <td><input name="SKILL-JAVA-WEB APPLICATIONS" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>JEE</td>
+                <td><input name="SKILL-JAVA-JEE" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>WEB SERVICES</td>
+                <td><input name="SKILL-JAVA-WEB SERVICES" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>SPRING</td>
+                <td><input name="SKILL-JAVA-SPRING" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>NETWORK APPLICATIONS</td>
+                <td><input name="SKILL-JAVA-NETWORK APPLICATIONS" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>HIBERNATE</td>
+                <td><input name="SKILL-JAVA-HIBERNATE" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>MAVEN</td>
+                <td><input name="SKILL-JAVA-MAVEN" type="text"  /></td>
+            </tr>
+        </table>
+
+    </div>
+
+    <div style="display:none" id=".NET">
+
+        <h2>.NET</h2>
+        <table>
+            <tr>
+                <td>ASP.NET</td>
+                <td><input name="SKILL-.NET-ASP.NET" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>WCF</td>
+                <td><input name="SKILL-.NET-WCF" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>ADO.NET</td>
+                <td><input name="SKILL-.NET-ADO.NET" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>ENTITY FRAMEWORK</td>
+                <td><input name="SKILL-.NET-ENTITY FRAMEWORK" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>LINQ</td>
+                <td><input name="SKILL-.NET-LINQ" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>C#</td>
+                <td><input name="SKILL-.NET-C#" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>VB.NET</td>
+                <td><input name="SKILL-.NET-VB.NET" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>MSBUILD</td>
+                <td><input name="SKILL-.NET-MSBUILD" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>SERVICE APPLICATIONS</td>
+                <td><input name="SKILL-.NET-SERVICE APPLICATIONS" type="text"  /></td>
+            </tr>
+
+        </table>
+    </div>
+
+    <div style="display:none" id="ECOMMERCE">
+
+        <h2>E-COMMERCE</h2>
+        <table>
+            <tr>
+                <td>HYBRIS</td>
+                <td><input name="SKILL-E COMMERCE-HYBRIS" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>DEMANDWARE</td>
+                <td><input name="SKILL-E COMMERCE-DEMANDWARE" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>ATG</td>
+                <td><input name="SKILL-E COMMERCE-ATG" type="text"  /></td>
+            </tr>
+        </table>
+    </div>
+
+    <div style="display:none" id="FUNCTIONALTESTING">
+
+        <h2>FUNCTIONAL TESTING</h2>
+        <table>
+            <tr>
+                <td>TEST PLAN CREATION</td>
+                <td><input name="SKILL-FUNCTIONAL TESTING-TEST PLAN CREATION" type="text"  /></td>
+            </tr>
+            <tr>
+                <td>TEST CASES CREATION</td>
+                <td><input name="SKILL-FUNCTIONAL TESTING-TEST CASES CREATION" type="text"  /></td>
+            </tr>
+        </table>
+    </div>
+
+
+    <div style="display:none" id="CREATIVETESTING">
+
+        <h2>CREATIVE TESTING</h2>
+        <table>
+            <tr>
+                <td>OLA</td>
+                <td><input name="SKILL-CREATIVE TESTING-OLA" type="text"  /></td>
+            </tr>
+
+            <tr>
+                <td>EMAIL</td>
+                <td><input name="SKILL-CREATIVE TESTING-EMAIL" type="text"  /></td>
+            </tr>
+
+            <tr>
+                <td>RICH MEDIA</td>
+                <td><input name="SKILL-CREATIVE TESTING-RICH MEDIA" type="text"  /></td>
+            </tr>
+
+        </table>
+    </div>
+
+    <div style="display:none" id="MOBILETESTING">
+
+        <h2>MOBILE TESTING</h2>
+        <table>
+            <tr>
+                <td>ANDROID</td>
+                <td><input name="SKILL-MOBILE TESTING-ANDROID" type="text"  /></td>
+            </tr>
+
+            <tr>
+                <td>IOS</td>
+                <td><input name="SKILL-MOBILE TESTING-IOS" type="text"  /></td>
+            </tr>
+
+            <tr>
+                <td>EMULATORS</td>
+                <td><input name="SKILL-MOBILE TESTING-EMULATORS" type="text"  /></td>
+            </tr>
+
+        </table>
+    </div>
+
+    <div style="display:none" id="TESTAUTOMATION">
+
+        <h2>TEST AUTOMATION</h2>
+        <table>
+            <tr>
+                <td>RECORD/PLAYBACK</td>
+                <td><input name="SKILL-TEST AUTOMATION-RECORD/PLAYBACK" type="text"  /></td>
+            </tr>
+
+            <tr>
+                <td>SCRIPTING</td>
+                <td><input name="SKILL-TEST AUTOMATION-SCRIPTING" type="text"  /></td>
+            </tr>
+
+            <tr>
+                <td>PERFORMANCE TESTING</td>
+                <td><input name="SKILL-TEST AUTOMATION-PERFORMANCE TESTING" type="text"  /></td>
+            </tr>
+
+            <tr>
+                <td>SELENIUM IDE</td>
+                <td><input name="SKILL-TEST AUTOMATION-SELENIUM IDE" type="text"  /></td>
+            </tr>
+
+            <tr>
+                <td>SELENIUM WEBDRIVER</td>
+                <td><input name="SKILL-TEST AUTOMATION-SELENIUM WEBDRIVER" type="text"  /></td>
+            </tr>
+
+            <tr>
+                <td>QTP</td>
+                <td><input name="SKILL-TEST AUTOMATION-QTP" type="text"  /></td>
+            </tr>
+
+
+        </table>
+    </div>
+
+    <div style="display:none" id="TOOLS">
+
+        <h2>TOOLS</h2>
+        <table>
+            <tr>
+                <td>QUALITY CENTER</td>
+                <td><input name="SKILL-TOOLS-QUALITY CENTER" type="text"  /></td>
+            </tr>
+
+            <tr>
+                <td>JIRA</td>
+                <td><input name="SKILL-TOOLS-JIRA" type="text"  /></td>
+            </tr>
+
+            <tr>
+                <td>BUGZILLA</td>
+                <td><input name="SKILL-TOOLS-BUGZILLA" type="text"  /></td>
+            </tr>
+
+            <tr>
+                <td>SPYRA</td>
+                <td><input name="SKILL-TOOLS-SPYRA" type="text"  /></td>
+            </tr>
+
+        </table>
+    </div>
+
+
+    <div style="display:none" id="TECHNOLOGIESTESTED">
+
+        <h2>TECHNOLOGIES TESTED</h2>
+        <table>
+            <tr>
+                <td>HTML5 / CSS3</td>
+                <td><input name="SKILL-TECHNOLOGIES TESTED-HTML5 / CSS3" type="text"  /></td>
+            </tr>
+
+            <tr>
+                <td>JAVASCRIPT</td>
+                <td><input name="SKILL-TECHNOLOGIES TESTED-JAVASCRIPT" type="text"  /></td>
+            </tr>
+
+            <tr>
+                <td>E-COMMERCE</td>
+                <td><input name="SKILL-TECHNOLOGIES TESTED-E COMMERCE" type="text"  /></td>
+            </tr>
+
+            <tr>
+                <td>RESPONSIVE DESIGN</td>
+                <td><input name="SKILL-TECHNOLOGIES TESTED-RESPONSIVE DESIGN" type="text"  /></td>
+            </tr>
+
+            <tr>
+                <td>SEARCH ENGINE OPTIMIZATION</td>
+                <td><input name="SKILL-TECHNOLOGIES TESTED-SEARCH ENGINE OPTIMIZATION" type="text"  /></td>
+            </tr>
+
+            <tr>
+                <td>ANALYTICS</td>
+                <td><input name="SKILL-TECHNOLOGIES TESTED-ANALYTICS" type="text"  /></td>
+            </tr>
+
+
+        </table>
+    </div>
+
+    <div style="display:none" id="LIFECYCLES">
+
+        <h2>LIFECYCLES</h2>
+        <table>
+            <tr>
+                <td>WATERFALL</td>
+                <td><input name="SKILL-LIFECYCLES-WATERFALL" type="text"  /></td>
+            </tr>
+
+            <tr>
+                <td>AGILE</td>
+                <td><input name="SKILL-LIFECYCLES-AGILE" type="text"  /></td>
+            </tr>
+
+        </table>
+    </div>
+
+    <div style="display:none" id="CMSTESTED">
+
+        <h2>CMS TESTED</h2>
+        <table>
+            <tr>
+                <td>CQ5</td>
+                <td><input name="SKILL-CMS TESTED-CQ5" type="text"  /></td>
+            </tr>
+
+            <tr>
+                <td>WORDPRESS</td>
+                <td><input name="SKILL-CMS TESTED-WORDPRESS" type="text"  /></td>
+            </tr>
+
+            <tr>
+                <td>JOOMLA</td>
+                <td><input name="SKILL-CMS TESTED-JOOMLA" type="text"  /></td>
+            </tr>
+
+            <tr>
+                <td>HYBRIS</td>
+                <td><input name="SKILL-CMS TESTED-HYBRIS" type="text"  /></td>
+            </tr>
+
+            <tr>
+                <td>DRUPAL</td>
+                <td><input name="SKILL-CMS TESTED-DRUPAL" type="text"  /></td>
+            </tr>
+
+        </table>
+    </div>
+
+    <input type="submit" value="Store" />
+</form>
+
+</body>
+</html>

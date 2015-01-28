@@ -1,14 +1,18 @@
 package cr.prodigious.controller;
 
 import cr.prodigious.bean.BooleanMessage;
+import cr.prodigious.bean.CapabilityBean;
 import cr.prodigious.bean.CapabilityTeamMapping;
-import cr.prodigious.bean.Configuration;
+import cr.prodigious.bean.ManagerBean;
+import cr.prodigious.bean.PositionBean;
+import cr.prodigious.bean.RegionBean;
 import cr.prodigious.bean.cases.Case;
 import cr.prodigious.bean.cases.CasesBean;
 import cr.prodigious.bean.team.Person;
 import cr.prodigious.bean.team.TeamBean;
 import cr.prodigious.bean.work.WorkBean;
 import cr.prodigious.helper.CasePopulatorHelper;
+import cr.prodigious.helper.JsonHelper;
 import cr.prodigious.helper.PersonPopulatorHelper;
 import cr.prodigious.service.TeamWebSiteFacadeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +25,13 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Team Web Site Controller
@@ -33,11 +42,271 @@ import java.util.ArrayList;
 @RequestMapping("/team")
 public class TeamWebSiteController implements Serializable {
 
+    private static final Class<? extends ArrayList> ARRAY_LIST_MANAGER_CLASS
+            = new ArrayList<ManagerBean>().getClass();
+
+    @Autowired
+    TeamWebSiteControllerHelper teamWebSiteControllerHelper = null;
+
     @Autowired
     private CapabilityTeamMapping capabilityTeamMapping = null;
 
     @Autowired
     private TeamWebSiteFacadeService teamWebSiteFacadeService = null;
+
+    @Autowired
+    private JsonHelper jsonHelper = null;
+
+    /*@RequestMapping(value = "/init-managers", method = RequestMethod.GET, produces={"application/xml", "application/json"})
+    @ResponseStatus(HttpStatus.OK)
+    public List<ManagerBean> initManagers() {
+
+        ArrayList<ManagerBean> managers =
+                new ArrayList<>();
+
+        ManagerBean managerBean =
+                new ManagerBean();
+
+        managerBean.setName("Carolina Chavarria");
+        managerBean.setOrder(1);
+        managers.add(managerBean);
+
+        managerBean =
+                new ManagerBean();
+        managerBean.setName("Eduardo Morales");
+        managerBean.setOrder(2);
+        managers.add(managerBean);
+
+        managerBean =
+                new ManagerBean();
+        managerBean.setOrder(3);
+        managerBean.setName("Guido Bolaños");
+        managers.add(managerBean);
+
+        this.teamWebSiteFacadeService.storeManagers(managers);
+
+        return this.teamWebSiteFacadeService.getManagers();
+    } // allTeam    */
+
+    @RequestMapping(value = "/capabilities/positions", method = RequestMethod.POST, produces={"application/xml", "application/json"})
+    @ResponseStatus(HttpStatus.OK)
+    public BooleanMessage editCapabilitiesPositions(HttpServletRequest request) {
+
+        final BooleanMessage success =
+                new BooleanMessage(false);
+
+        InputStream inputStream = null;
+
+        ArrayList<RegionBean> regions = null;
+
+        try {
+
+            inputStream =
+                    request.getInputStream();
+
+            regions =
+                    this.jsonHelper.read
+                            (inputStream, ARRAY_LIST_MANAGER_CLASS);
+
+            if (null != regions) {
+
+                this.teamWebSiteFacadeService.
+                        storeRegions(regions);
+
+                success.setValue(true);
+            }
+        } catch (IOException e) {
+
+            success.setValue(false);
+        }
+
+        return success;
+    } // editRegions
+
+    @RequestMapping(value = "/capabilities/positions", method = RequestMethod.GET, produces={"application/xml", "application/json"})
+    @ResponseStatus(HttpStatus.OK)
+    public List<CapabilityBean> capabilitiesPositions() {
+
+        ArrayList<CapabilityBean> capabilities =
+                new ArrayList<>();
+        ArrayList<PositionBean> positionBeansBE =
+                new ArrayList<>();
+
+
+        CapabilityBean capabilityBean =
+                new CapabilityBean();
+
+        capabilityBean.setOrder(1);
+        capabilityBean.setName("BE");
+
+        capabilityBean.setPositions(positionBeansBE);
+
+        PositionBean positionBean =
+                new PositionBean();
+
+        positionBean.setOrder(1);
+        positionBean.setName("Software Engineer");
+
+        positionBeansBE.add(positionBean);
+
+        positionBean =
+                new PositionBean();
+
+        positionBean.setOrder(2);
+        positionBean.setName("Senior Software Engineer");
+
+        positionBeansBE.add(positionBean);
+
+        capabilities.add(capabilityBean);
+
+        return capabilities;
+    } // capabilitiesPositions
+
+    @RequestMapping(value = "/capabilities", method = RequestMethod.GET, produces={"application/xml", "application/json"})
+    @ResponseStatus(HttpStatus.OK)
+    public Set<String> capabilities() {
+
+        return this.capabilityTeamMapping.getAllCapabilityNames();
+    } // capabilities
+
+    @RequestMapping(value = "/regions", method = RequestMethod.POST, produces={"application/xml", "application/json"})
+    @ResponseStatus(HttpStatus.OK)
+    public BooleanMessage editRegions(HttpServletRequest request) {
+
+        final BooleanMessage success =
+                new BooleanMessage(false);
+
+        InputStream inputStream = null;
+
+        ArrayList<RegionBean> regions = null;
+
+        try {
+
+            inputStream =
+                    request.getInputStream();
+
+            regions =
+                    this.jsonHelper.read
+                            (inputStream, ARRAY_LIST_MANAGER_CLASS);
+
+            if (null != regions) {
+
+                this.teamWebSiteFacadeService.
+                        storeRegions(regions);
+
+                success.setValue(true);
+            }
+        } catch (IOException e) {
+
+            success.setValue(false);
+        }
+
+        return success;
+    } // editRegions
+
+    @RequestMapping(value = "/regions", method = RequestMethod.GET, produces={"application/xml", "application/json"})
+    @ResponseStatus(HttpStatus.OK)
+    public List<RegionBean> regions() {
+
+        return this.teamWebSiteFacadeService.getRegions();
+    } // regions
+
+    @RequestMapping(value = "/managers", method = RequestMethod.POST, produces={"application/xml", "application/json"})
+    @ResponseStatus(HttpStatus.OK)
+    public BooleanMessage editManagers(HttpServletRequest request) {
+
+        final BooleanMessage success =
+                new BooleanMessage(false);
+
+        InputStream inputStream = null;
+
+        ArrayList<ManagerBean> managers = null;
+
+        try {
+
+            inputStream =
+                    request.getInputStream();
+
+            managers =
+                this.jsonHelper.read
+                        (inputStream, ARRAY_LIST_MANAGER_CLASS);
+
+            if (null != managers) {
+
+                this.teamWebSiteFacadeService.
+                        storeManagers(managers);
+
+                success.setValue(true);
+            }
+        } catch (IOException e) {
+
+            success.setValue(false);
+        }
+
+        return success;
+    } // editManagers
+
+    @RequestMapping(value = "/managers", method = RequestMethod.GET, produces={"application/xml", "application/json"})
+    @ResponseStatus(HttpStatus.OK)
+    public List<ManagerBean> managers() {
+
+        return this.teamWebSiteFacadeService.getManagers();
+    } // managers
+
+    //////////////
+
+    @RequestMapping(value = "/all-team", method = RequestMethod.GET, produces={"application/xml", "application/json"})
+    @ResponseStatus(HttpStatus.OK)
+    public ArrayList<TeamBean> allTeam() {
+
+        final ArrayList<TeamBean> teamBeanList =
+                 new ArrayList<>();
+
+        final Collection<Long> idList =
+                this.capabilityTeamMapping.getAllIds();
+
+        TeamBean teamBean = null;
+
+        if (null != idList) {
+
+            for (Long id : idList) {
+
+                teamBean =
+                        this.teamWebSiteFacadeService
+                                .getTeam(id);
+
+                teamBeanList.add
+                        (teamBean);
+            }
+        }
+
+        return teamBeanList;
+    } // allTeam
+
+    @RequestMapping(value = "/person/capability/{capability}/email/{email}", method = RequestMethod.GET, produces={"application/xml", "application/json"})
+    @ResponseStatus(HttpStatus.OK)
+    public Person person(@PathVariable("capability")  String capability, @PathVariable("email") String personEmail ) {
+
+        Long teamId = null;
+        TeamBean teamBean = null;
+        Person person = null;
+
+        if (null != capability) {
+
+            teamId =
+                    this.capabilityTeamMapping.map(capability.trim().toUpperCase());
+        }
+
+        if(null != teamId) {
+
+            person =
+                this.teamWebSiteFacadeService.getPerson
+                        (teamId, personEmail);
+        }
+
+        return person;
+    } // person
+
 
     @RequestMapping(value = "/team/{capability}", method = RequestMethod.GET, produces={"application/xml", "application/json"})
     @ResponseStatus(HttpStatus.OK)
@@ -55,34 +324,64 @@ public class TeamWebSiteController implements Serializable {
                 this.teamWebSiteFacadeService.getTeam(teamId):null;
     } // team
 
-    @RequestMapping(value = "/cases", method = RequestMethod.GET, produces={"application/xml", "application/json"})
+    @RequestMapping(value = "/delete-team/{capability}", method = RequestMethod.GET, produces={"application/xml", "application/json"})
     @ResponseStatus(HttpStatus.OK)
-    public CasesBean cases( ) {
+    public BooleanMessage deleteTeam(@PathVariable String capability ) {
 
-        return this.teamWebSiteFacadeService.getCases();
-    } // team
+        final BooleanMessage booleanMessage =
+                new BooleanMessage(false);
 
-    @RequestMapping(value = "/work", method = RequestMethod.GET, produces={"application/xml", "application/json"})
+        Long teamId = null;
+
+        if (null != capability) {
+
+            teamId =
+                    this.capabilityTeamMapping.map(capability.trim().toUpperCase());
+
+            booleanMessage.setValue(this.teamWebSiteFacadeService.removeTeam(teamId));
+        }
+
+        return booleanMessage;
+    } // deleteTeam.
+
+
+    @RequestMapping(value = "/restore-team/{capability}/{filename}", method = RequestMethod.GET, produces={"application/xml", "application/json"})
     @ResponseStatus(HttpStatus.OK)
-    public WorkBean work( ) {
+    public BooleanMessage restoreTeam(@PathVariable String capability, @PathVariable String filename) {
 
-        return this.teamWebSiteFacadeService.getWork();
-    } // team
+        final BooleanMessage booleanMessage =
+                new BooleanMessage(false);
+
+        Long teamId = null;
+
+        if (null != capability) {
+
+            teamId =
+                    this.capabilityTeamMapping.map(capability.trim().toUpperCase());
+
+            booleanMessage.setValue(this.teamWebSiteFacadeService.restoreTeam(teamId, filename));
+        }
+
+        return booleanMessage;
+    } // restoreTeam.
+
 
     @RequestMapping(value = "/add-team", method = RequestMethod.POST, produces={"application/xml", "application/json"})
     @ResponseStatus(HttpStatus.OK)
     public BooleanMessage addTeam(@RequestParam(value = "name", required = true) final String name,
-                         @RequestParam(value = "position", required = true)   final String position,
-                         @RequestParam(value = "imageLocal", required = true) final String imageLocal,
-                         @RequestParam(value = "email", required = true)      final String email,
-                         @RequestParam(value = "regionproject", required = true)      final String regionproject,
-                         final HttpServletRequest request) {
+                                  @RequestParam(value = "position", required = true)   final String position,
+                                  @RequestParam(value = "imageLocal", required = true) final String imageLocal,
+                                  @RequestParam(value = "email", required = true)      final String email,
+                                  @RequestParam(value = "regionProject", required = true)      final String regionProject,
+                                  @RequestParam(value = "employeeNumber", required = true)     final String employeeNumber,
+                                  @RequestParam(value = "manager", required = true)    final String manager,
+                                  final HttpServletRequest request) {
 
         final BooleanMessage booleanMessage =
                 new BooleanMessage(false);
 
         final Long teamId =
-                  this.getTeamId(position);
+                this.teamWebSiteControllerHelper.getTeamId(position);
 
         if (null != teamId) {
 
@@ -91,69 +390,52 @@ public class TeamWebSiteController implements Serializable {
 
             final Person person =
                     PersonPopulatorHelper.populate(name, position,
-                            imageLocal, email, regionproject, request);
+                            imageLocal, email, regionProject,
+                            employeeNumber, manager, request);
 
             booleanMessage.setValue
-                    (this.addNewPerson(teamBean, person, teamId));
+                    (this.teamWebSiteControllerHelper.addNewPerson(teamBean, person, teamId));
         }
 
         return booleanMessage;
     } // addWork
 
-    private Long getTeamId (final String position) {
 
-        Long teamId         = null;
-        String positionName = null;
-        String [] array     = null;
 
-        if (null != position) {
+    ////////////////////
 
-            array = position.split("/");
-            if (array.length > 1) {
+    @RequestMapping(value = "/cases", method = RequestMethod.GET, produces={"application/xml", "application/json"})
+    @ResponseStatus(HttpStatus.OK)
+    public CasesBean cases( ) {
 
-                positionName =
-                        array[0];
+        return this.teamWebSiteFacadeService.getCases();
+    } // team
 
-                teamId =
-                        this.capabilityTeamMapping.map(positionName.trim().toUpperCase());
+    @RequestMapping(value = "/restore-cases/{filename}", method = RequestMethod.GET, produces={"application/xml", "application/json"})
+    @ResponseStatus(HttpStatus.OK)
+    public BooleanMessage restoreCases(@PathVariable String filename) {
 
-            }
-        }
+        final BooleanMessage booleanMessage =
+                new BooleanMessage(false);
 
-        return teamId;
-    } // teamId
+        booleanMessage.setValue(this.teamWebSiteFacadeService.restoreCases(filename));
 
-    private boolean addNewPerson(TeamBean teamBean, final Person person,  final Long teamId) {
+        return booleanMessage;
+    } // deleteTeam.
 
-        boolean result = false;
+    @RequestMapping(value = "/delete-cases", method = RequestMethod.GET, produces={"application/xml", "application/json"})
+    @ResponseStatus(HttpStatus.OK)
+    public BooleanMessage deleteCases( ) {
 
-        try {
+        final BooleanMessage booleanMessage =
+                new BooleanMessage(false);
 
-            if (null == teamBean) {
+        booleanMessage.setValue(this.teamWebSiteFacadeService.removeCases());
 
-                teamBean = new TeamBean();
-                teamBean.setId(teamId);
-            }
+        return booleanMessage;
+    } // deleteTeam.
 
-            if (null == teamBean.getPerson()) {
-
-                teamBean.setPerson(new ArrayList<Person>());
-            }
-
-            teamBean.getPerson().add(person);
-
-            this.teamWebSiteFacadeService.storeTeam(teamBean);
-
-            result = true;
-        } catch (Exception e) {
-
-            result = false;
-        }
-
-        return result;
-    } // addNewPerson.
-
-    @RequestMapping(value = "/add-case", method = RequestMethod.POST, produces={"application/xml", "application/json"})
+    @RequestMapping(value = "/add-cases", method = RequestMethod.POST, produces={"application/xml", "application/json"})
     @ResponseStatus(HttpStatus.OK)
     public BooleanMessage addCase(@RequestParam(value = "brand", required = true)          final String brand,
                                   @RequestParam(value = "description", required = true)    final String description,
@@ -172,40 +454,45 @@ public class TeamWebSiteController implements Serializable {
                 CasePopulatorHelper.populate(brand, description, image, inputText, excecutionTime, request);
 
         booleanMessage.setValue
-                (this.addNewCase(casesBean, aCase));
+                (this.teamWebSiteControllerHelper.addNewCase(casesBean, aCase));
 
         return booleanMessage;
     } // addCase
 
-    private boolean addNewCase(CasesBean casesBean, final Case aCase) {
+    //////////
 
-        boolean result = false;
+    @RequestMapping(value = "/work", method = RequestMethod.GET, produces={"application/xml", "application/json"})
+    @ResponseStatus(HttpStatus.OK)
+    public WorkBean work( ) {
 
-        try {
+        return this.teamWebSiteFacadeService.getWork();
+    } // team
 
-          /*  if (null == teamBean) {
 
-                teamBean = new TeamBean();
-                teamBean.setId(Configuration.DEFAULT_ID);
-            }
+    //////////
 
-            if (null == teamBean.getPerson()) {
+    @RequestMapping(value = "/backme", method = RequestMethod.GET, produces={"application/xml", "application/json"})
+    @ResponseStatus(HttpStatus.OK)
+    public BooleanMessage backupMe() {
 
-                teamBean.setPerson(new ArrayList<Person>());
-            }
+        final BooleanMessage booleanMessage =
+                new BooleanMessage(false);
 
-            teamBean.getPerson().add(person);
+        booleanMessage.setValue(this.teamWebSiteFacadeService.backMe());
 
-            this.teamWebSiteFacadeService.storeTeam(teamBean);*/
+        return booleanMessage;
+    } // backupMe.
 
-            result = true;
-        } catch (Exception e) {
+    @RequestMapping(value = "/closeme", method = RequestMethod.GET, produces={"application/xml", "application/json"})
+    @ResponseStatus(HttpStatus.OK)
+    public BooleanMessage closeMe() {
 
-            result = false;
-        }
+        final BooleanMessage booleanMessage =
+                new BooleanMessage(false);
 
-        return result;
-    } // addNewPerson.
+        booleanMessage.setValue(this.teamWebSiteFacadeService.closeMe());
 
+        return booleanMessage;
+    } // closeMe.
 
 } // E:O:F:TeamWebSiteController.

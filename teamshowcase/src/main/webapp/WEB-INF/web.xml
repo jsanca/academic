@@ -10,6 +10,10 @@
         <servlet-class>
             org.springframework.web.servlet.DispatcherServlet
         </servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>/WEB-INF/rest-servlet-servlet.xml</param-value>
+        </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
@@ -25,12 +29,12 @@
     </servlet-mapping>
 
     <!-- Register Spring Listener -->
-    <!--listener>
+    <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-    </listener-->
+    </listener>
 
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>/WEB-INF/rest-servlet-servlet.xml</param-value>
+        <param-value>/WEB-INF/*-context.xml</param-value>
     </context-param>
 </web-app>
