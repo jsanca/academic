@@ -28,12 +28,22 @@ public class Person {
 
     @JsonProperty("name")
     private String name;
+
+    @JsonProperty("employeeNumber")
+    private String employeeNumber;
+
+    @JsonProperty("manager")
+    private String manager;
+
+
+
     @JsonProperty("position")
     private String position;
     @JsonProperty("regionProject")
     private String regionProject;
     @JsonProperty("photo")
     private String photo;
+
 
     @JsonProperty("regionProject")
     public String getRegionProject() {
@@ -73,6 +83,29 @@ public class Person {
     @JsonProperty("name")
     public void setName(String name) {
         this.name = name;
+    }
+
+
+    @JsonProperty("employeeNumber")
+    public String getEmployeeNumber() {
+        return employeeNumber;
+    }
+
+
+    @JsonProperty("employeeNumber")
+    public void setEmployeeNumber(String employeeNumber) {
+        this.employeeNumber = employeeNumber;
+    }
+
+    @JsonProperty("manager")
+    public String getManager() {
+        return manager;
+    }
+
+
+    @JsonProperty("manager")
+    public void setManager(String manager) {
+        this.manager = manager;
     }
 
     /**

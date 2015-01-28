@@ -2,10 +2,13 @@ package cr.prodigious.dao;
 
 import com.db4o.Db4oEmbedded;
 import com.db4o.ObjectContainer;
+import com.db4o.config.EmbeddedConfiguration;
+import cr.prodigious.bean.team.TeamBean;
 import cr.prodigious.entity.Entity;
 
-import javax.sql.rowset.Predicate;
 import java.io.Serializable;
+import java.text.MessageFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -17,16 +20,22 @@ public class DataBaseHelper implements Serializable, DataBase, cr.prodigious.bea
 
     private ObjectContainer dataBase = null;
     private String dataBasePath;
+    private String backupDataBasePatternPath = "backup{0}.db4o";
 
     public ObjectContainer getDataBase() {
+
         return dataBase;
     }
 
     @Override
     public synchronized void init() {
 
-        this.dataBase = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(),
+        EmbeddedConfiguration config = Db4oEmbedded.newConfiguration();
+        this.dataBase = Db4oEmbedded.openFile(config,
                 this.getDataBasePath());
+
+        config.common().objectClass(TeamBean.class).cascadeOnActivate(
+                true);
     } // init.
 
     @Override
@@ -37,6 +46,7 @@ public class DataBaseHelper implements Serializable, DataBase, cr.prodigious.bea
         try {
 
             this.dataBase.store(entity);
+            this.dataBase.ext().commit();
 
             this.dataBase.commit();
             result = true;
@@ -117,6 +127,52 @@ public class DataBaseHelper implements Serializable, DataBase, cr.prodigious.bea
         return this.dataBase.queryByExample(entityClass);
     } // selectAll.
 
+    @Override
+    public Entity activate(Entity entity, int depth) {
+
+        this.dataBase.activate(entity, depth);
+
+        return entity;
+    }
+
+    @Override
+    public boolean backupMe() {
+
+        boolean backup = false;
+
+        try {
+
+            this.dataBase.ext().backup
+                    (MessageFormat.format(this.getBackupDataBasePatternPath(),
+                            String.valueOf(new Date().getTime())));
+
+            backup = true;
+        } catch (Exception e) {
+
+            backup = false;
+        }
+
+        return backup;
+    }
+
+    @Override
+    public boolean closeMe() {
+
+        boolean closed = false;
+
+        // TODO: backup me?
+        if (null != this.dataBase) {
+
+            if (!this.dataBase.ext().isClosed()) {
+
+                closed =
+                    this.dataBase.close();
+            }
+        }
+
+        return closed;
+    }
+
     public String getDataBasePath() {
 
         return this.dataBasePath;
@@ -127,12 +183,23 @@ public class DataBaseHelper implements Serializable, DataBase, cr.prodigious.bea
         this.dataBasePath = dataBasePath;
     }
 
+    public String getBackupDataBasePatternPath() {
+        return backupDataBasePatternPath;
+    }
+
+    public void setBackupDataBasePatternPath(String backupDataBasePatternPath) {
+        this.backupDataBasePatternPath = backupDataBasePatternPath;
+    }
+
     @Override
     public synchronized void close() {
 
         if (null != this.dataBase) {
 
-            this.dataBase.close();
+            if (!this.dataBase.ext().isClosed()) {
+
+                this.dataBase.close();
+            }
         }
     }
 } // E:O:F:DataBaseHelper.

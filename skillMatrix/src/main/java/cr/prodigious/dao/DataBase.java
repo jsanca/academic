@@ -24,4 +24,10 @@ public interface DataBase extends Serializable {
 
     List<Entity> selectAll(Class<Entity> entityClass) // selectAll.
     ;
+
+    public Entity activate (final Entity entity, final int depth);
+
+    boolean backupMe ();
+
+    boolean closeMe ();
 } // E:O:F:DataBase.
