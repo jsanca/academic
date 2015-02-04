@@ -37,7 +37,7 @@
             <artifactId>db4o8</artifactId>
             <version>1</version>
             <scope>system</scope>
-            <systemPath>${basedir}/lib/db4o-8.0.276.16149-all-java5.jar</systemPath>
+            <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/db4o-8.0.276.16149-all-java5.jar</systemPath>
         </dependency>
 
         <dependency>
