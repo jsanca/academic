@@ -59,7 +59,9 @@
         <property name="fileName" value="region.json"/>
     </bean>
 
-
+    <bean name="capabilityPositionsDAO"  class="cr.prodigious.dao.impl.FileSystemJsonCapabilityPositionsDAOImpl" parent="backupDAOHelper">
+        <property name="fileName" value="capability-position.json"/>
+    </bean>
 
     <!-- DAO INIT -->
     <bean name="initDataBase" class="cr.prodigious.dao.SpringDataBaseHelper" scope="singleton" destroy-method="destroy">
@@ -74,6 +76,7 @@
         <property name="workDAO"  ref="workDAO"/>
         <property name="managerDAO"  ref="managerDAO"/>
         <property name="regionDAO" ref="regionDAO"/>
+        <property name="capabilityPositionsDAO" ref="capabilityPositionsDAO"/>
         <property name="dataBase" ref="dataBase"/>
         <property name="xmlBackupDAOHelper" ref="backupDAOHelper"/>
         <property name="backModeOn" value="true"/>

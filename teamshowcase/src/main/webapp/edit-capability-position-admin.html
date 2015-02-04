@@ -3,11 +3,12 @@
     <script src="js/core.js"></script>
     <script>
 
-        var regionsJson = null;
+        var capabilityPositionsJson = null;
 
 
         function load () {
 
+            // Load capabilities and positions
             var url     = '/teamshowcase/team/capabilities/positions.json';
             getJson(url, loadJSON);
             var addLink =
@@ -20,6 +21,10 @@
 
             addCapabilityLink.onclick =
                     addCapabilityLinkAction;
+
+            // load the select with the capability list
+            url     = '/teamshowcase/team/capabilities.json';
+            getJson(url, loadCapabilitiesJSON);
         }
 
         function addCapabilityLinkAction (event) {
@@ -27,37 +32,49 @@
             var addModal =
                     document.getElementById("addModal");
 
-            var capabilityNameText =
-                    document.getElementById("capabilityNameText");
+            var capabilityListSelect =
+                    document.getElementById("capabilityListSelect");
+
+            var positionNameText =
+                    document.getElementById("positionNameText");
 
             var ul = document.getElementById("capabilityList");
 
-            if (isNotBlank (capabilityNameText.value)) {
+            if (isNotBlank (positionNameText.value)) {
 
-                addNewCapability(ul, capabilityNameText.value);
-                addNewCapabilityToJsonObject (capabilityNameText.value);
+                addNewPosition(ul,
+                        capabilityListSelect.options[capabilityListSelect.selectedIndex].value,
+                        positionNameText.value
+                );
+
+                addNewCapabilityToJsonObject (
+                        capabilityListSelect.options[capabilityListSelect.selectedIndex].value,
+                        positionNameText.value);
+
                 postCapabilityListToBackend();
 
-                capabilityNameText.placeholder =
-                        "Write here the new capability name";
+                positionNameText.placeholder =
+                        "Write here the new position";
                 setHide (addModal);
             } else {
 
-                message("Please write a new name for the new capability");
+                message("Please write a new name for the new position");
             }
+
+            return false;
         }
 
         function postCapabilityListToBackend () {
 
-           /* postJson("/teamshowcase/team/capabilitys.json", this.capabilitysJson, function(jsonResponse) {
+           postJson("/teamshowcase/team/capabilities/positions.json", this.capabilityPositionsJson, function(jsonResponse) {
 
                 if (jsonResponse.value) {
 
-                    message("Capability added");
+                    message("Position added");
                 } else {
-                    message("Capability was not added");
+                    message("Position‰ was not added");
                 }
-            });*/
+            });
         }
 
         function addLinkAction (event) {
@@ -69,42 +86,177 @@
             return false;
         }
 
-        function addNewCapability (ul, name) {
+        function addNewPosition (ul, capability, position) {
+
+            var liArray =
+                    ul.children;
+            var li = null;
+
+            console.log("capability", capability);
+            console.log("position", position);
+
+            // try to find the capability
+            for (var i = 0; i < liArray.length; ++i) {
+
+                if (capability.trim() == liArray[i].id.trim()) {
+
+                    li = liArray[i];   break;
+                }
+            }
+
+            // no capability added yet, create a new one
+            if (null == li) {
+
+                li = document.createElement("li");
+                li.innerText = li.id = capability;
+                ul.appendChild(li);
+            }
+
+            // find or create the ul
+            var positionUL = getPositionUL(li);
+            addPositionToUL (positionUL, position); // add the position
+        }
+
+        function getPositionUL (li) {
+
+            var positionUL = null;
+            var child = li.children;
+
+            if (child && child.length > 0) {
+
+                for (var i = 0; i < child.length; ++i) {
+
+                    if ('ul' == child[i].nodeName.toLowerCase()) {
+
+                        positionUL = child[i]; break;
+                    }
+                }
+            }
+
+            // if not position found, create a new one and assign
+            if (null == positionUL) {
+
+                positionUL = document.createElement("ul");
+                li.appendChild(positionUL);
+            }
+
+            return    positionUL;
+        }
+
+        function addPositionToUL (positionUL, position) {
 
             var li = document.createElement("li");
-            li.innerText = name;
+            li.innerText = position;
+            positionUL.appendChild(li);
+        }
+
+        function addNewCapability (ul, capability) {
+
+            var li = document.createElement("li");
+            li.innerText = capability.name;
+            li.id = capability.name;
             ul.appendChild(li);
+
+            var positionUL = document.createElement("ul");
+
+            li.appendChild(positionUL);
+
+            capability.positions.forEach(
+
+                    function(position) {
+
+                        li = document.createElement("li");
+                        li.innerText = position.name;
+                        positionUL.appendChild(li);
+                    }
+            );
+
         }
 
-        function addNewCapabilityToJsonObject(capabilityName) {
 
-            var capabilityOrder = capabilitysJson.length;
-            this.capabilitysJson[capabilityOrder] =
-                        {name: capabilityName, order: (capabilityOrder + 1)};
+        function  addNewCapabilityToJsonObject (
+                        capability,
+                        position) {
 
-            console.log(this.capabilitysJson);
+            var capabilityJson = null;
+
+            // try to see if exists
+            this.capabilityPositionsJson.forEach(
+                    function(capabilityEntry) {
+
+                         if (capability == capabilityEntry.name) {
+
+                             capabilityJson =
+                                     capabilityEntry;
+                         }
+                    }
+            );
+
+            // if does not exists, need to be created and assigned
+            if (null == capabilityJson) {
+
+                capabilityJson =
+                    {
+                        name: capability,
+                        order: (this.capabilityPositionsJson.length + 1),
+                        positions: []
+                    };
+
+                this.capabilityPositionsJson
+                        [this.capabilityPositionsJson.length] =
+                            capabilityJson;
+            }
+
+            // then, we add the new position to the capability
+            var orderValue = capabilityJson.positions.length + 1;
+            capabilityJson.positions[capabilityJson.positions.length] =
+                            {name : position, order: orderValue};
+
+            console.log(this.capabilityPositionsJson);
         }
 
-        function loadJSON (capabilitysJSON) {
+        function loadCapabilitiesJSON(capabilityListJSON) {
+
+            var capabilityListSelect =
+                    document.getElementById("capabilityListSelect");
+
+            if (capabilityListSelect) {
+
+                if (capabilityListJSON) {
+
+                    capabilityListJSON.forEach(
+                            function(capability) {
+
+                                var option = document.createElement("option");
+                                option.text = capability;
+                                option.value = capability;
+                                capabilityListSelect.add(option);
+                            }
+                    );
+                }
+            }
+        }
+
+        function loadJSON (capabilitiesJSON) {
 
             var divCapabilitys =
-                      document.getElementById("capabilitys");
+                      document.getElementById("capabilities");
 
             var ul = document.createElement("ul");
             ul.id = "capabilityList";
 
             divCapabilitys.appendChild(ul);
 
-            this.capabilitysJson = capabilitysJSON;
+            this.capabilityPositionsJson = capabilitiesJSON;
 
-            console.log("capability Json", this.capabilitysJson);
+            console.log("capability Json", this.capabilityPositionsJson);
 
-            if (capabilitysJSON) {
+            if (capabilitiesJSON) {
 
-                capabilitysJSON.forEach(
+                capabilitiesJSON.forEach(
                         function(capability) {
 
-                            addNewCapability(ul, capability.name)
+                            addNewCapability(ul, capability);
                         }
                 );
             }
@@ -119,7 +271,7 @@
 
 
 
-    <div id="capabilitys">
+    <div id="capabilities">
         <div >
             <a href="index.html"  title="Go back to the main menu">Main Menu</a>
         </div>
@@ -130,8 +282,11 @@
 
     <div id="addModal" style="display: none;">
 
-         Name:
-         <input id="regionNameText" placeholder="Write here the new capability name" size="40"/><br/><br/>
+         Select a capability
+         <select id="capabilityListSelect"></select>
+         <br/><br/>
+         Write a position:
+         <input id="positionNameText" placeholder="Write here the new position" size="40"/><br/><br/>
          <a href="#" id="addCapabilityLink">Add a new Capability to the List</a>
     </div>
 

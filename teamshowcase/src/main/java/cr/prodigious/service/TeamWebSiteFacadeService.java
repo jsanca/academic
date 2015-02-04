@@ -1,13 +1,16 @@
 package cr.prodigious.service;
 
+import cr.prodigious.bean.CapabilityBean;
 import cr.prodigious.bean.ManagerBean;
 import cr.prodigious.bean.RegionBean;
+import cr.prodigious.bean.SkillCategoryBean;
 import cr.prodigious.bean.cases.CasesBean;
 import cr.prodigious.bean.team.Person;
 import cr.prodigious.bean.team.TeamBean;
 import cr.prodigious.bean.work.WorkBean;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -51,5 +54,13 @@ public interface TeamWebSiteFacadeService extends Serializable {
     void storeRegions(List<RegionBean> regions);
 
     List<RegionBean> getRegions ();
+
+    void storeCapabilityPositions(ArrayList<CapabilityBean> capabilities);
+
+    List<CapabilityBean> getCapabilityPositions();
+
+    void storeSkillCatalog(ArrayList<SkillCategoryBean> capabilities);
+
+    List<SkillCategoryBean> getSkillCatalog();
 
 } // E:O:F:TeamWebSiteFacadeService.

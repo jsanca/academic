@@ -5,27 +5,27 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
- * Represents the Manager info
+ * Define a skill category
+ * It works as a catalog for the user, so that the user can select the his/her own skills.
  * @author jsanca
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
         "name",
-        "email",
         "order"
 })
-public class ManagerBean implements Serializable {
+
+public class SkillCategoryBean implements Serializable {
 
     @JsonProperty("name")
     private String name = null;
 
-    @JsonProperty("email")
-    private String email = null;
-
     @JsonProperty("order")
     private Integer order = null;
+
 
     @JsonProperty("name")
     public String getName() {
@@ -47,13 +47,5 @@ public class ManagerBean implements Serializable {
         this.order = order;
     }
 
-    @JsonProperty("email")
-    public String getEmail() {
-        return email;
-    }
 
-    @JsonProperty("email")
-    public void setEmail(String email) {
-        this.email = email;
-    }
-}  // E:O:F:ManagerBean.
+} // E:O:F:SkillCategoryBean.

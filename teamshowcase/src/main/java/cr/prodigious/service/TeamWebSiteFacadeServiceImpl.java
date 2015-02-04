@@ -1,17 +1,21 @@
 package cr.prodigious.service;
 
+import cr.prodigious.bean.CapabilityBean;
 import cr.prodigious.bean.Configuration;
 import cr.prodigious.bean.ManagerBean;
 import cr.prodigious.bean.RegionBean;
+import cr.prodigious.bean.SkillCategoryBean;
 import cr.prodigious.bean.cases.CasesBean;
 import cr.prodigious.bean.team.Person;
 import cr.prodigious.bean.team.TeamBean;
 import cr.prodigious.bean.work.WorkBean;
 import cr.prodigious.dao.BackupDAOHelper;
+import cr.prodigious.dao.CapabilityPositionsDAO;
 import cr.prodigious.dao.CasesDAO;
 import cr.prodigious.dao.DataBase;
 import cr.prodigious.dao.ManagerDAO;
 import cr.prodigious.dao.RegionDAO;
+import cr.prodigious.dao.SkillCategoryDAO;
 import cr.prodigious.dao.TeamDAO;
 import cr.prodigious.dao.WorkDAO;
 import cr.prodigious.helper.JsonHelper;
@@ -43,8 +47,20 @@ public class TeamWebSiteFacadeServiceImpl implements TeamWebSiteFacadeService {
 
     private RegionDAO regionDAO = null;
 
+    private CapabilityPositionsDAO capabilityPositionsDAO;
+
+    private SkillCategoryDAO skillCategoryDAO;
+
     private boolean backModeOn = false;
 
+
+    public void setSkillCategoryDAO(SkillCategoryDAO skillCategoryDAO) {
+        this.skillCategoryDAO = skillCategoryDAO;
+    }
+
+    public void setCapabilityPositionsDAO(CapabilityPositionsDAO capabilityPositionsDAO) {
+        this.capabilityPositionsDAO = capabilityPositionsDAO;
+    }
 
     public void setRegionDAO(RegionDAO regionDAO) {
         this.regionDAO = regionDAO;
@@ -223,6 +239,38 @@ public class TeamWebSiteFacadeServiceImpl implements TeamWebSiteFacadeService {
         }
 
         return regionBeans;
+    }
+
+    @Override
+    public void storeCapabilityPositions(final ArrayList<CapabilityBean> capabilities) {
+
+        this.capabilityPositionsDAO.update(capabilities);
+    }
+
+    @Override
+    public List<CapabilityBean> getCapabilityPositions() {
+
+        List<CapabilityBean> capabilityBeans =
+                this.capabilityPositionsDAO.get();
+
+        if (null == capabilityBeans) {
+
+            capabilityBeans =
+                    new ArrayList<>();
+        }
+
+        return capabilityBeans;
+    }
+
+    @Override
+    public void storeSkillCatalog(ArrayList<SkillCategoryBean> capabilities) {
+
+
+    }
+
+    @Override
+    public List<SkillCategoryBean> getSkillCatalog() {
+        return null;
     }
 
     @Override

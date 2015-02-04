@@ -24,26 +24,38 @@
 
         function addManagerLinkAction (event) {
 
-            var addModal =
-                    document.getElementById("addModal");
+            var managerForm =
+                    document.getElementById("managerForm");
 
-            var managerNameText =
-                    document.getElementById("managerNameText");
+            if (managerForm.checkValidity()) {
 
-            var ul = document.getElementById("managerList");
+                var addModal =
+                        document.getElementById("addModal");
 
-            if (isNotBlank (managerNameText.value)) {
+                var managerNameText =
+                        document.getElementById("managerNameText");
 
-                addNewManager(ul, managerNameText.value);
-                addNewManagerToJsonObject (managerNameText.value);
-                postManagerListToBackend();
+                var emailText =
+                        document.getElementById("emailText");
 
-                managerNameText.placeholder =
-                        "Write here the new manager name";
-                setHide (addModal);
-            } else {
+                var ul = document.getElementById("managerList");
 
-                message("Please write a new name for the new manager");
+                if (isNotBlank(managerNameText.value)) {
+
+                    var email = (emailText.value) ? " - " + emailText.value : "";
+                    var name = managerNameText.value + email;
+
+                    addNewManager(ul, email);
+                    addNewManagerToJsonObject(managerNameText.value, emailText.value);
+                    postManagerListToBackend();
+
+                    managerNameText.placeholder =
+                            "Write here the new manager name";
+                    setHide(addModal);
+                } else {
+
+                    message("Please write a new name for the new manager");
+                }
             }
         }
 
@@ -77,11 +89,11 @@
             ul.appendChild(li);
         }
 
-        function addNewManagerToJsonObject(managerName) {
+        function addNewManagerToJsonObject(managerName, managerEmail) {
 
             var managerOrder = managersJson.length;
             this.managersJson[managerOrder] =
-                        {name: managerName, order: (managerOrder + 1)};
+                        {name: managerName, email: managerEmail, order: (managerOrder + 1)};
 
             console.log(this.managersJson);
         }
@@ -105,7 +117,9 @@
                 managersJSON.forEach(
                         function(manager) {
 
-                            addNewManager(ul, manager.name)
+                            var email = (manager.email)? " - " + manager.email:"";
+                            var name =  manager.name + email;
+                            addNewManager(ul, name);
                         }
                 );
             }
@@ -130,10 +144,20 @@
     </div>
 
     <div id="addModal" style="display: none;">
+         <form name="managerForm"  id="managerForm">
+             <p>
+                 Name:
+                <input id="managerNameText" required="required" placeholder="Write here the new manager name" size="40"/>
+             </p>
 
-         Name:
-         <input id="managerNameText" placeholder="Write here the new manager name" size="40"/><br/><br/>
-         <a href="#" id="addManagerLink">Add a new Manager to the List</a>
+            <p>
+                Email:
+                <input id="emailText" required="required" placeholder="myemail@prodigious.cr" type="email" />
+            </p>
+
+             <br/>
+             <a href="#" id="addManagerLink">Add a new Manager to the List</a>
+         </form>
     </div>
 
 </body>

@@ -5,6 +5,83 @@
 
         var wasAddSkillCalledatLeastOnes = false;
 
+        function load () {
+
+            // Load capabilities and positions
+            var url     = '/teamshowcase/team/capabilities/positions.json';
+            getJson(url, loadCapabilityPositionJSON);
+
+            // load manager list
+            url     = '/teamshowcase/team/managers.json';
+            getJson(url, loadJSONManagers);
+
+            // load regions
+            url     = '/teamshowcase/team/regions.json';
+            getJson(url, loadJSONRegions);
+        }
+
+        function loadJSONRegions (regionsJSON) {
+
+            var regionSelect =
+                    document.getElementById("regionProject");
+
+            if (regionsJSON) {
+
+                regionsJSON.forEach(
+                        function(region) {
+
+                            var option = document.createElement("option");
+                            option.text = option.value = region.name;
+                            regionSelect.add(option);
+                        }
+                );
+            }
+        }
+
+        function loadJSONManagers (managersJSON) {
+
+            var managerSelect =
+                    document.getElementById("manager");
+
+            if (managersJSON) {
+
+                managersJSON.forEach(
+                        function(manager) {
+
+                            var option = document.createElement("option");
+                            option.text = option.value = manager.name;
+                            managerSelect.add(option);
+                        }
+                );
+            }
+        }
+
+        function loadCapabilityPositionJSON (capabilitiesJSON) {
+
+            var positionSelect =
+                    document.getElementById("position");
+
+            console.log(positionSelect);
+
+            if (capabilitiesJSON) {
+
+                capabilitiesJSON.forEach(
+                    function(capability) {
+
+                        // Studio / Creative Lead
+                        var capabilityName = capability.name;
+                        for (var i = 0; i < capability.positions.length; ++i) {
+
+                            var option = document.createElement("option");
+                            option.text = option.value = capabilityName +
+                                    ' / ' + capability.positions[i].name;
+                            positionSelect.add(option);
+                        }
+                    }
+                );
+            }
+        }
+
         function addSkill () {
 
             var skillSelect =
@@ -40,7 +117,7 @@
         }
     </script>
 </head>
-<body>
+<body onload="load();">
 <h2>Add a new Team Member!</h2>
 
 <form name="teamMemberForm" action="/teamshowcase/team/add-team.json" method="post">
@@ -77,9 +154,9 @@
         <tr>
             <th>Position:</th>
             <td>
-                <select name="position">
+                <select name="position" id="position">
 
-                    <option value="Studio / Creative Lead">Studio / Creative Lead</option>
+                    <!--option value="Studio / Creative Lead">Studio / Creative Lead</option>
                     <option value="Studio / Senior Creative Designer">Studio / Senior Creative Designer</option>
                     <option value="Studio / Senior Flash Developer">Studio / Senior Flash Developer</option>
                     <option value="Studio / Senior Flash Designer">Studio / Senior Flash Designer</option>
@@ -105,18 +182,18 @@
 
                     <option value="QA / QA Analyst">QA / QA Analyst</option>
                     <option value="QA / Senior QA Analyst">QA / Senior QA Analyst</option>
-                    <option value="QA / QA Lead">QA / QA Lead</option>
+                    <option value="QA / QA Lead">QA / QA Lead</option-->
                 </select>
             </td>
         </tr>
         <tr>
             <th>Region:</th>
             <td>
-                <select name="regionProject" >
-                    <option value="East">East</option>
+                <select name="regionProject" id="regionProject" >
+                    <!--option value="East">East</option>
                     <option value="Central">Central</option>
                     <option value="West">West</option>
-                    <option value="DE">DE</option>
+                    <option value="DE">DE</option-->
                 </select>
             </td>
         </tr>
@@ -137,10 +214,10 @@
             <td>
                 <select id="manager" name="manager" >
 
-                    <option value="Carolina Chavarria">Carolina Chavarria</option>
+                    <!--option value="Carolina Chavarria">Carolina Chavarria</option>
                     <option value="Eduardo Morales">Eduardo Morales</option>
                     <option value="Guido Bolaños">Guido Bola&ntilde;os</option>
-                    <option value="n/a">N/A</option>
+                    <option value="n/a">N/A</option-->
                 </select>
             </td>
         </tr>

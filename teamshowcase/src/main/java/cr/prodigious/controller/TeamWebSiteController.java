@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.swing.plaf.synth.Region;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -44,6 +45,12 @@ public class TeamWebSiteController implements Serializable {
 
     private static final Class<? extends ArrayList> ARRAY_LIST_MANAGER_CLASS
             = new ArrayList<ManagerBean>().getClass();
+
+    private static final Class<? extends ArrayList> ARRAY_LIST_REGION_CLASS
+            = new ArrayList<RegionBean>().getClass();
+
+    private static final Class<? extends ArrayList> ARRAY_LIST_CAPABILITY_POSITION_CLASS
+            = new ArrayList<CapabilityBean>().getClass();
 
     @Autowired
     TeamWebSiteControllerHelper teamWebSiteControllerHelper = null;
@@ -97,21 +104,21 @@ public class TeamWebSiteController implements Serializable {
 
         InputStream inputStream = null;
 
-        ArrayList<RegionBean> regions = null;
+        ArrayList<CapabilityBean> capabilities = null;
 
         try {
 
             inputStream =
                     request.getInputStream();
 
-            regions =
+            capabilities =
                     this.jsonHelper.read
-                            (inputStream, ARRAY_LIST_MANAGER_CLASS);
+                            (inputStream, ARRAY_LIST_CAPABILITY_POSITION_CLASS);
 
-            if (null != regions) {
+            if (null != capabilities) {
 
                 this.teamWebSiteFacadeService.
-                        storeRegions(regions);
+                        storeCapabilityPositions(capabilities);
 
                 success.setValue(true);
             }
@@ -127,39 +134,7 @@ public class TeamWebSiteController implements Serializable {
     @ResponseStatus(HttpStatus.OK)
     public List<CapabilityBean> capabilitiesPositions() {
 
-        ArrayList<CapabilityBean> capabilities =
-                new ArrayList<>();
-        ArrayList<PositionBean> positionBeansBE =
-                new ArrayList<>();
-
-
-        CapabilityBean capabilityBean =
-                new CapabilityBean();
-
-        capabilityBean.setOrder(1);
-        capabilityBean.setName("BE");
-
-        capabilityBean.setPositions(positionBeansBE);
-
-        PositionBean positionBean =
-                new PositionBean();
-
-        positionBean.setOrder(1);
-        positionBean.setName("Software Engineer");
-
-        positionBeansBE.add(positionBean);
-
-        positionBean =
-                new PositionBean();
-
-        positionBean.setOrder(2);
-        positionBean.setName("Senior Software Engineer");
-
-        positionBeansBE.add(positionBean);
-
-        capabilities.add(capabilityBean);
-
-        return capabilities;
+        return this.teamWebSiteFacadeService.getCapabilityPositions();
     } // capabilitiesPositions
 
     @RequestMapping(value = "/capabilities", method = RequestMethod.GET, produces={"application/xml", "application/json"})
@@ -187,7 +162,7 @@ public class TeamWebSiteController implements Serializable {
 
             regions =
                     this.jsonHelper.read
-                            (inputStream, ARRAY_LIST_MANAGER_CLASS);
+                            (inputStream, ARRAY_LIST_REGION_CLASS);
 
             if (null != regions) {
 

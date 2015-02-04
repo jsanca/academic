@@ -7,22 +7,19 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.io.Serializable;
 
 /**
- * Represents the Manager info
+ * Define a sub category
  * @author jsanca
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
         "name",
-        "email",
         "order"
 })
-public class ManagerBean implements Serializable {
+
+public class SkillSubCategoryBean implements Serializable {
 
     @JsonProperty("name")
     private String name = null;
-
-    @JsonProperty("email")
-    private String email = null;
 
     @JsonProperty("order")
     private Integer order = null;
@@ -47,13 +44,5 @@ public class ManagerBean implements Serializable {
         this.order = order;
     }
 
-    @JsonProperty("email")
-    public String getEmail() {
-        return email;
-    }
 
-    @JsonProperty("email")
-    public void setEmail(String email) {
-        this.email = email;
-    }
-}  // E:O:F:ManagerBean.
+} // E:O:F:SkillSubCategoryBean.
