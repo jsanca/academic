@@ -45,6 +45,14 @@
             <map>
                 <entry key="One" value="1"/>
                 <entry key="Two" value="2"/>
+                <entry key="Three">
+                    <bean class="java.lang.Integer">
+                        <constructor-arg type="int">
+                            <value>33</value>
+                        </constructor-arg>
+                    </bean>
+
+                </entry>
             </map>
         </property>
 
@@ -72,4 +80,14 @@
 
     <!-- Alias in the same bean -->
     <bean id="date1" name="birthdate, anniversary" class="java.util.Date"/>
+    <alias name="date1" alias="aliasDate"/>
+    <!-- depend order -->
+
+    <bean id="beanOne" class="spring.tutorial.Bean1" depends-on="bean2"></bean>
+    <bean id="bean2" class="spring.tutorial.Bean2" ></bean>
+
+
+    <!-- auto wiring -->
+    <bean id="targetByName" autowire="byName" class="spring.tutorial.Target"/>
+    <bean id="targetByType" autowire="byType" class="spring.tutorial.Target"/>
 </beans>

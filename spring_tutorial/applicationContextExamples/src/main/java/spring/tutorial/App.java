@@ -46,5 +46,13 @@ public class App
         System.out.println( date == birthdate );
         System.out.println( date == anniversary );
 
+        Target target = null;
+
+        System.out.println( "Using target by Name" );
+        target = (Target) applicationContext.getBean("targetByName");
+
+        System.out.println( "Using target by Type" );
+        target = (Target) applicationContext.getBean("targetByType");
+
     }
 }

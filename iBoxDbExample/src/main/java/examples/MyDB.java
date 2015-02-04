@@ -39,6 +39,21 @@ public class MyDB {
         defaultPath = BoxFileStreamConfig.RootPath;
     }
 
+    // CRUD
+    public Record insert(String username) {
+
+        long id = MyDB.getInstance().newId(1);
+        Record r = new Record();
+        r.ID = id;
+        if (username == null) {
+            username = "Name-" + r.ID;
+        }
+        r.Name = username;
+        r.RegTime = System.currentTimeMillis();
+        MyDB.getInstance().insert("Record", r);
+        return r;
+    }
+
     public static void close() {
         if (db != null) {
             db.close();

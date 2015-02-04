@@ -34,6 +34,9 @@ public class ConfigByXML {
 
     @Override
     public String toString() {
+
+
+
         final StringBuilder sb = new StringBuilder("ConfigByXML{");
         sb.append("name1='").append(name1).append('\'');
         sb.append(", name2='").append(name2).append('\'');

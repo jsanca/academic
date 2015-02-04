@@ -22,6 +22,7 @@
         <property name="properties">
             <value>property.config.nickname=jsanca</value>
         </property>
+
     </bean>
 
     <!-- In a web application environment, Spring also supports specifying values in web.xml

@@ -1,5 +1,7 @@
 // how to create right objects
 
+this.name = "Evelyn";
+
 // how to create a Doggy
 function Doggy(name, birthdate, color, breed) {
 
@@ -29,3 +31,9 @@ puppy.bark();
 tita.bark();
 
 alert((puppy.bark == tita.bark));
+
+
+alert("Doggy.constructor is " + puppy.constructor );
+
+
+alert(name);
