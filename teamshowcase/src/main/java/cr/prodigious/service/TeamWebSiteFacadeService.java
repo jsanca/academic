@@ -1,6 +1,7 @@
 package cr.prodigious.service;
 
 import cr.prodigious.bean.CapabilityBean;
+import cr.prodigious.bean.CapabilitySkillsBean;
 import cr.prodigious.bean.ManagerBean;
 import cr.prodigious.bean.RegionBean;
 import cr.prodigious.bean.SkillCategoryBean;
@@ -63,4 +64,7 @@ public interface TeamWebSiteFacadeService extends Serializable {
 
     List<SkillCategoryBean> getSkillCatalog();
 
+    List<CapabilitySkillsBean> getCapabilitySkills();
+
+    void storeCapabilitySkills(ArrayList<CapabilitySkillsBean> capabilitySkillsBeans);
 } // E:O:F:TeamWebSiteFacadeService.

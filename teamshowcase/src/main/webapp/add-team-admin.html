@@ -4,6 +4,8 @@
     <script>
 
         var wasAddSkillCalledatLeastOnes = false;
+        var capabilitySkillJson = null;
+        var currentCapabilityName = null;
 
         function load () {
 
@@ -18,7 +20,150 @@
             // load regions
             url     = '/teamshowcase/team/regions.json';
             getJson(url, loadJSONRegions);
-        }
+
+        } // load
+
+        /**
+         * Load all the skill stuff based on the current capability selected
+         * @param capabilitySkillJSON
+         */
+        function loadCapabilitySkills (capabilitySkillsJSON) {
+
+            capabilitySkillJson =
+                    capabilitySkillsJSON;
+
+            reloadSkillBasedOnCapability ();
+        } // loadCapabilitySkills.
+
+
+        /**
+         * Reload the skill layout based on the capability position selected.
+         */
+        function reloadSkillBasedOnCapability () {
+
+            var capabilityName =
+                    getCapabilityNameSelected ();
+
+            console.log("capabilityName", capabilityName);
+
+            // if the capability selected has changed.
+            if (currentCapabilityName != capabilityName) {
+
+                var capabilityJsonNode =
+                        getCapabilityJson(capabilityName);
+
+                console.log("capabilityJsonNode", capabilityJsonNode);
+
+                if (null != capabilityJsonNode) {
+
+                    loadSkillCombo (capabilityJsonNode);
+                    loadSkillTable (capabilityJsonNode);
+                } else {
+
+                    // to avoid showing the message the first time
+                    if (null != currentCapabilityName) {
+
+                        message("There not any skills for the position: " +
+                                capabilityName);
+                    }
+                }
+
+                currentCapabilityName =
+                        capabilityName;
+            }
+        } // reloadSkillBasedOnCapability.
+
+        /**
+         * Get the capability name based on the position selected.
+         * @returns {*}
+         */
+        function getCapabilityNameSelected () {
+
+            var capabilityPositionSelect =
+                    document.getElementById("position");
+
+            var capabilityPosition =
+                    capabilityPositionSelect.options
+                            [capabilityPositionSelect.selectedIndex].value;
+
+            return getCapabilityName (capabilityPosition);
+        } // getCapabilityNameSelected.
+
+        /**
+         * Find the capability json associated to the capabilityName
+         * @param capabilityName
+         */
+        function getCapabilityJson (capabilityName) {
+
+            var capabilitySkillJsonNodeReturned = null;
+
+            for (var i = 0; i < capabilitySkillJson.length; ++i) {
+
+                var capabilitySkillJsonNode =
+                        capabilitySkillJson [i];
+
+                console.log("capabilitySkillJsonNode", capabilitySkillJsonNode.name);
+
+                if (capabilitySkillJsonNode.name == capabilityName.trim()) {
+
+                    capabilitySkillJsonNodeReturned =
+                        capabilitySkillJsonNode;
+                }
+            }
+
+            return capabilitySkillJsonNodeReturned;
+        } // getCapabilityJson.
+
+        /**
+         * Load the select box with all the capabilites cleaning the previous one
+         * @param capabilityJsonNode
+         */
+        function loadSkillCombo (capabilityJsonNode) {
+
+            var skillSelect =
+                    document.getElementById("skillSelect");
+
+            // cleaning the current skills in the select box
+            for (var i = skillSelect.options.length - 1; i >= 0; --i) {
+
+                skillSelect.remove(i);
+            }
+
+            capabilityJsonNode.skills.forEach(
+              function (skill) {
+
+                  var option =
+                          document.createElement("option");
+
+                  option.text  = skill.category.name;
+                  option.value = removeSpaces(skill.category.name);
+
+                  skillSelect.add(option);
+              }
+            );
+        } // loadSkillCombo
+
+        /**
+         * Load the skill table with all the skill sub cat
+         * to set the knowlegde percentage
+         * @param capabilityJsonNode
+         */
+        function loadSkillTable (capabilityJsonNode) {
+
+            var skillsTableDiv =
+                    document.getElementById("skillsTable");
+
+            // clean the previous one
+            removeAllChildNodes (skillsTableDiv);
+
+            capabilityJsonNode.subcategories.forEach(
+
+                function(subCategorySkill) {
+
+                    // todo: for each subcategory create a div with the table.
+                }
+            );
+        } // loadSkillTable.
 
         function loadJSONRegions (regionsJSON) {
 
@@ -80,6 +225,20 @@
                     }
                 );
             }
+
+            // as soon as we get the select box done,
+            // we have to load all stuff related to the skills by capability
+            var url = '/teamshowcase/team/capability-skills.json';
+            getJson(url, loadCapabilitySkills);
+
+            // add the on change action listener
+            positionSelect.onchange =
+                    onChangePositionSelectAction;
+        }
+
+        function onChangePositionSelectAction(event) {
+
+            reloadSkillBasedOnCapability ();
         }
 
         function addSkill () {
@@ -111,6 +270,29 @@
             if (!wasAddSkillCalledatLeastOnes) {
 
                 message("Add at least one skill by clicking on the add skill button");
+            } else {
+
+                try {
+
+                    var teamMemberForm =
+                            document.getElementById("teamMemberForm");
+
+                    var email =
+                            teamMemberForm.elements["email"].value;
+
+                    var nickName =
+                            getNickName(email);
+
+                    teamMemberForm.elements["nickName"].value =
+                            nickName;
+
+                    teamMemberForm.elements["imageLocal"].value =
+                            getImageName(nickName);
+                } catch (e) {
+
+                    console.log(e);
+                    alert (e);
+                }
             }
 
             return wasAddSkillCalledatLeastOnes;
@@ -120,7 +302,10 @@
 <body onload="load();">
 <h2>Add a new Team Member!</h2>
 
-<form name="teamMemberForm" action="/teamshowcase/team/add-team.json" method="post">
+<form name="teamMemberForm" id="teamMemberForm" action="/teamshowcase/team/add-team.json" method="post">
+
+    <input name="nickName" id="nickName" type="hidden"/>
+    <input name="imageLocal" type="hidden" />
 
     <p class="help">
         * For the skills please select all the categories that apply for you, add your personal evaluation and them click on store.
@@ -198,12 +383,6 @@
             </td>
         </tr>
         <tr>
-            <th>Image Local Name:</th>
-            <td>
-                <input name="imageLocal" type="text" required="required" placeholder="Ask to your PM for image path" size="46"/>
-            </td>
-        </tr>
-        <tr>
             <th>Email:</th>
             <td>
                 <input name="email" type="email"  required="required" placeholder="myaccount@prodigious.cr" size="46"/>
@@ -272,8 +451,11 @@
     </table>
 
     <!---- SKILLS ---->
+    <div id="skillsTable">
 
-    <div style="display:none" id="MOTION">
+    </div>
+
+    <!--div style="display:none" id="MOTION">
 
         <h2>MOTION</h2>
         <table>
@@ -1186,7 +1368,7 @@
             </tr>
 
         </table>
-    </div>
+    </div-->
 
     <input type="submit" value="Store" onclick="return validate();"/>
 </form>

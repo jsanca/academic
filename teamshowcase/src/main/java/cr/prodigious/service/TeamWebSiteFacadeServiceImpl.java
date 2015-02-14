@@ -1,6 +1,7 @@
 package cr.prodigious.service;
 
 import cr.prodigious.bean.CapabilityBean;
+import cr.prodigious.bean.CapabilitySkillsBean;
 import cr.prodigious.bean.Configuration;
 import cr.prodigious.bean.ManagerBean;
 import cr.prodigious.bean.RegionBean;
@@ -11,6 +12,7 @@ import cr.prodigious.bean.team.TeamBean;
 import cr.prodigious.bean.work.WorkBean;
 import cr.prodigious.dao.BackupDAOHelper;
 import cr.prodigious.dao.CapabilityPositionsDAO;
+import cr.prodigious.dao.CapabilitySkillDAO;
 import cr.prodigious.dao.CasesDAO;
 import cr.prodigious.dao.DataBase;
 import cr.prodigious.dao.ManagerDAO;
@@ -26,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Bizness team show service
+ * Bizness team show service facade
  * @author jsanca
  */
 // TODO:implement cache
@@ -51,8 +53,13 @@ public class TeamWebSiteFacadeServiceImpl implements TeamWebSiteFacadeService {
 
     private SkillCategoryDAO skillCategoryDAO;
 
+    private CapabilitySkillDAO capabilitySkillDAO;
+
     private boolean backModeOn = false;
 
+    public void setCapabilitySkillDAO(CapabilitySkillDAO capabilitySkillDAO) {
+        this.capabilitySkillDAO = capabilitySkillDAO;
+    }
 
     public void setSkillCategoryDAO(SkillCategoryDAO skillCategoryDAO) {
         this.skillCategoryDAO = skillCategoryDAO;
@@ -200,7 +207,7 @@ public class TeamWebSiteFacadeServiceImpl implements TeamWebSiteFacadeService {
     }
 
     @Override
-    public void storeManagers(List<ManagerBean> managers) {
+    public void storeManagers(final List<ManagerBean> managers) {
 
         this.managerDAO.update(managers);
     }
@@ -221,7 +228,7 @@ public class TeamWebSiteFacadeServiceImpl implements TeamWebSiteFacadeService {
     }
 
     @Override
-    public void storeRegions(List<RegionBean> regions) {
+    public void storeRegions(final List<RegionBean> regions) {
 
         this.regionDAO.update(regions);
     }
@@ -263,14 +270,45 @@ public class TeamWebSiteFacadeServiceImpl implements TeamWebSiteFacadeService {
     }
 
     @Override
-    public void storeSkillCatalog(ArrayList<SkillCategoryBean> capabilities) {
+    public void storeSkillCatalog(final ArrayList<SkillCategoryBean> capabilities) {
 
-
+         this.skillCategoryDAO.update(capabilities);
     }
 
     @Override
     public List<SkillCategoryBean> getSkillCatalog() {
-        return null;
+
+        List<SkillCategoryBean> skillCategoryBeans =
+                this.skillCategoryDAO.get();
+
+        if (null == skillCategoryBeans) {
+
+            skillCategoryBeans =
+                    new ArrayList<>();
+        }
+
+        return skillCategoryBeans;
+    }
+
+    @Override
+    public List<CapabilitySkillsBean> getCapabilitySkills() {
+
+        List<CapabilitySkillsBean> capabilitySkillsBeanList =
+                this.capabilitySkillDAO.get();
+
+        if (null == capabilitySkillsBeanList) {
+
+            capabilitySkillsBeanList =
+                    new ArrayList<>();
+        }
+
+        return capabilitySkillsBeanList;
+    }
+
+    @Override
+    public void storeCapabilitySkills(ArrayList<CapabilitySkillsBean> capabilitySkillsBeans) {
+
+        this.capabilitySkillDAO.update(capabilitySkillsBeans);
     }
 
     @Override

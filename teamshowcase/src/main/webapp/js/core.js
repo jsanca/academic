@@ -25,9 +25,9 @@ function getJson (url, successHandler) {
     request.open('GET', url, true);
     request.onreadystatechange = function (event) {
 
-        console.log("event: " + event +
+        /*console.log("event: " + event +
             " readyState: " + request.readyState +
-            " status: " + request.status);
+            " status: " + request.status);*/
         if (4 == request.readyState) {
             if (200 == request.status) {
 
@@ -62,9 +62,9 @@ function postJson (url, jsonObject, successHandler) {
     request.setRequestHeader('Content-Type', 'application/json');
     request.onreadystatechange = function (event) {
 
-        console.log("event: " + event +
+        /*console.log("event: " + event +
             " readyState: " + request.readyState +
-            " status: " + request.status);
+            " status: " + request.status);*/
         if (4 == request.readyState) {
             if (200 == request.status) {
 
@@ -117,3 +117,79 @@ function isNotBlank(aString) {
 
     return aString && aString.trim().length > 0;
 }
+
+/**
+ * Try to get the nick name from the email.
+ * @param email
+ * @returns {*}
+ */
+function getNickName(email) {
+
+    var emailArray = email.split("@");
+    return (emailArray.length > 0)?emailArray[0]:email;
+}
+
+/**
+ * From the nick name gets the image name (basically the nick name without . and with the png extension)
+ * @param nickName
+ */
+function getImageName(nickName) {
+
+    return nickName.replace(/\./g,'') + ".png";
+}
+
+/**
+ * Get elements by class.
+ * @param className
+ * @returns {NodeList}
+ */
+function getElementByClass (className) {
+
+    return document.getElementsByClassName(className);
+}
+
+
+/**
+ * Remove all the ChildNodes from the element
+ * @param element
+ */
+function removeAllChildNodes (element) {
+
+    for (var i = element.childNodes.length - 1; i >= 0; --i) {
+
+        var child =
+            element.childNodes[i];
+        element.removeChild(child);
+    }
+}
+
+/**
+ * Get the capability name from the capability/position
+ * @param capabilityPosition
+ */
+function getCapabilityName (capabilityPosition) {
+
+    var capabilityPositionArray =
+        capabilityPosition.split("/");
+
+    var capabilityName = capabilityPosition;
+
+    if (capabilityPositionArray.length > 0) {
+
+        capabilityName =
+            capabilityPositionArray[0];
+    }
+
+    return capabilityName;
+} // getCapabilityName.
+
+
+/**
+ * Remove all the spaces from the string
+ * @param string
+ * @returns {XML|string|void}
+ */
+function removeSpaces (string) {
+
+    return string.replace(/ /g,'');
+} // removeSpaces

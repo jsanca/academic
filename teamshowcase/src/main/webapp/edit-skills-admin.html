@@ -1,0 +1,539 @@
+<html>
+<head>
+
+    <style>
+        .skillSubCategoryNameText {
+
+            display: block;
+        }
+    </style>
+
+    <script src="js/core.js"></script>
+    <script src="js/capability-skills.js"></script>
+    <script>
+
+        var managersJson = null;
+        var skillCatalogJson = null; // just the combo box
+        var capabilitySkillJson = null; // the tree
+        var subCategoryInputFieldId = 2;   // counter for the text field sub category
+
+        function load () {
+
+            // loading the jsons.
+            var url     = '/teamshowcase/team/skillcatalog.json';
+            getJson(url, loadSkillCatalogJSON);
+
+            url     = '/teamshowcase/team/capabilities.json';
+            getJson(url, loadCapabilitiesJSON);
+
+            url     = '/teamshowcase/team/capability-skills.json';
+            getJson(url, loadCapabilitySkillsJSON);
+
+            // action listener
+            var addSkillCategory =
+                    document.getElementById("addSkillCategory");
+
+            addSkillCategory.onclick =
+                    addSkillCategoryAction;
+
+            var addSkillCategoryLink =
+                    document.getElementById("addSkillCategoryLink");
+
+            addSkillCategoryLink.onclick =
+                    addSkillCategoryLinkAction;
+
+            var  addSkillCategoryToCapability =
+                    document.getElementById("addSkillCategoryToCapability");
+
+            addSkillCategoryToCapability.onclick =
+                    addSkillCategoryToCapabilityAction;
+
+            var addSkillSubCategoryLink =
+                    document.getElementById("addSkillSubCategoryLink");
+
+            addSkillSubCategoryLink.onclick =
+                    addSkillSubCategoryLinkAction;
+        } // load
+
+        /**
+         * This is the action to handle the add skill to the tree json.
+         * It renders the change into the DOM and syncro with the backend.
+         *
+         * @param event
+         */
+        function addSkillSubCategoryLinkAction (event) {
+
+            var addSkillCategoryToCapabilityModal =
+                    document.getElementById("addSkillCategoryToCapabilityModal");
+
+            var capability       = document.getElementById("capabilitySelect");
+            var skillCategory    = document.getElementById("skillCategorySelect");
+            var skillSubCategoryArray =
+                    getElementByClass("skillSubCategoryNameText");
+
+            // verified if the capability exists in the tree otherwise created it
+            // verified if the skillcategory exists in the capability
+            // so on
+
+            var capabilityJson =
+                    getOrCreateCapabilityJson (capability.options[capability.selectedIndex].value);
+
+            var skillCategoryJson =
+                    getOrCreateSkillCategoryJson(capabilityJson, skillCategory.options[skillCategory.selectedIndex].value);
+
+            createSubCategories (skillCategoryJson, skillSubCategoryArray);
+
+            // send to the backend, if it is ok refresh the tree
+            postJson("/teamshowcase/team/capability-skills.json", capabilitySkillJson, function(jsonResponse) {
+
+                if (jsonResponse.value) {
+
+                    updateCapabilitySkillsTree("skillTree", capabilitySkillJson);
+
+                    setHide(addSkillCategoryToCapabilityModal);
+                } else{
+
+                    message("The Skill couldn't be added to the backend");
+                }
+
+            });
+        } // addSkillSubCategoryLinkAction.
+
+        /**
+         * If the capability does not exists in the tree it creates the capability, otherwise it just
+         * returns the actual capability node, with all the child skill categories and sub cat.
+         * @param capability
+         * @returns {*}
+         */
+        function  getOrCreateCapabilityJson (capability) {
+
+            var exists = false;
+            var capabilityJson = null;
+
+            // verified if the capability exists
+            if (this.capabilitySkillJson) {
+
+                // see if the capability exists.
+                for (var i = 0; i < capabilitySkillJson.length; ++i) {
+
+                    if (capabilitySkillJson[i].name.toUpperCase() == capability.toUpperCase()) {
+
+                        exists = true;
+                        capabilityJson =
+                                capabilitySkillJson[i];
+                        break;
+                    }
+                }
+            } else {
+                // no any capability yet
+                this.capabilitySkillJson = [];
+            }
+
+            // if does not exists, so create it
+            if (!exists) {
+
+                var order =
+                        capabilitySkillJson.length + 1;
+
+                capabilityJson =
+                    {name:capability.toUpperCase(),order:order,skills:[]};
+
+                this.capabilitySkillJson[capabilitySkillJson.length] =
+                        capabilityJson;
+            }
+
+            return capabilityJson;
+        } // getOrCreateCapabilityJson.
+
+        /**
+         * Creates the Skill Category in case that if does not exists.
+         * If exits just the existing skill category is created
+         * @param capabilityJson
+         * @param skillCategory
+         * @returns {*}
+         */
+        function getOrCreateSkillCategoryJson(capabilityJson, skillCategory) {
+
+            var exists = false;
+            var skillCategoryJson = null;
+
+            // see if the category skill on the current capability
+            for (var i = 0; i < capabilityJson.skills.length; ++i) {
+
+                if (capabilityJson.skills[i].category.name.toUpperCase() == skillCategory.toUpperCase()) {
+
+                    exists = true;
+                    skillCategoryJson =
+                            capabilityJson.skills[i];
+                    break;
+                }
+            }
+
+            // if does not exists, so create it
+            if (!exists) {
+
+                var order =
+                        capabilityJson.skills.length + 1;
+
+                skillCategoryJson =
+                     {category:{name:skillCategory.toUpperCase(),order:order},subcategories:[]};
+
+                capabilityJson.skills[capabilityJson.skills.length] =
+                        skillCategoryJson;
+            }
+
+            return skillCategoryJson;
+        } // getOrCreateSkillCategoryJson.
+
+        /**
+         * Creates the Skill Sub Categories in case that they don't exists.
+         * @param skillCategoryJson
+         * @param skillSubCategoryArray
+         */
+        function createSubCategories (skillCategoryJson, skillSubCategoryArray) {
+
+            // for each sub category that the user provided
+            for (var j = 0; j < skillSubCategoryArray.length; ++j) {
+
+                var skillSubCategory = skillSubCategoryArray[j].value; // is a text field
+                var exists = false;
+
+                // check if it exits on the sub category json
+                for (var i = 0; i < skillCategoryJson.subcategories.length; ++i) {
+
+                    if (skillCategoryJson.subcategories[i].name.toUpperCase() == skillSubCategory.toUpperCase()) {
+
+                        exists = false;
+                    }
+                }
+
+                if (!exists) {
+
+                    var order =
+                            skillCategoryJson.subcategories.length + 1;
+
+                    skillCategoryJson.subcategories[skillCategoryJson.subcategories.length] =
+                            {name:skillSubCategory.toUpperCase(),order:order};
+                }
+            }
+        } // createSubCategories.
+
+        /**
+         * This is the action listener for the add sub category skill.
+         * It removes the previous sub category text field in case that the user has added more than one.
+         * @param event
+         */
+        function addSkillCategoryToCapabilityAction(event) {
+
+            var  addSkillCategoryToCapabilityModal =
+                    document.getElementById("addSkillCategoryToCapabilityModal");
+
+
+            var skillSubCategoryNameTextList =
+                    getElementByClass("skillSubCategoryNameText");
+
+            var skillSubCategoryFieldListParent =
+                    document.getElementById("skillSubCategoryFieldList");
+
+            // clean the modal.
+            if (skillSubCategoryNameTextList) {
+
+                for (var i = skillSubCategoryNameTextList.length - 1; i >= 0; --i) {
+
+                    var skillNode = skillSubCategoryNameTextList[i];
+
+                    if (skillNode) {
+
+                        // if it is not the default one (the idea is leave just one text field)
+                        if (skillSubCategoryFieldListParent.contains(skillNode) &&
+                                "skillSubCategoryNameText1" != skillNode.id) {
+
+                            skillSubCategoryFieldListParent.removeChild(skillNode);
+                        }
+                    }
+                }
+            }
+
+            subCategoryInputFieldId = 2;  // reset the sub cate text field id counter to 2
+
+            setVisible(addSkillCategoryToCapabilityModal);
+        } // addSkillCategoryToCapabilityAction.
+
+        /**
+         * Just popup the modal.
+         * @param event
+         */
+        function addSkillCategoryAction(event) {
+
+            var addSkillCategoryModal =
+                    document.getElementById("addSkillCategoryModal");
+
+            setVisible(addSkillCategoryModal);
+        } // addSkillCategoryAction.
+
+        /**
+         * Check if the skillCatalogJson contains the skillCategoryValue
+         * @param skillCategoryValue
+         * @returns {boolean}
+         */
+        function doesNotExists(skillCategoryValue) {
+
+            var notExists = true;
+
+            for (var i = 0; i < skillCatalogJson.length; ++i) {
+
+                if (skillCategoryValue.toLowerCase() == skillCatalogJson[i].name.toLowerCase()) {
+
+                    notExists = false;
+                }
+            }
+
+            return notExists;
+        } // doesNotExists.
+
+        /**
+         * Add a new skill to the skillcatalog.
+         * In addition refresh the list in the modal and in the sub category modal, combo box.
+         * @param event
+         */
+        function addSkillCategoryLinkAction(event) {
+
+            var skillCategoryForm =
+                    document.getElementById("skillCategoryForm");
+
+            if (skillCategoryForm.checkValidity()) {
+
+                var skillCategoryNameText =
+                        document.getElementById("skillCategoryNameText");
+
+                if (doesNotExists(skillCategoryNameText.value)) {
+
+                    var skillCatalogOrder = skillCatalogJson.length;
+                    skillCatalogJson[skillCatalogJson.length] =
+                         {name: skillCategoryNameText.value.toUpperCase(), order: (skillCatalogOrder + 1)};
+
+                    postJson("/teamshowcase/team/skillcatalog.json", skillCatalogJson, function(jsonResponse) {
+
+                        if (jsonResponse.value) {
+
+                            // update the list
+                            var skillCategoryListUl =
+                                    document.getElementById("skillCategoryList");
+
+                            var skillCategoryLi =
+                                    document.createElement("li");
+
+                            skillCategoryLi.innerHTML =
+                                    skillCategoryNameText.value.toUpperCase();
+
+                            skillCategoryListUl.appendChild
+                                (skillCategoryLi);
+
+                            // update the combo box
+                            var skillCategorySelect =
+                                    document.getElementById("skillCategorySelect");
+
+                            var option = document.createElement("option");
+                            option.text = option.value =
+                                    skillCategoryNameText.value.toUpperCase();
+                            skillCategorySelect.add(option);
+
+                            // hide the modal
+                            var addSkillCategoryModal =
+                                    document.getElementById("addSkillCategoryModal");
+
+                            setHide(addSkillCategoryModal);
+                        } else{
+
+                            message("The Skill couldn't be added to the backend");
+                        }
+                    });
+                } else {
+
+                    message("The Skill " + skillCategoryNameText.value + " already exists");
+                }
+            } else {
+
+                skillCategoryForm.reportValidity();
+            }
+        } // addSkillCategoryLinkAction.
+
+        /**
+         * Load the list of skills and the combo box of the skill categories.
+         * @param skillCategoryListJSON
+         */
+        function loadSkillCatalogJSON(skillCategoryListJSON) {
+
+            var skillCategoryListUl =
+                    document.getElementById("skillCategoryList");
+
+            var skillCategorySelect =
+                    document.getElementById("skillCategorySelect");
+
+            this.skillCatalogJson =  skillCategoryListJSON;
+
+            skillCategoryListJSON.forEach(
+                function(skillCategory) {
+
+                    var skillCategoryLi =
+                            document.createElement("li");
+
+                    skillCategoryLi.innerHTML =
+                        skillCategory.name;
+
+                    skillCategoryListUl.appendChild
+                        (skillCategoryLi);
+
+                    //////// the combo box in the sub cat modal
+                    var option = document.createElement("option");
+                    option.text = skillCategory.name;
+                    option.value = skillCategory.name;
+                    skillCategorySelect.add(option);
+                }
+            );
+        } // loadSkillCatalogJSON.
+
+
+        /**
+         * Load the capabilities in the sub cat modal combo box.
+         * @param capabilityListJSON
+         */
+        function loadCapabilitiesJSON(capabilityListJSON) {
+
+            var capabilityListSelect =
+                    document.getElementById("capabilitySelect");
+
+            if (capabilityListSelect) {
+
+                if (capabilityListJSON) {
+
+                    capabilityListJSON.forEach(
+                            function(capability) {
+
+                                var option = document.createElement("option");
+                                option.text = capability;
+                                option.value = capability;
+                                capabilityListSelect.add(option);
+                            }
+                    );
+                }
+            }
+        } // loadCapabilitiesJSON.
+
+        /**
+         * Load the tree with all the capabilities skills.
+         * @param capabilitySkillListJSON
+         */
+        function loadCapabilitySkillsJSON(capabilitySkillListJSON) {
+
+            this.capabilitySkillJson =
+                    capabilitySkillListJSON;
+
+            updateCapabilitySkillsTree("skillTree", capabilitySkillListJSON);
+
+        } // loadCapabilitySkillsJSON.
+
+        /**
+         * Action listener to handle the adding a new text field for a sub category skill.
+         * @param event
+         */
+        function addNewSubCategoryField (event) {
+
+            var skillSubCategoryFieldList =
+                    document.getElementById("skillSubCategoryFieldList");
+
+            var subCategoryInputFieldText =
+                    document.createElement("input");
+
+            subCategoryInputFieldText.id = "skillSubCategoryNameText" + subCategoryInputFieldId++;
+            subCategoryInputFieldText.type = "text";
+            subCategoryInputFieldText.required = "required";
+            subCategoryInputFieldText.placeholder = "Write here the new skill sub category name";
+            subCategoryInputFieldText.size = "60";
+            subCategoryInputFieldText.className = "skillSubCategoryNameText";
+
+            skillSubCategoryFieldList.insertBefore(subCategoryInputFieldText, skillSubCategoryFieldList.childNodes[0]);
+        } // addNewSubCategoryField.
+
+    </script>
+</head>
+<body onload="load();">
+<h2>Edit the Skills Catalog!</h2>
+
+
+    <div id="managers">
+        <div >
+            <a href="index.html"  title="Go back to the main menu">Main Menu</a>
+        </div>
+        <div >
+            <a href="#" id="addSkillCategory" title="Add a new Skill Category to the list">+ Add Skill Category</a>
+        </div>
+        <div >
+            <a href="#" id="addSkillCategoryToCapability" title="Add a new Skill Category to the list">+ Add a New Skill Category to a Capability</a>
+        </div>
+    </div>
+
+    <div id="skillTree">
+
+    </div>
+
+    <div id="addSkillCategoryModal" style="display: none;">
+
+         <h4>Add a new Skill Category</h4>
+
+         <ul id="skillCategoryList">
+
+         </ul>
+
+         <form name="skillCategoryForm"  id="skillCategoryForm">
+             <p>
+                 Name:
+                <input id="skillCategoryNameText" required="required" placeholder="Write here the new skill category name" size="40"/>
+             </p>
+
+             <br/>
+             <a href="#" id="addSkillCategoryLink">Add a new Skill Category to the List</a>
+         </form>
+    </div>
+
+
+    <div id="addSkillCategoryToCapabilityModal" style="display: none;">
+
+        <h4>Add a new Skill Category to a Capability</h4>
+
+        <div>
+
+            <span>Select a capability:</span>
+
+            <select id="capabilitySelect">
+
+            </select>
+        </div>
+
+        <div>
+
+            <span>Select a skill category:</span>
+
+            <select id="skillCategorySelect">
+
+            </select>
+        </div>
+
+        <form name="skillCategoryForm"  id="skillCategoryForm">
+            <p>
+                Name:
+            </p>
+            <div id="skillSubCategoryFieldList">
+                <input id="skillSubCategoryNameText1" class="skillSubCategoryNameText" required="required" placeholder="Write here the new skill sub category name" size="60"/>
+                <a href="#" title="Click here to a new sub category field" onclick="return addNewSubCategoryField();">
+                    +
+                </a>
+            </div>
+
+            <br/>
+            <a href="#" id="addSkillSubCategoryLink">Add a new Skill Sub Category to the List</a>
+        </form>
+    </div>
+
+</body>
+</html>

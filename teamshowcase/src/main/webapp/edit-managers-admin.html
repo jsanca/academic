@@ -45,7 +45,7 @@
                     var email = (emailText.value) ? " - " + emailText.value : "";
                     var name = managerNameText.value + email;
 
-                    addNewManager(ul, email);
+                    addNewManager(ul, name);
                     addNewManagerToJsonObject(managerNameText.value, emailText.value);
                     postManagerListToBackend();
 
@@ -56,6 +56,9 @@
 
                     message("Please write a new name for the new manager");
                 }
+            } else {
+
+                managerForm.reportValidity();
             }
         }
 

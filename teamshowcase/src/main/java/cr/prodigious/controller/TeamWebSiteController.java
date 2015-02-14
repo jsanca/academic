@@ -2,10 +2,14 @@ package cr.prodigious.controller;
 
 import cr.prodigious.bean.BooleanMessage;
 import cr.prodigious.bean.CapabilityBean;
+import cr.prodigious.bean.CapabilitySkillsBean;
 import cr.prodigious.bean.CapabilityTeamMapping;
 import cr.prodigious.bean.ManagerBean;
 import cr.prodigious.bean.PositionBean;
 import cr.prodigious.bean.RegionBean;
+import cr.prodigious.bean.SkillBean;
+import cr.prodigious.bean.SkillCategoryBean;
+import cr.prodigious.bean.SkillSubCategoryBean;
 import cr.prodigious.bean.cases.Case;
 import cr.prodigious.bean.cases.CasesBean;
 import cr.prodigious.bean.team.Person;
@@ -52,6 +56,15 @@ public class TeamWebSiteController implements Serializable {
     private static final Class<? extends ArrayList> ARRAY_LIST_CAPABILITY_POSITION_CLASS
             = new ArrayList<CapabilityBean>().getClass();
 
+    private static final Class<? extends ArrayList> ARRAY_LIST_SKILL_CATALOG_CLASS
+            = new ArrayList<SkillCategoryBean>().getClass();
+
+    private static final Class<? extends ArrayList> ARRAY_LIST_CAPABILITY_SKILLS_CLASS
+            = new ArrayList<CapabilitySkillsBean>().getClass();
+
+
+
+
     @Autowired
     TeamWebSiteControllerHelper teamWebSiteControllerHelper = null;
 
@@ -63,6 +76,105 @@ public class TeamWebSiteController implements Serializable {
 
     @Autowired
     private JsonHelper jsonHelper = null;
+
+    // todo: create the logic to get and store the capability skills
+    @RequestMapping(value = "/capability-skills", method = RequestMethod.GET, produces={"application/xml", "application/json"})
+    @ResponseStatus(HttpStatus.OK)
+    public List<CapabilitySkillsBean> capabilitySkills() {
+
+        return this.teamWebSiteFacadeService.getCapabilitySkills();
+    }
+
+    @RequestMapping(value = "/capability-skills", method = RequestMethod.POST, produces={"application/xml", "application/json"})
+    @ResponseStatus(HttpStatus.OK)
+    public BooleanMessage editCapabilitySkills(final HttpServletRequest request) {
+
+        final BooleanMessage success =
+                new BooleanMessage(false);
+
+        InputStream inputStream = null;
+        ArrayList<CapabilitySkillsBean> capabilitySkillsBeans = null;
+
+        try {
+
+            inputStream =
+                    request.getInputStream();
+
+            capabilitySkillsBeans =
+                    this.jsonHelper.read
+                            (inputStream, ARRAY_LIST_CAPABILITY_SKILLS_CLASS);
+
+            if (null != capabilitySkillsBeans) {
+
+                this.teamWebSiteFacadeService.
+                        storeCapabilitySkills(capabilitySkillsBeans);
+
+                success.setValue(true);
+            }
+        } catch (IOException e) {
+
+            success.setValue(false);
+        }
+
+        return success;
+    } // editSkillsCatalog
+
+    /// todo: remove me
+    @RequestMapping(value = "/init-capability-skills", method = RequestMethod.GET, produces={"application/xml", "application/json"})
+    @ResponseStatus(HttpStatus.OK)
+    public List<CapabilitySkillsBean> initCapabilitySkills() {
+
+        ArrayList<CapabilitySkillsBean> capabilitySkillsBeans =
+                new ArrayList<>();
+
+         CapabilitySkillsBean capabilitySkillsBean =
+                 new CapabilitySkillsBean();
+
+         capabilitySkillsBean.setName("QA");
+         capabilitySkillsBean.setOrder(1);
+
+         List<SkillBean> qaSkillBeans =  new ArrayList<>();
+
+         SkillBean skillBean = new SkillBean();
+
+
+         SkillCategoryBean testAutomationSkillCategoryBean =
+                 new SkillCategoryBean();
+
+         testAutomationSkillCategoryBean.setName("TEST AUTOMATION");
+         testAutomationSkillCategoryBean.setOrder(1);
+
+         skillBean.setSkillCategoryBean(testAutomationSkillCategoryBean);
+
+         List<SkillSubCategoryBean> testAutomationSubCategoryList =
+                 new ArrayList<>();
+
+         SkillSubCategoryBean skillSubCategoryBean =
+                 new SkillSubCategoryBean();
+
+         skillSubCategoryBean.setName("RECORD/PLAYBACK");
+         skillSubCategoryBean.setOrder(1);
+
+         testAutomationSubCategoryList.add(skillSubCategoryBean);
+
+         skillSubCategoryBean =
+                 new SkillSubCategoryBean();
+
+         skillSubCategoryBean.setName("SCRIPTING");
+         skillSubCategoryBean.setOrder(2);
+
+         testAutomationSubCategoryList.add(skillSubCategoryBean);
+
+         skillBean.setSubcategories(testAutomationSubCategoryList);
+
+         qaSkillBeans.add(skillBean);
+
+         capabilitySkillsBean.setSkillBeans(qaSkillBeans);
+
+         capabilitySkillsBeans.add(capabilitySkillsBean);
+
+        return capabilitySkillsBeans;
+    } // initCapabilitySkills
 
     /*@RequestMapping(value = "/init-managers", method = RequestMethod.GET, produces={"application/xml", "application/json"})
     @ResponseStatus(HttpStatus.OK)
@@ -94,6 +206,49 @@ public class TeamWebSiteController implements Serializable {
 
         return this.teamWebSiteFacadeService.getManagers();
     } // allTeam    */
+
+    @RequestMapping(value = "/skillcatalog", method = RequestMethod.POST, produces={"application/xml", "application/json"})
+    @ResponseStatus(HttpStatus.OK)
+    public BooleanMessage editSkillsCatalog(final HttpServletRequest request) {
+
+        final BooleanMessage success =
+                new BooleanMessage(false);
+
+        InputStream inputStream = null;
+        ArrayList<SkillCategoryBean> skillCategoryBeans = null;
+
+        try {
+
+            inputStream =
+                    request.getInputStream();
+
+            skillCategoryBeans =
+                    this.jsonHelper.read
+                            (inputStream, ARRAY_LIST_SKILL_CATALOG_CLASS);
+
+            if (null != skillCategoryBeans) {
+
+                this.teamWebSiteFacadeService.
+                        storeSkillCatalog(skillCategoryBeans);
+
+                success.setValue(true);
+            }
+        } catch (IOException e) {
+
+            success.setValue(false);
+        }
+
+        return success;
+    } // editSkillsCatalog
+
+    @RequestMapping(value = "/skillcatalog", method = RequestMethod.GET, produces={"application/xml", "application/json"})
+    @ResponseStatus(HttpStatus.OK)
+    public List<SkillCategoryBean> skillsCatalog() {
+
+        return this.teamWebSiteFacadeService.getSkillCatalog();
+    } // capabilitiesPositions
+
+    ///////////////////////
 
     @RequestMapping(value = "/capabilities/positions", method = RequestMethod.POST, produces={"application/xml", "application/json"})
     @ResponseStatus(HttpStatus.OK)
@@ -340,7 +495,7 @@ public class TeamWebSiteController implements Serializable {
         return booleanMessage;
     } // restoreTeam.
 
-
+    // TODO: validate if the email does not exists, if does returns false
     @RequestMapping(value = "/add-team", method = RequestMethod.POST, produces={"application/xml", "application/json"})
     @ResponseStatus(HttpStatus.OK)
     public BooleanMessage addTeam(@RequestParam(value = "name", required = true) final String name,
@@ -350,6 +505,7 @@ public class TeamWebSiteController implements Serializable {
                                   @RequestParam(value = "regionProject", required = true)      final String regionProject,
                                   @RequestParam(value = "employeeNumber", required = true)     final String employeeNumber,
                                   @RequestParam(value = "manager", required = true)    final String manager,
+                                  @RequestParam(value = "nickName", required = true)   final String nickName,
                                   final HttpServletRequest request) {
 
         final BooleanMessage booleanMessage =
@@ -366,7 +522,8 @@ public class TeamWebSiteController implements Serializable {
             final Person person =
                     PersonPopulatorHelper.populate(name, position,
                             imageLocal, email, regionProject,
-                            employeeNumber, manager, request);
+                            employeeNumber, manager, nickName,
+                            request);
 
             booleanMessage.setValue
                     (this.teamWebSiteControllerHelper.addNewPerson(teamBean, person, teamId));

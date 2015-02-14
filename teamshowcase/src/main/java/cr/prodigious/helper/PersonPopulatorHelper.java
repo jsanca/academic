@@ -29,6 +29,7 @@ public class PersonPopulatorHelper implements Serializable {
                                      final String regionproject,
                                      final String employeeNumber,
                                      final String manager,
+                                     final String nickName,
                                      final HttpServletRequest request) {
 
         final Person person = new Person();
@@ -39,6 +40,7 @@ public class PersonPopulatorHelper implements Serializable {
         person.setEmail(email);
         person.setRegionProject(regionproject);
         person.setEmployeeNumber(employeeNumber);
+        person.setNickName(nickName);
         person.setManager(manager);
 
         populateSkills(person, request);

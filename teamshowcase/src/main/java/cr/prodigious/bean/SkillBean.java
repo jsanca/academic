@@ -14,25 +14,25 @@ import java.util.List;
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-        "skill",
+        "category",
         "subcategories"
 })
 
 public class SkillBean implements Serializable {
 
-    @JsonProperty("skill")
+    @JsonProperty("category")
     private SkillCategoryBean skillCategoryBean;
 
 
     @JsonProperty("subcategories")
     private List<SkillSubCategoryBean> subcategories = null;
 
-    @JsonProperty("skill")
+    @JsonProperty("category")
     public SkillCategoryBean getSkillCategoryBean() {
         return skillCategoryBean;
     }
 
-    @JsonProperty("skill")
+    @JsonProperty("category")
     public void setSkillCategoryBean(SkillCategoryBean skillCategoryBean) {
         this.skillCategoryBean = skillCategoryBean;
     }
