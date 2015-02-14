@@ -17,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
     "name",
+    "nickName",
     "position",
     "regionProject",
     "photo",
@@ -28,6 +29,9 @@ public class Person {
 
     @JsonProperty("name")
     private String name;
+
+    @JsonProperty("nickName")
+    private String nickName;
 
     @JsonProperty("employeeNumber")
     private String employeeNumber;
@@ -64,6 +68,16 @@ public class Person {
     private String tags;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+
+    @JsonProperty("nickName")
+    public String getNickName() {
+        return nickName;
+    }
+
+    @JsonProperty("nickName")
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
 
     /**
      * 
