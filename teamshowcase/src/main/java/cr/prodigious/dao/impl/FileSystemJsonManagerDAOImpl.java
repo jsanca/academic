@@ -1,7 +1,7 @@
 package cr.prodigious.dao.impl;
 
 import cr.prodigious.bean.ManagerBean;
-import cr.prodigious.dao.FileSystemJsonDAO;
+import cr.prodigious.dao.base.FileSystemJsonDAO;
 import cr.prodigious.dao.ManagerDAO;
 
 import java.util.ArrayList;

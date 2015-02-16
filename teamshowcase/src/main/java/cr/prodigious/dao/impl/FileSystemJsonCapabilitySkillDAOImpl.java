@@ -1,10 +1,8 @@
 package cr.prodigious.dao.impl;
 
 import cr.prodigious.bean.CapabilitySkillsBean;
-import cr.prodigious.bean.SkillCategoryBean;
 import cr.prodigious.dao.CapabilitySkillDAO;
-import cr.prodigious.dao.FileSystemJsonDAO;
-import cr.prodigious.dao.SkillCategoryDAO;
+import cr.prodigious.dao.base.FileSystemJsonDAO;
 
 import java.util.ArrayList;
 import java.util.List;

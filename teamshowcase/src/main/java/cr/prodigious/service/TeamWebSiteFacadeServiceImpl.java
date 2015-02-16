@@ -10,17 +10,16 @@ import cr.prodigious.bean.cases.CasesBean;
 import cr.prodigious.bean.team.Person;
 import cr.prodigious.bean.team.TeamBean;
 import cr.prodigious.bean.work.WorkBean;
-import cr.prodigious.dao.BackupDAOHelper;
+import cr.prodigious.dao.base.BackupDAOHelper;
 import cr.prodigious.dao.CapabilityPositionsDAO;
 import cr.prodigious.dao.CapabilitySkillDAO;
-import cr.prodigious.dao.CasesDAO;
+import cr.prodigious.dao.impl.Db4oCasesDAOImpl;
 import cr.prodigious.dao.DataBase;
 import cr.prodigious.dao.ManagerDAO;
 import cr.prodigious.dao.RegionDAO;
 import cr.prodigious.dao.SkillCategoryDAO;
-import cr.prodigious.dao.TeamDAO;
-import cr.prodigious.dao.WorkDAO;
-import cr.prodigious.helper.JsonHelper;
+import cr.prodigious.dao.impl.Db4oTeamDAOImpl;
+import cr.prodigious.dao.impl.Db4oWorkDAOImpl;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 
@@ -37,11 +36,11 @@ public class TeamWebSiteFacadeServiceImpl implements TeamWebSiteFacadeService {
 
     private DataBase dataBase = null;
 
-    private WorkDAO workDAO = null;
+    private Db4oWorkDAOImpl workDAO = null;
 
-    private CasesDAO casesDAO = null;
+    private Db4oCasesDAOImpl casesDAO = null;
 
-    private TeamDAO teamDAO = null;
+    private Db4oTeamDAOImpl teamDAO = null;
 
     private BackupDAOHelper xmlBackupDAOHelper = null;
 
@@ -81,15 +80,15 @@ public class TeamWebSiteFacadeServiceImpl implements TeamWebSiteFacadeService {
         this.dataBase = dataBase;
     }
 
-    public void setWorkDAO(WorkDAO workDAO) {
+    public void setWorkDAO(Db4oWorkDAOImpl workDAO) {
         this.workDAO = workDAO;
     }
 
-    public void setCasesDAO(CasesDAO casesDAO) {
+    public void setCasesDAO(Db4oCasesDAOImpl casesDAO) {
         this.casesDAO = casesDAO;
     }
 
-    public void setTeamDAO(TeamDAO teamDAO) {
+    public void setTeamDAO(Db4oTeamDAOImpl teamDAO) {
         this.teamDAO = teamDAO;
     }
 

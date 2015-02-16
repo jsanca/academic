@@ -36,17 +36,18 @@
         <property name="backupDataBasePatternPath"  value="${database.backup.pattern.path}"/>
     </bean>
 
-    <bean name="baseDAO" abstract="true" class="cr.prodigious.dao.BaseDAO">
+    <bean name="baseDAO" abstract="true" class="cr.prodigious.dao.base.BaseDAO">
         <property name="dataBase" ref="dataBase"/>
     </bean>
 
-    <bean name="casesDAO" class="cr.prodigious.dao.CasesDAO" parent="baseDAO"/>
-    <bean name="teamDAO"  class="cr.prodigious.dao.TeamDAO"  parent="baseDAO"/>
-    <bean name="workDAO"  class="cr.prodigious.dao.WorkDAO"  parent="baseDAO"/>
+    <bean name="casesDAO" class="cr.prodigious.dao.impl.Db4oCasesDAOImpl" parent="baseDAO"/>
+    <bean name="teamDAO"  class="cr.prodigious.dao.impl.Db4oTeamDAOImpl"  parent="baseDAO"/>
+    <bean name="workDAO"  class="cr.prodigious.dao.impl.Db4oWorkDAOImpl"  parent="baseDAO"/>
+    <bean name="userDAO"  class="cr.prodigious.dao.impl.Db4oUserDAOImpl"  parent="baseDAO"/>
 
     <bean name="jsonHelper" class="cr.prodigious.helper.JsonHelper"/>
 
-    <bean name="backupDAOHelper" class="cr.prodigious.dao.BackupDAOHelper">
+    <bean name="backupDAOHelper" class="cr.prodigious.dao.base.BackupDAOHelper">
         <property name="backupBaseDirectory" value="${database.backup.xmldirbasepath}"/>
         <property name="jsonHelper" ref="jsonHelper"/>
     </bean>
@@ -72,7 +73,7 @@
     </bean>
 
     <!-- DAO INIT -->
-    <bean name="initDataBase" class="cr.prodigious.dao.SpringDataBaseHelper" scope="singleton" destroy-method="destroy">
+    <bean name="initDataBase" class="cr.prodigious.dao.base.SpringDataBaseHelper" scope="singleton" destroy-method="destroy">
         <!--property name="dataBaseHelper" ref="dataBase"/-->
         <property name="dataBaseName" value="dataBase"/>
     </bean>

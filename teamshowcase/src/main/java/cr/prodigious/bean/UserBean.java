@@ -1,5 +1,7 @@
 package cr.prodigious.bean;
 
+import cr.prodigious.entity.Entity;
+
 import java.io.Serializable;
 
 /**
@@ -7,9 +9,11 @@ import java.io.Serializable;
  *
  * @author jsanca
  */
-public class UserBean implements Serializable {
+public class UserBean implements Entity, Serializable, Cloneable {
 
-    private String id   = null;
+    private Long userId = null;
+
+    private String userName = null;
 
 
     private String email = null;
@@ -17,12 +21,22 @@ public class UserBean implements Serializable {
     // password will be storaged in md5 in keep the user security
     private String password = null;
 
-    public String getId() {
-        return id;
+    public Long getUserId() {
+
+        return this.userId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getEmail() {
@@ -39,5 +53,11 @@ public class UserBean implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+
+        return super.clone();
     }
 } // E:O:F:UserBean.

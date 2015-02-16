@@ -2,7 +2,7 @@ package cr.prodigious.dao.impl;
 
 import cr.prodigious.bean.CapabilityBean;
 import cr.prodigious.dao.CapabilityPositionsDAO;
-import cr.prodigious.dao.FileSystemJsonDAO;
+import cr.prodigious.dao.base.FileSystemJsonDAO;
 
 import java.util.ArrayList;
 import java.util.List;
