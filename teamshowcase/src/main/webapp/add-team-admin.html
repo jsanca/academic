@@ -1,6 +1,7 @@
 <html>
 <head>
     <script src="js/core.js"></script>
+    <script src="js/capability-skills.js"></script>
     <script>
 
         var wasAddSkillCalledatLeastOnes = false;
@@ -25,6 +26,9 @@
 
         /**
          * Load all the skill stuff based on the current capability selected
+         *
+         * Note: this is called by  loadCapabilityPositionJSON, as soon as it is done, this method is invoked.
+         *
          * @param capabilitySkillJSON
          */
         function loadCapabilitySkills (capabilitySkillsJSON) {
@@ -68,7 +72,7 @@
                     }
                 }
 
-                currentCapabilityName =
+                currentCapabilityName =   // keep the new name to the next calls.
                         capabilityName;
             }
         } // reloadSkillBasedOnCapability.
@@ -156,11 +160,12 @@
             // clean the previous one
             removeAllChildNodes (skillsTableDiv);
 
-            capabilityJsonNode.subcategories.forEach(
+            capabilityJsonNode.skills.forEach(
 
-                function(subCategorySkill) {
+                function(skill) {
 
-                    // todo: for each subcategory create a div with the table.
+                    skillsTableDiv.appendChild
+                        (createSubCategorySkillDiv(skill));
                 }
             );
         } // loadSkillTable.
@@ -181,7 +186,7 @@
                         }
                 );
             }
-        }
+        } // loadJSONRegions.
 
         function loadJSONManagers (managersJSON) {
 
@@ -199,7 +204,7 @@
                         }
                 );
             }
-        }
+        } // loadJSONManagers.
 
         function loadCapabilityPositionJSON (capabilitiesJSON) {
 
@@ -234,7 +239,7 @@
             // add the on change action listener
             positionSelect.onchange =
                     onChangePositionSelectAction;
-        }
+        } // loadCapabilityPositionJSON.
 
         function onChangePositionSelectAction(event) {
 
@@ -406,7 +411,7 @@
             <td>
                 <select id="skillSelect" name="skillSelect" >
 
-                    <option value="MOTION">MOTION</option>
+                    <!--option value="MOTION">MOTION</option>
                     <option value="DESIGN">DESIGN</option>
                     <option value="STUDIODEV">STUDIO DEV</option>
                     <option value="PROJECTMANANGEMENT">PROJECT MANANGEMENT</option>
@@ -441,7 +446,7 @@
                     <option value="TOOLS">TOOLS</option>
                     <option value="TECHNOLOGIESTESTED">TECHNOLOGIES TESTED</option>
                     <option value="LIFECYCLES">LIFECYCLES</option>
-                    <option value="CMSTESTED">CMS TESTED</option>
+                    <option value="CMSTESTED">CMS TESTED</option-->
                 </select>
 
                 <input type="button" value="Add Skill" onclick="return addSkill();" />

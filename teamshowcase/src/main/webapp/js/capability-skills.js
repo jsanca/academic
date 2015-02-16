@@ -99,3 +99,89 @@ function loadSkillSubCategories(skillSubCategories, skillCategoryLi) {
     skillCategoryLi.appendChild(skillSubCategoryUl);
 } // loadSkillSubCategories.
 
+
+/**
+ * Creates a div with the skill sub categories.
+ * @param skill
+ * @returns {HTMLElement}
+ */
+function createSubCategorySkillDiv (skill) {
+
+    var categoryName =
+        skill.category.name;
+
+    var categorySkillNameId =
+        removeSpaces(categoryName);
+
+    var div =
+        document.createElement("div");
+
+    div.style.display = "none"; // hide by default
+    div.id = categorySkillNameId;  // the id is the name without spaces
+
+    var h2 =
+        document.createElement("h2");
+
+    h2.innerText =
+        categoryName;
+
+    div.appendChild(h2);
+
+    div.appendChild
+        (createSubCategoryKillTable(skill.subcategories, categoryName));
+
+    return div;
+} // createSubCategoryTable.
+
+
+/**
+ * Creates the actual table with the sub cat titles and number inputs
+ * @param subCategoriesSkill
+ * @param categoryName
+ * @returns {HTMLElement}
+ */
+function createSubCategoryKillTable(subCategoriesSkill, categoryName) {
+
+    var table =
+        document.createElement("table");
+
+    if (subCategoriesSkill) {
+
+        subCategoriesSkill.forEach(
+
+            function (subCategorySkill) {
+
+               var tr =
+                   document.createElement("tr");
+
+               var tdTitle =
+                   document.createElement("td");
+
+                tdTitle.innerText =
+                    subCategorySkill.name;
+
+                var tdInput =
+                    document.createElement("td");
+
+                var input =
+                    document.createElement("input");
+
+                input.type = "number";
+                input.min  = 0;
+                input.max  = 100;
+                // an example of name SKILL-MOTION-2D ANIMATION
+                input.name = "SKILL-" + categoryName + "-" + subCategorySkill.name;
+
+                tdInput.appendChild(input);
+
+                tr.appendChild(tdTitle);
+                tr.appendChild(tdInput);
+
+                table.appendChild(tr);
+            }
+        );
+    }
+
+    return table;
+} // createSubCategoryKillTable.
+

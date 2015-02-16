@@ -11,6 +11,7 @@
             // Load capabilities and positions
             var url     = '/teamshowcase/team/capabilities/positions.json';
             getJson(url, loadJSON);
+
             var addLink =
                     document.getElementById("add");
 
@@ -27,6 +28,11 @@
             getJson(url, loadCapabilitiesJSON);
         }
 
+        /**
+         * Handle the add capability action
+         * @param event
+         * @returns {boolean}
+         */
         function addCapabilityLinkAction (event) {
 
             var addModal =
@@ -62,8 +68,11 @@
             }
 
             return false;
-        }
+        } // addCapabilityLinkAction.
 
+        /**
+         * Updates the positions in the backend.
+         */
         function postCapabilityListToBackend () {
 
            postJson("/teamshowcase/team/capabilities/positions.json", this.capabilityPositionsJson, function(jsonResponse) {
@@ -75,8 +84,13 @@
                     message("Position‰ was not added");
                 }
             });
-        }
+        } // postCapabilityListToBackend.
 
+        /**
+         * Handle the add capability/position click, by showing the modal.
+         * @param event
+         * @returns {boolean}
+         */
         function addLinkAction (event) {
 
             var addModal =
@@ -84,8 +98,14 @@
 
             setVisible (addModal);
             return false;
-        }
+        } // addLinkAction.
 
+        /**
+         * Add a new capability and position to the UL elements.
+         * @param ul
+         * @param capability
+         * @param position
+         */
         function addNewPosition (ul, capability, position) {
 
             var liArray =
@@ -115,8 +135,14 @@
             // find or create the ul
             var positionUL = getPositionUL(li);
             addPositionToUL (positionUL, position); // add the position
-        }
+        } // addNewPosition.
 
+
+        /**
+         * Get or creates the position UL
+         * @param li
+         * @returns {*}
+         */
         function getPositionUL (li) {
 
             var positionUL = null;
@@ -141,7 +167,7 @@
             }
 
             return    positionUL;
-        }
+        } // getPositionUL.
 
         function addPositionToUL (positionUL, position) {
 
@@ -150,6 +176,11 @@
             positionUL.appendChild(li);
         }
 
+        /**
+         * Add a new capability and positions to Ul param
+         * @param ul
+         * @param capability
+         */
         function addNewCapability (ul, capability) {
 
             var li = document.createElement("li");
@@ -171,9 +202,14 @@
                     }
             );
 
-        }
+        } // addNewCapability.
 
-
+        /**
+         * Add a new Position to the capability.
+         * Even if the capability exists or does not exists, it works
+         * @param capability
+         * @param position
+         */
         function  addNewCapabilityToJsonObject (
                         capability,
                         position) {
@@ -213,7 +249,7 @@
                             {name : position, order: orderValue};
 
             console.log(this.capabilityPositionsJson);
-        }
+        } // addNewCapabilityToJsonObject.
 
         function loadCapabilitiesJSON(capabilityListJSON) {
 
