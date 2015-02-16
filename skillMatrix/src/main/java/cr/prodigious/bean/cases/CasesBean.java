@@ -66,7 +66,7 @@ public class CasesBean implements Entity {
      * @return Long
      */
     @JsonProperty("id")
-    public Long getId() {
+    public Long getUserId() {
 
         return this.id;
     }

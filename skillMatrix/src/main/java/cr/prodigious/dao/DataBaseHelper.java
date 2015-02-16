@@ -110,6 +110,25 @@ public class DataBaseHelper implements Serializable, DataBase, cr.prodigious.bea
         return entity;
     } // selectById.
 
+    @Override
+    public <T extends Entity> List<T> selectByPredicate
+            (final cr.prodigious.dao.Predicate<T> predicate) {
+
+        List<T> entityList = null;
+
+        entityList =
+                this.selectByPredicate(new com.db4o.query.Predicate<T>() {
+
+                    @Override
+                    public boolean match(final T candidate) {
+
+                        return predicate.match(candidate);
+                    }
+                });
+
+        return entityList;
+    } // selectByPredicate.
+
     public <T extends Entity> List<T> selectByPredicate
             (final com.db4o.query.Predicate<T> predicate) {
 

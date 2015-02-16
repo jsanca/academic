@@ -61,7 +61,7 @@ public class TeamBean implements Entity {
     }
 
     @JsonProperty("id")
-    public Long getId() {
+    public Long getUserId() {
 
         return this.id;
     }

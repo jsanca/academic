@@ -7,6 +7,6 @@ import java.io.Serializable;
  */
 public interface Entity extends Serializable {
 
-    public Long getId();
+    public Long getUserId();
 
 } // E:O:F:Entity.

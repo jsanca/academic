@@ -25,6 +25,9 @@ public interface DataBase extends Serializable {
     List<Entity> selectAll(Class<Entity> entityClass) // selectAll.
     ;
 
+    <T extends Entity> List<T> selectByPredicate(cr.prodigious.dao.Predicate<T> predicate)
+    ;
+
     public Entity activate (final Entity entity, final int depth);
 
     boolean backupMe ();
