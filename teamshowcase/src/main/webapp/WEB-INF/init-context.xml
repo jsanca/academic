@@ -28,6 +28,9 @@
         </property>
     </bean>
 
+    <bean name="stringEncoder" class="cr.prodigious.helper.MD5StringEncoderImpl"/>
+    <bean name="conversionHelper" class="cr.prodigious.helper.ConversionHelper"/>
+    <bean name="sessionHelper" class="cr.prodigious.helper.SessionHelper"/>
 
 
     <!-- DAO -->
@@ -92,5 +95,13 @@
         <property name="xmlBackupDAOHelper" ref="backupDAOHelper"/>
         <property name="backModeOn" value="true"/>
     </bean>
+
+    <bean name="userService" class="cr.prodigious.service.UserServiceImpl">
+        <property name="userDAO" ref="userDAO"/>
+        <property name="conversionHelper" ref="conversionHelper"/>
+        <property name="stringEncoder" ref="stringEncoder"/>
+    </bean>
+
+
 
 </beans>

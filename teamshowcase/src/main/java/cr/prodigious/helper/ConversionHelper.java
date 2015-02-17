@@ -15,7 +15,7 @@ public class ConversionHelper implements Serializable {
      */
     public Long toLongNonNumeric (final String string) {
 
-        return Long.parseLong(string, 36);
+        return Long.valueOf(string.hashCode());
     } // toLong
 
 } // E:O:F:ConversionHelper.

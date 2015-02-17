@@ -1,5 +1,8 @@
 package cr.prodigious.bean;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import cr.prodigious.entity.Entity;
 
 import java.io.Serializable;
@@ -9,16 +12,27 @@ import java.io.Serializable;
  *
  * @author jsanca
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder({
+        "userId",
+        "userName",
+        "email",
+        "password"
+})
 public class UserBean implements Entity, Serializable, Cloneable {
 
+    @JsonProperty("userId")
     private Long userId = null;
 
+    @JsonProperty("userName")
     private String userName = null;
 
 
+    @JsonProperty("email")
     private String email = null;
 
     // password will be storaged in md5 in keep the user security
+    @JsonProperty("password")
     private String password = null;
 
     public Long getUserId() {
@@ -56,7 +70,7 @@ public class UserBean implements Entity, Serializable, Cloneable {
     }
 
     @Override
-    protected Object clone() throws CloneNotSupportedException {
+    public Object clone() throws CloneNotSupportedException {
 
         return super.clone();
     }

@@ -14,7 +14,6 @@ import java.io.Serializable;
 @JsonPropertyOrder({
         "value"
 })
-
 public class BooleanMessage implements Serializable {
 
     @JsonProperty("value")

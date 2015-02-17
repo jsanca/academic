@@ -32,4 +32,12 @@ public interface UserService extends Serializable {
      * @return UserBean null if does not exists
      */
     public UserBean findByEmail(String email);
+
+    /**
+     * Find the user by email and try to see if the login is ok
+     * @param email String
+     * @param password String
+     * @return UserBean
+     */
+    public UserBean loginByEmail(String email, String password);
 } // E:O:F:UserService.
