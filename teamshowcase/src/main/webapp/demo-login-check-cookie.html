@@ -1,0 +1,40 @@
+<html>
+<head>
+    <title>Demo Login Check Cookie</title>
+</head>
+<body>
+
+     <script>
+         function setCookie () {
+
+             var userForm =
+                     document.getElementById("userForm");
+
+             var sessionId =
+                     userForm.elements["jsessionid"].value;
+
+             document.cookie = "jsessionid=" + sessionId;
+
+             return true;
+         }
+     </script>
+
+     <form name="userForm"  id="userForm" action="/teamshowcase/user/is-logged-in.json" method="get">
+         <p>
+             Email:
+            <input name="email" required="required" type="email" size="40"/>
+         </p>
+
+        <p>
+            jsessionid:
+            <input name="jsessionid" required="required"  type="text" size="40" />
+        </p>
+
+         <p>
+             <input type="submit" value="submit" onclick="return setCookie();" />
+         </p>
+     </form>
+
+
+</body>
+</html>

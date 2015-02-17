@@ -37,4 +37,14 @@ public class SessionHelper implements Serializable {
         // to restrict the access to the session just for particular ip?
     } // createSession.
 
+    /**
+     * Get the UserSessionBean from the current session
+     * @param session HttpSession
+     * @return  UserSessionBean
+     */
+    public UserSessionBean getUserSessionBean (final HttpSession session) {
+
+        return (UserSessionBean)session.getAttribute(USER_SESSION_KEY);
+    } // getUserSessionBean.
+
 } // E:O:F:SessionHelper

@@ -63,6 +63,37 @@ public class UserController implements Serializable {
 
     // todo: eventually will have login by user name
 
+    @RequestMapping(value = "/is-logged-in", method = RequestMethod.GET, produces={"application/xml", "application/json"})
+    @ResponseStatus(HttpStatus.OK)
+    public BooleanMessage isLoggedIn(
+            @RequestParam(value = "email", required = true) final String email,
+            final HttpServletRequest request) {
+
+        final BooleanMessage booleanMessage =
+                new BooleanMessage(false);
+
+        final HttpSession httpSession =
+                request.getSession(false);
+
+        UserSessionBean userSessionBean = null;
+
+        if (null != httpSession) {
+
+            // todo: check the ip security?
+            userSessionBean =
+                    this.sessionHelper.getUserSessionBean(httpSession);
+
+            if (null != userSessionBean) {
+
+                booleanMessage.setValue
+                        (userSessionBean.getUserBean().getEmail().equals(email));
+            }
+        }
+
+
+        return booleanMessage;
+    } // isLogged.
+
     @RequestMapping(value = "/login-by-email", method = RequestMethod.POST, produces={"application/xml", "application/json"})
     @ResponseStatus(HttpStatus.OK)
     public LoginResult loginByEmail(
