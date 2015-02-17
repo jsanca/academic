@@ -97,7 +97,7 @@ public class DataBaseHelper implements Serializable, DataBase, cr.prodigious.bea
                     @Override
                     public boolean match(final T candidate) {
 
-                        return id.equals(Entity.class.cast(candidate).getId());
+                        return id.equals(Entity.class.cast(candidate).getUserId());
                     }
                 });
 
