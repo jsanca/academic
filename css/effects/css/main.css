@@ -1,0 +1,48 @@
+.box {
+	
+	
+	background-color : red;
+	border-style     : solid;
+	height  		 : 80px;
+	width 			 : 120px;
+	font-size 		 : 16pt;
+	font-weight 	 : border;
+	color            : red;
+	text-align       : center;
+	padding-top      : 20px;   
+ 	
+}
+
+.box:hover {
+	
+	color            :white;
+}
+
+.box:before {
+		
+	content: attr(data-before-content);
+	background-color : red;
+	margin-left: -17px;
+	padding-left: 0px;
+	height  		 : 80px;
+	width 			 : 114px;
+	font-size 		 : 16pt;
+	font-weight 	 : border;
+	color            : white;
+	text-align       : center;
+	transition-duration: 0.4s;
+	
+	position         : absolute; 
+	
+	
+}
+
+.box:hover:before {
+	
+	background-color : white;
+	border-style     : solid;
+	border-color     : red;  
+	color            : red;
+	transform        : translateY(80px); 
+	
+}
