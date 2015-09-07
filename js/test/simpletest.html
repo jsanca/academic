@@ -1,0 +1,38 @@
+<!doctype html>
+<html class="no-js" lang="eng">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>The jQuery like library challenge!</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+</head>
+<body>
+
+<div id="container"></div>
+<script src="../dQuery.js"></script>
+
+<script >
+
+    console.log("Running DOM manipulation");
+    var $container = $('#container');
+
+    console.log("Running DOM manipulation 2");
+    var $p = $('<p></p>');
+
+    var $hr = $('<hr/>');
+
+    console.log("Running DOM manipulation 3");
+    $p.html('<strong>Some html content</strong>');
+
+    console.log("Running DOM manipulation 4");
+    $('#container').html($p).html($hr);
+
+    console.log("Running DOM manipulation 5");
+
+</script>
+
+</body>
+</html>

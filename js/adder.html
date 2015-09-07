@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+
+<script>
+
+    // CLASS DEFINITION
+    function AdderClass (value) {
+
+        //console.log("Setting the value: " + value);
+        this.value = value;
+    }
+
+    AdderClass.prototype.add = function (aValue) {
+
+        //console.log("Adding a value: " + aValue);
+
+        this.value += aValue;
+
+        //console.log("Result: " + this.value);
+    }
+
+    AdderClass.prototype.getValue = function () {
+
+        return this.value;
+    }
+
+    AdderClass.prototype.toString = function () {
+
+        return this.value;
+    };
+
+    // GLOBAL VARIABLES
+    this.adderInstancesArray = new Array();
+
+
+    // ADDER FACTORY FUNCTION
+    function createAdder(value) {
+
+        console.log("First function: " + value);
+
+        var count =  this.adderInstancesArray.length;
+
+        var callback = function (anotherValue) {
+
+            console.log("Callback function: " + anotherValue);
+
+            if (!this.adderInstancesArray[count]) {
+
+                this.adderInstancesArray[count] = new AdderClass(anotherValue);
+            } else {
+
+                this.adderInstancesArray[count].add(anotherValue);
+            }
+
+            return this.adderInstancesArray[count].getValue();
+        }
+
+        callback(value);
+
+        return callback;
+    }
+
+    var addTwo = createAdder(2);
+    console.log("THE RESULT OF 2 + 3 = " + addTwo(3));
+    console.log("THE RESULT OF more 4 = " + addTwo(4));
+
+    console.log("//////////");
+    var anotherAddTwo = createAdder(2);
+    console.log("THE RESULT OF 2 + 7 = " + anotherAddTwo(7));
+    console.log("THE RESULT OF more 7 = " + anotherAddTwo(7));
+
+
+</script>
+
+</body>
+</html>
