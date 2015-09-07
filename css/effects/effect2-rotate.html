@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Effect 2 Rotate!</title>
+ 
+<link rel="stylesheet" href="css/main2.css" type="text/css" />
+ 
+
+
+</head>
+ 
+<body id="index" class="home">
+	
+	<div>
+		The box effect
+	</div>	
+	
+	<div id="body">
+		
+		<article class="box box-rotate">
+			This is cool
+			
+		</article>	
+		
+		<article class="box dyna-box-rotate">
+			This is cool
+			
+		</article>	
+		
+		
+	</div>	
+	
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+		
+		    var boxes = document.querySelectorAll(".dyna-box-rotate");
+			if (boxes) {
+				
+				for (var i = 0; i < boxes.length; ++i) {
+					
+					boxes[0].addEventListener("mouseover", function (event) {
+
+						var deg  = 20;	
+												
+						// if the box was rotating before, see if deg is set
+						if (!event.target.deg) {
+							// if it is not, so set it for the future.
+							event.target.deg = deg;
+						} else { // if it is, use the current deg
+							deg = event.target.deg + 10;
+						}
+								
+						// this interval moves the box every 0.3 seconds					
+						var myInterval = setInterval(function() {
+						
+						    event.target.deg = deg;
+							event.target.style.transform = 
+								`rotate(${deg}deg)`;
+									
+							deg = (deg < 360)?
+									deg + 10: 0;	
+						}, 300);
+						
+						// if the user move the mouse out, so stop the intervale and rotate in consequence.
+						event.target.addEventListener("mouseout", function (event) {
+							clearInterval(myInterval)
+						});
+					});	
+				}
+			}	
+		});
+	</script>	
+</body>
+</html>

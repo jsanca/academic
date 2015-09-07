@@ -1,0 +1,25 @@
+.box {
+	
+	
+	background-color : red;
+	border-style     : solid;
+	height  		 : 80px;
+	width 			 : 120px;
+	font-size 		 : 16pt;
+	font-weight 	 : border;
+	color            : white;
+	text-align       : center;
+	padding-top      : 20px;   
+ 	
+}
+
+.box-rotate:hover {
+	
+	transform: rotate(20deg);
+}
+
+.dyna-box-rotate:hover {
+	
+	transition-duration: 0.4s;
+}
+
