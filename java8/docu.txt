@@ -1,0 +1,71 @@
+collection.removeIf( item -> condition to remove);
+
+computeIfPresent(key, (key, value) -> something to do if the key is present);
+for instance:
+map.computeIfPresent("hello", (key, value) -> map.put(key, hello + "buddy"));
+
+IdentityHashMap is a faster and low consuming Map, study it!
+
+
+- Lambdas
+
+-- Consumers
+
+Does not return any
+
+String message -> System.out.println(message);
+
+-- Providers
+
+Does not receive any, but returns something
+
+
+() -> return createRandomInteger()
+
+-- Functions
+
+Receive something and returns something
+
+(Address address, String name) -> new Person(name, address);
+
+-- Predicates
+
+receive an parameter and return a logic value
+
+String message -> message.length > 50
+
+-- Method references
+
+1) Tradicional way
+Person[] rosterAsArray = ...
+
+class PersonAgeComparator implements Comparator<Person> {
+    public int compare(Person a, Person b) {
+        return a.getBirthday().compareTo(b.getBirthday());
+    }
+}
+
+Arrays.sort(rosterAsArray, new PersonAgeComparator());
+
+2) With a Function
+
+Arrays.sort(rosterAsArray,
+    (Person a, Person b) -> {
+        return a.getBirthday().compareTo(b.getBirthday());
+    }
+);
+
+3) With a static method
+
+Arrays.sort(rosterAsArray,
+    (a, b) -> Person.compareByAge(a, b)
+);
+
+4) the same, but with method reference
+
+Arrays.sort(rosterAsArray, Person::compareByAge);
+
+Another example with a transformer
+
+Set<Person> rosterSet = transferElements(rosterAsArray, HashSet<Person>::new); // passing a constructor as a method reference.
+
