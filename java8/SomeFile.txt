@@ -1,0 +1,201 @@
+ Bernardo Bernardo Bernardo  WHO’S there?
+  Fran.  Nay, answer me. Stand, and unfold yourself.
+  Ber.  Long live the king!
+  Fran.  Bernardo?	        4
+  Ber.  He.
+  Fran.  You come most carefully upon your hour.
+  Ber.  ’Tis now struck twelve. Get thee to bed, Francisco.
+  Fran.  For this relief much thanks. ’Tis bitter cold,	        8
+And I am sick at heart.
+  Ber.  Have you had quiet guard?
+  Fran.        Not a mouse stirring.
+  Ber.  Well, good-night.	        12
+If you do meet Horatio and Marcellus,
+The rivals 1 of my watch, bid them make haste.
+
+Enter HORATIO and MARCELLUS
+
+  Fran.  I think I hear them. Stand, ho! Who’s there?
+  Hor.  Friends to this ground.	        16
+  Mar.        And liegemen to the Dane.
+  Fran.  Give you good-night.
+  Mar.        O, farewell, honest soldier.
+Who hath reliev’d you?	        20
+  Fran.        Bernardo has my place.
+Give you good-night  Exit.
+  Mar.  Holla! Bernardo!
+  Ber.        Say,	        24
+What, is Horatio there?
+  Hor.        A piece of him.
+  Ber.  Welcome, Horatio; welcome, good Marcellus.
+  Hor.  What, has this thing appear’d again to-night?	        28
+  Ber.  I have seen nothing.
+  Mar.  Horatio says ’tis but our fantasy,
+And will not let belief take hold of him
+Touching this dreaded sight, twice seen of us;	        32
+Therefore I have entreated him along
+With us to watch the minutes of this night,
+That if again this apparition come,
+He may approve our eyes and speak to it.	        36
+  Hor.  Tush, tush, ’twill not appear.
+  Ber.        Sit down a while,
+And let us once again assail your ears,
+That are so fortified against our story,	        40
+What we two nights have seen.
+  Hor.        Well, sit we down,
+And let us hear Bernardo speak of this.
+  Ber.  Last night of all,	        44
+When yond same star that’s westward from the pole
+Had made his course to illume that part of heaven
+Where now it burns, Marcellus and myself,
+The bell then beating one,—	        48
+
+Enter Ghost
+
+  Mar.  Peace, break thee off! Look, where it comes again!
+  Ber.  In the same figure, like the king that’s dead.
+  Mar.  Thou art a scholar; speak to it, Horatio.
+  Ber.  Looks it not like the King? Mark it, Horatio.	        52
+  Hor.  Most like; it harrows me with fear and wonder.
+  Ber.  It would be spoke to.
+  Mar.        Question it, Horatio.
+  Hor.  What art thou that usurp’st this time of night,	        56
+Together with that fair and warlike form
+In which the majesty of buried Denmark
+Did sometimes march? By heaven I charge thee, speak!
+  Mar.  It is offended.	        60
+  Ber.        See, it stalks away!
+  Hor.  Stay! speak, speak! I charge thee, speak!  Exit Ghost.
+  Mar.  ’Tis gone, and will not answer.
+  Ber.  How now, Horatio! you tremble and look pale.	        64
+Is not this something more than fantasy?
+What think you on’t?
+  Hor.  Before my God, I might not this believe
+Without the sensible 2 and true avouch 3	        68
+Of mine own eyes.
+  Mar.        Is it not like the King?
+  Hor.  As thou art to thyself.
+Such was the very armour he had on	        72
+When he the ambitious Norway combated.
+So frown’d he once, when, in an angry parle,
+He smote the sledded Polacks on the ice.
+’Tis strange.	        76
+  Mar.  Thus twice before, and jump 4 at this dead hour,
+With martial stalk hath he gone by our watch.
+  Hor.  In what particular thought to work I know not;
+But, in the gross and scope 5 of my opinion,	        80
+This bodes some strange eruption to our state.
+  Mar.  Good now, sit down, and tell me, he that knows,
+Why this same strict and most observant watch
+So nightly toils the subject of the land,	        84
+And why such daily cast of brazen cannon,
+And foreign mart for implements of war;
+Why such impress of shipwrights, whose sore task
+Does not divide the Sunday from the week.	        88
+What might be toward, that this sweaty haste
+Doth make the night joint-labourer with the day,
+Who is’t that can inform me?
+  Hor.        That can I;	        92
+At least, the whisper goes so. Our last king,
+Whose image even but now appear’d to us,
+Was, as you know, by Fortinbras of Norway,
+Thereto prick’d on by a most emulate pride,	        96
+Dar’d to the combat; in which our valiant Hamlet—
+For so this side of our known world esteem’d him—
+Did slay this Fortinbras; who, by a seal’d compact,
+Well ratified by law and heraldry,	        100
+Did forfeit, with his life, all those his lands
+Which he stood seiz’d of, 6 to the conqueror;
+Against the which, a moiety competent
+Was gaged 7 by our king; which had return’d	        104
+To the inheritance of Fortinbras,
+Had he been vanquisher; as, by the same covenant,
+And carriage of the article design’d, 8
+His fell to Hamlet. Now, sir, young Fortinbras,	        108
+Of unimproved mettle hot and full,
+Hath in the skirts of Norway here and there
+Shark’d up 9 a list of landless resolutes,
+For food and diet, to some enterprise	        112
+That hath a stomach 10 in ’t; which is no other—
+As it doth well appear unto our state—
+But to recover of us, by strong hand
+And terms compulsative, 11 those foresaid lands	        116
+So by his father lost; and this, I take it,
+Is the main motive of our preparations,
+The source of this our watch, and the chief head
+Of this post-haste and romage 12 in the land.	        120
+  [Ber.  I think it be no other but e’en so.
+Well may it sort 13 that this portentous figure
+Comes armed through our watch, so like the King
+That was and is the question of these wars.	        124
+  Hor.  A mote it is to trouble the mind’s eye.
+In the most high and palmy state of Rome,
+A little ere the mightiest Julius fell,
+The graves stood tenantless and the sheeted dead	        128
+Did squeak and gibber in the Roman streets.
+
+As stars with trains of fire and dews of blood,
+Disasters in the sun; and the moist star
+Upon whose influence Neptune’s empire stands	        132
+Was sick almost to doomsday with eclipse.
+And even the like precurse of fierce events,
+As harbingers 14 preceding still the fates
+And prologue to the omen coming on,	        136
+Have heaven and earth together demonstrated
+Unto our climatures 15 and countrymen.]
+
+Re-enter Ghost
+
+But soft, behold! Lo, where it comes again!
+I’ll cross it, though it blast me. Stay, illusion!	        140
+If thou hast any sound, or use of voice,
+Speak to me;
+If there be any good thing to be done
+That may to thee do ease and grace to me,	        144
+Speak to me;
+If thou art privy to thy country’s fate,
+Which, happily, foreknowing may avoid,
+O speak!	        148
+Or if thou hast uphoarded in thy life
+Extroted treasure in the womb of earth,
+For which, they say, you spirits oft walk in death,
+Speak of it; stay, and speak!  (Cock crows.)	        152
+Stop it, Marcellus.
+  Mar.  Shall I strike at it with my partisan? 16
+  Hor.  Do, if it will not stand.
+  Ber.        ’Tis here!	        156
+  Hor.        ’Tis here!
+  Mar.  ’Tis gone!  Exit Ghost.
+We do it wrong, being so majestical,
+To offer it the show of violence;	        160
+For it is, as the air, invulnerable,
+And our vain blows malicious mockery.
+  Ber.  It was about to speak, when the cock crew.
+  Hor.  And then it started like a guilty thing	        164
+Upon a fearful summons. I have heard,
+The cock, that is the trumpet to the morn,
+Doth with his lofty and shrill-sounding throat
+Awake the god of day; and, at his warning,	        168
+Whether in sea or fire, in earth or air,
+The extravagant 17 and erring 18 spirit hies
+To his confine; and of the truth herein
+This present object made probation.	        172
+  Mar.  It faded on the crowing of the cock.
+Some say that ever ’gainst that season comes
+Wherein our Saviour’s birth is celebrated,
+The bird of dawning singeth all night long;	        176
+And then, they say, no spirit can walk abroad;
+The nights are wholesome; then no planets strike, 19
+No fairy takes, 20 nor witch hath power to charm,
+So hallow’d and so gracious is the time.	        180
+  Hor.  So have I heard and do in part believe it.
+But, look, the morn, in russet mantle clad,
+Walks o’er the dew of yon high eastern hill.
+Break we our watch up; and, by my advice,	        184
+Let us impart what we have seen to-night
+Unto young Hamlet; for, upon my life,
+This spirit, dumb to us, will speak to him.
+Do you consent we shall acquaint him with it,	        188
+As needful in our loves, fitting our duty?
+  Mar.  Let’s do ’t, I pray; and I this morning know
+Where we shall find him most conveniently.  Exeunt.
