@@ -1,0 +1,31 @@
+group 'com.github.jsanca'
+version '1.0-SNAPSHOT'
+
+project.ext {
+    aspectjVersion = '1.8.4'
+}
+
+apply plugin: 'aspectj'
+apply plugin: 'application'
+
+sourceCompatibility = 1.8
+
+mainClassName = 'com.github.jsanca.aspectj.example.MyApp'
+
+buildscript {
+    repositories {
+        maven {
+            url "https://maven.eveoh.nl/content/repositories/releases"
+        }
+    }
+
+    dependencies {
+        classpath "nl.eveoh:gradle-aspectj:1.6"
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+
