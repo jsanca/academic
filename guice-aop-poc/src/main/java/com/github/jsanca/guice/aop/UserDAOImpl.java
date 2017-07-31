@@ -5,6 +5,7 @@ import javax.inject.Singleton;
 @Singleton
 public class UserDAOImpl implements UserDAO {
 
+
     @Cacheable (key = "userkey{0}", group = "userDAO")
     @Override
     public User getUserByName(final String name) {
