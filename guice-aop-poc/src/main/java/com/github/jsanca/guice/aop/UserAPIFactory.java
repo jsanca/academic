@@ -1,22 +1,16 @@
 package com.github.jsanca.guice.aop;
 
 
-import com.google.inject.Provider;
+public class UserAPIFactory {
 
-import javax.inject.Inject;
-
-public class UserAPIFactory implements Provider<UserAPI> {
 
     private final UserDAO userDAO;
 
-    @Inject
     public UserAPIFactory(UserDAO userDAO) {
         this.userDAO = userDAO;
     }
 
-    @Override
-    public UserAPI get() {
-
+    public UserAPI getUserApi () {
         return new MyUserAPI(this.userDAO, new UserUtil());
     }
 

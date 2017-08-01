@@ -4,7 +4,6 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Singleton
@@ -13,7 +12,8 @@ public class MyApp {
     private final UserAPI userAPI;
 
     private static final Injector injector =
-            Guice.createInjector(new AppInjector());
+            Guice.createInjector(new PersistenceModule(),
+                    new ApiModule());
 
     public static Injector getInjector() {
         return injector;
@@ -21,6 +21,9 @@ public class MyApp {
 
     @Inject @CustomUserAPI
     private  UserAPI userAPI2;
+
+    @Inject
+    private PrintHelper printHelper;
 
     @Inject
     public MyApp(final UserAPI userAPI) {
@@ -41,19 +44,19 @@ public class MyApp {
 
     public void sayHello () {
 
-        System.out.println("Hello World1!: " + userAPI.findUserByName("Tedy"));
+        printHelper.print("Hello World1!: " + userAPI.findUserByName("Tedy"));
         userAPI.saveUser(new User("Joe", "Bell"));
-        System.out.println("Hello World2!: " + userAPI.findUserByName("Joe"));
-        System.out.println("Hello World3!: " + userAPI.findUserByName("Tedy"));
-        System.out.println("Hello World4!: " + userAPI.getDefaultUser());
+        printHelper.print("Hello World2!: " + userAPI.findUserByName("Joe"));
+        printHelper.print("Hello World3!: " + userAPI.findUserByName("Tedy"));
+        printHelper.print("Hello World4!: " + userAPI.getDefaultUser());
 
-        System.out.println("*******************************\n");
+        printHelper.print("*******************************\n");
 
-        System.out.println("Hello World1!: " + userAPI2.findUserByName("Tedy"));
+        printHelper.print("Hello World1!: " + userAPI2.findUserByName("Tedy"));
         userAPI.saveUser(new User("Joe", "Bell"));
-        System.out.println("Hello World2!: " + userAPI2.findUserByName("Joe"));
-        System.out.println("Hello World3!: " + userAPI2.findUserByName("Tedy"));
-        System.out.println("Hello World4!: " + userAPI2.getDefaultUser());
+        printHelper.print("Hello World2!: " + userAPI2.findUserByName("Joe"));
+        printHelper.print("Hello World3!: " + userAPI2.findUserByName("Tedy"));
+        printHelper.print("Hello World4!: " + userAPI2.getDefaultUser());
     }
 
 
