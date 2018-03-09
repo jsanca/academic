@@ -15,7 +15,7 @@ public class Mapper {
     private final Map<MultiKey, Mapping> classFieldMappingMap =
             new ConcurrentHashMap<>();
 
-    private final Map<Class<FieldMapper>, FieldMapper> classFieldMapperInstancesMap =
+    private final Map<Class<FieldMapper>, FieldMapper> customClassFieldMapperInstancesMap =
             new ConcurrentHashMap<>();
 
 
@@ -42,7 +42,7 @@ public class Mapper {
     {
         this.addMapper(Integer.TYPE, this::parseInt);
         this.addMapper(Boolean.TYPE, this::parseBoolean);
-        this.addMapper(Date.class, this::parseDate);
+        this.addMapper(Date.class,   this::parseDate);
         this.addMapper(String.class, this::parseString);
 
         this.addCreatorAndSetterStrategy(new CreatorConstructorSetterStrategy());
@@ -192,17 +192,17 @@ public class Mapper {
 
     private FieldMapper createFieldMapper(final Mapping mapping) throws IllegalAccessException, InstantiationException {
 
-        if (!this.classFieldMapperInstancesMap.containsKey(mapping.fieldMapper())) {
+        if (!this.customClassFieldMapperInstancesMap.containsKey(mapping.fieldMapper())) {
 
             final FieldMapper fieldMapper =
                     mapping.fieldMapper().newInstance();
 
-            this.classFieldMapperInstancesMap.put
+            this.customClassFieldMapperInstancesMap.put
                     (mapping.fieldMapper(), fieldMapper);
             return fieldMapper;
         }
 
-        return this.classFieldMapperInstancesMap.get(mapping.fieldMapper());
+        return this.customClassFieldMapperInstancesMap.get(mapping.fieldMapper());
     }
 
     private <T> String getColumnName(final Class<T> classToUse,
