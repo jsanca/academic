@@ -23,6 +23,9 @@ public class MyApp {
     private  UserAPI userAPI2;
 
     @Inject
+    private  Util util;
+
+    @Inject
     private PrintHelper printHelper;
 
     @Inject
@@ -57,6 +60,8 @@ public class MyApp {
         printHelper.print("Hello World2!: " + userAPI2.findUserByName("Joe"));
         printHelper.print("Hello World3!: " + userAPI2.findUserByName("Tedy"));
         printHelper.print("Hello World4!: " + userAPI2.getDefaultUser());
+
+        util.printSomething();
     }
 
 

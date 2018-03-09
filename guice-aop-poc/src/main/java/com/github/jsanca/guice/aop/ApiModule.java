@@ -14,6 +14,7 @@ public class ApiModule extends AbstractModule {
 	@Override
 	protected void configure() {
 		//bind the service to implementation class
+        bind(Util.class);
 		bind(UserAPI.class).to(UserAPIImpl.class);
 		bind(UserAPI.class).annotatedWith(Names.named("superUserAPI")).to(SuperUserAPI.class);
         bind(UserAPI.class).annotatedWith(Names.named("myUserAPI")).toProvider(UserAPIProvider.class);
