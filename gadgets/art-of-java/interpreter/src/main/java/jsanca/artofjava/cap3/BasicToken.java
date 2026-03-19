@@ -27,6 +27,7 @@ package jsanca.artofjava.cap3;
  * @param type broad token classification
  * @param keyword recognized BASIC keyword, or {@link BasicKeyword#UNKNOWN} when
  *                the token is not a reserved keyword
+ * @author jsanca & elo
  */
 public record BasicToken(
         String text,

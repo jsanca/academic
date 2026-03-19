@@ -5,10 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * A simple interpreter for a BASIC-like language.
@@ -34,6 +31,7 @@ import java.util.TreeMap;
  * </ul>
  *
  * <p>This implementation is educational and inspired by classic interpreter designs.</p>
+ * @author jsanca & elo
  */
 public class BasicInterpreter {
 
@@ -43,8 +41,8 @@ public class BasicInterpreter {
     private final BasicLexer lexer;
     private final ExpressionParser expressionParser;
 
-    private final double[] vars = new double[26];
-    private final Map<String, Integer> labelTable = new TreeMap<>();
+    private final double[] variableValues = new double[26];
+    private final Map<String, Integer> labelTableMap = new TreeMap<>();
     private final Deque<ForInfo> forStack = new ArrayDeque<>();
     private final Deque<Integer> gosubStack = new ArrayDeque<>();
 
@@ -54,10 +52,11 @@ public class BasicInterpreter {
      * @param programFile path to the BASIC program file
      * @throws InterpreterException if the program cannot be loaded
      */
-    public BasicInterpreter(String programFile) throws InterpreterException {
+    public BasicInterpreter(final String programFile) throws InterpreterException {
+
         this.program = loadProgram(programFile);
-        this.lexer = new BasicLexer(program);
-        this.expressionParser = new ExpressionParser(lexer, this::findVar);
+        this.lexer   = new BasicLexer(this.program);
+        this.expressionParser = new ExpressionParser(this.lexer, this::findVar);
     }
 
     /**
@@ -68,10 +67,11 @@ public class BasicInterpreter {
      * @throws InterpreterException if a runtime or syntax error occurs
      */
     public void run() throws InterpreterException {
-        resetRuntimeState();
-        scanLabels();
-        lexer.setIndex(0);
-        interpret();
+
+        this.resetRuntimeState();
+        this.scanLabels();
+        this.lexer.rewindToProgramStart();
+        this.interpret();
     }
 
     /**
@@ -83,9 +83,12 @@ public class BasicInterpreter {
      * @throws InterpreterException if a syntax or runtime error occurs
      */
     private void interpret() throws InterpreterException {
-        while (true) {
-            BasicToken token = lexer.nextToken();
 
+        while (true) {
+
+            final  BasicToken token = this.lexer.nextToken();
+
+            // if it is the end of the program, exit
             if (token.type() == BasicTokenType.EOP) {
                 return;
             }
@@ -99,8 +102,9 @@ public class BasicInterpreter {
             }
 
             if (token.type() == BasicTokenType.VARIABLE) {
-                lexer.putBack(token);
-                assignment();
+
+                this.lexer.putBack(token);
+                this.assignment();
                 continue;
             }
 
@@ -129,22 +133,26 @@ public class BasicInterpreter {
      * @throws InterpreterException if syntax is invalid
      */
     private void assignment() throws InterpreterException {
-        BasicToken variableToken = lexer.nextToken();
-        char variableName = variableToken.text().charAt(0);
+
+        final BasicToken variableToken = this.lexer.nextToken();
+        final char variableName = variableToken.text().charAt(0);
 
         if (!Character.isLetter(variableName)) {
             throw new InterpreterException("Not a variable");
         }
 
-        int variableIndex = Character.toUpperCase(variableName) - 'A';
+        // Map variable name (A-Z) to array index (0-25).
+        // Example: 'A' -> 0, 'B' -> 1, ..., 'Z' -> 25.
+        // This allows O(1) access using a fixed-size array instead of a Map.
+        final int variableIndex = Character.toUpperCase(variableName) - 'A';
 
-        BasicToken equals = lexer.nextToken();
+        final BasicToken equals = this.lexer.nextToken();
         if (!equals.isText("=")) {
             throw new InterpreterException("Equal sign expected");
         }
 
-        double value = expressionParser.evaluate();
-        vars[variableIndex] = value;
+        final double value = this.expressionParser.evaluate();
+        this.variableValues[variableIndex] = value;
     }
 
     /**
@@ -156,13 +164,15 @@ public class BasicInterpreter {
      * @throws InterpreterException if syntax is invalid
      */
     private void print() throws InterpreterException {
+
         String lastDelimiter = "";
         int len = 0;
 
         while (true) {
-            BasicToken token = lexer.nextToken();
 
-            if (token.type() == BasicTokenType.EOL || token.type() == BasicTokenType.EOP) {
+            final BasicToken token = this.lexer.nextToken();
+
+            if (isEndOfLineOrEndOfProgram(token)) {
                 if (!lastDelimiter.equals(";") && !lastDelimiter.equals(",")) {
                     System.out.println();
                 }
@@ -170,19 +180,22 @@ public class BasicInterpreter {
             }
 
             if (token.type() == BasicTokenType.QUOTED_STRING) {
+
                 System.out.print(token.text());
                 len += token.text().length();
             } else {
-                lexer.putBack(token);
-                double result = expressionParser.evaluate();
+
+                this.lexer.putBack(token);
+                final double result = expressionParser.evaluate();
                 System.out.print(result);
                 len += Double.toString(result).length();
             }
 
-            BasicToken delimiter = lexer.nextToken();
+            final BasicToken delimiter = this.lexer.nextToken();
             lastDelimiter = delimiter.text();
 
             if (delimiter.isText(",")) {
+
                 int spaces = 8 - (len % 8);
                 len += spaces;
                 while (spaces-- > 0) {
@@ -191,7 +204,7 @@ public class BasicInterpreter {
             } else if (delimiter.isText(";")) {
                 System.out.print(" ");
                 len++;
-            } else if (delimiter.type() == BasicTokenType.EOL || delimiter.type() == BasicTokenType.EOP) {
+            } else if (isEndOfLineOrEndOfProgram(delimiter)) {
                 if (!lastDelimiter.equals(";") && !lastDelimiter.equals(",")) {
                     System.out.println();
                 }
@@ -210,14 +223,14 @@ public class BasicInterpreter {
      * @throws InterpreterException if the label is undefined
      */
     private void execGoto() throws InterpreterException {
-        BasicToken label = lexer.nextToken();
-        Integer location = labelTable.get(label.text());
+        final BasicToken label = this.lexer.nextToken();
+        final Integer location = this.labelTableMap.get(label.text());
 
         if (location == null) {
             throw new InterpreterException("Undefined label");
         }
 
-        lexer.setIndex(location);
+        this.lexer.setIndex(location);
     }
 
     /**
@@ -229,10 +242,12 @@ public class BasicInterpreter {
      * @throws InterpreterException if syntax is invalid
      */
     private void execIf() throws InterpreterException {
-        double result = expressionParser.evaluate();
+
+        final double result = this.expressionParser.evaluate();
 
         if (result != 0.0) {
-            BasicToken thenToken = lexer.nextToken();
+
+            final BasicToken thenToken = this.lexer.nextToken();
             if (!thenToken.isKeyword(BasicKeyword.THEN)) {
                 throw new InterpreterException("THEN expected");
             }
@@ -249,34 +264,36 @@ public class BasicInterpreter {
      * @throws InterpreterException if syntax is invalid
      */
     private void execFor() throws InterpreterException {
-        BasicToken variableToken = lexer.nextToken();
-        char variableName = variableToken.text().charAt(0);
+
+        final BasicToken variableToken = this.lexer.nextToken();
+        final char variableName = variableToken.text().charAt(0);
 
         if (!Character.isLetter(variableName)) {
             throw new InterpreterException("Not a variable");
         }
 
-        int variableIndex = Character.toUpperCase(variableName) - 'A';
+        final int variableIndex = Character.toUpperCase(variableName) - 'A';
 
-        BasicToken equals = lexer.nextToken();
+        final BasicToken equals = this.lexer.nextToken();
         if (!equals.isText("=")) {
             throw new InterpreterException("Equal sign expected");
         }
 
-        double startValue = expressionParser.evaluate();
-        vars[variableIndex] = startValue;
+        final double startValue = this.expressionParser.evaluate();
+        this.variableValues[variableIndex] = startValue;
 
-        BasicToken toToken = lexer.nextToken();
+        final BasicToken toToken = this.lexer.nextToken();
         if (!toToken.isKeyword(BasicKeyword.TO)) {
             throw new InterpreterException("TO expected");
         }
 
-        double targetValue = expressionParser.evaluate();
+        final double targetValue = this.expressionParser.evaluate();
 
-        ForInfo info = new ForInfo(variableIndex, targetValue, lexer.getIndex());
+        final ForInfo info = new ForInfo(variableIndex, targetValue, this.lexer.getIndex());
 
         if (startValue <= targetValue) {
-            forStack.push(info);
+
+            this.forStack.push(info);
         } else {
             skipUntilNext();
         }
@@ -295,9 +312,9 @@ public class BasicInterpreter {
             throw new InterpreterException("NEXT without FOR");
         }
 
-        vars[info.varIndex()]++;
+        variableValues[info.varIndex()]++;
 
-        if (vars[info.varIndex()] > info.target()) {
+        if (variableValues[info.varIndex()] > info.target()) {
             return;
         }
 
@@ -314,7 +331,7 @@ public class BasicInterpreter {
      */
     private void gosub() throws InterpreterException {
         BasicToken label = lexer.nextToken();
-        Integer location = labelTable.get(label.text());
+        Integer location = labelTableMap.get(label.text());
 
         if (location == null) {
             throw new InterpreterException("Undefined label");
@@ -366,7 +383,7 @@ public class BasicInterpreter {
 
         try {
             String input = reader.readLine();
-            vars[var] = Double.parseDouble(input);
+            variableValues[var] = Double.parseDouble(input);
         } catch (IOException ex) {
             throw new InterpreterException("I/O error on INPUT statement");
         } catch (NumberFormatException ex) {
@@ -382,18 +399,21 @@ public class BasicInterpreter {
      * @throws InterpreterException if duplicate labels are found
      */
     private void scanLabels() throws InterpreterException {
-        lexer.setIndex(0);
+
+        this.lexer.setIndex(0);
 
         while (true) {
-            int tokenStart = lexer.getIndex();
-            BasicToken token = lexer.nextToken();
 
-            if (token.type() == BasicTokenType.EOP) {
+            final int tokenStart   = this.lexer.getIndex();
+            final BasicToken token = this.lexer.nextToken();
+
+            if (token.type() == BasicTokenType.EOP) { // end of program
                 return;
             }
 
             if (token.type() == BasicTokenType.NUMBER) {
-                Integer previous = labelTable.put(token.text(), tokenStart);
+
+                final Integer previous = this.labelTableMap.put(token.text(), tokenStart);
                 if (previous != null) {
                     throw new InterpreterException("Duplicate label");
                 }
@@ -410,11 +430,16 @@ public class BasicInterpreter {
      */
     private void skipToNextLine() throws InterpreterException {
         while (true) {
-            BasicToken token = lexer.nextToken();
-            if (token.type() == BasicTokenType.EOL || token.type() == BasicTokenType.EOP) {
+
+            final BasicToken token = this.lexer.nextToken();
+            if (this.isEndOfLineOrEndOfProgram(token)) {
                 return;
             }
         }
+    }
+
+    private boolean isEndOfLineOrEndOfProgram(final BasicToken token) {
+        return token.type() == BasicTokenType.EOL || token.type() == BasicTokenType.EOP;
     }
 
     /**
@@ -447,7 +472,7 @@ public class BasicInterpreter {
         if (!Character.isLetter(variableName.charAt(0))) {
             throw new InterpreterException("Syntax Error");
         }
-        return vars[Character.toUpperCase(variableName.charAt(0)) - 'A'];
+        return variableValues[Character.toUpperCase(variableName.charAt(0)) - 'A'];
     }
 
     /**
@@ -456,12 +481,11 @@ public class BasicInterpreter {
      * <p>Clears variables, labels, and control stacks.</p>
      */
     private void resetRuntimeState() {
-        for (int i = 0; i < vars.length; i++) {
-            vars[i] = 0.0;
-        }
-        labelTable.clear();
-        forStack.clear();
-        gosubStack.clear();
+
+        Arrays.fill(this.variableValues, 0.0);
+        this.labelTableMap.clear();
+        this.forStack.clear();
+        this.gosubStack.clear();
     }
 
     /**

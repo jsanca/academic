@@ -6,6 +6,7 @@ package jsanca.artofjava.cap3;
  * <p>This enum is used by the lexer to classify identifiers that match
  * language commands (e.g., PRINT, IF, FOR). If a token does not match any
  * known keyword, it is classified as {@link #UNKNOWN}.
+ * @author jsanca & elo
  */
 public enum BasicKeyword {
 

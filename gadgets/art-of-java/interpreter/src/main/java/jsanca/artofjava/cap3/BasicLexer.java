@@ -14,6 +14,7 @@ import java.util.Map;
  *
  * <p>This implementation is intentionally simple and educational, inspired by
  * classic interpreter designs.</p>
+ * @author jsanca & elo
  */
 public class BasicLexer {
 
@@ -47,7 +48,7 @@ public class BasicLexer {
      *
      * @param source the input program as a character array
      */
-    public BasicLexer(char[] source) {
+    public BasicLexer(final char[] source) {
         this.source = source;
         this.index = 0;
     }
@@ -61,6 +62,12 @@ public class BasicLexer {
         return index;
     }
 
+    /**
+     * Rewind the program to the start
+     */
+    public void rewindToProgramStart() {
+        this.setIndex(0);
+    }
     /**
      * Sets the current position of the lexer.
      * Also clears any pushed-back token.
@@ -77,7 +84,7 @@ public class BasicLexer {
      *
      * @param token token to push back
      */
-    public void putBack(BasicToken token) {
+    public void putBack(final BasicToken token) {
         this.pushedBackToken = token;
     }
 
@@ -91,6 +98,7 @@ public class BasicLexer {
      * @throws InterpreterException if a lexical error occurs
      */
     public BasicToken nextToken() throws InterpreterException {
+
         if (pushedBackToken != null) {
             BasicToken token = pushedBackToken;
             pushedBackToken = null;

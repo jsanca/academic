@@ -1,5 +1,22 @@
 package jsanca.artofjava.cap3;
 
+/**
+ * Recursive descent expression parser for a BASIC-like language.
+ *
+ * <p>This parser evaluates arithmetic and relational expressions directly
+ * from tokens provided by {@link BasicLexer}. It respects operator precedence
+ * and associativity using a layered method structure.</p>
+ *
+ * <p>Supported features:</p>
+ * <ul>
+ *   <li>Arithmetic operations: +, -, *, /, %, ^</li>
+ *   <li>Relational operations: <, >, <=, >=, =, <></li>
+ *   <li>Unary operators: +, -</li>
+ *   <li>Parentheses</li>
+ *   <li>Variables and numeric literals</li>
+ * </ul>
+ * @author jsanca & elo
+ */
 public class ExpressionParser {
 
     private static final String REL_OPS = new String(new char[]{
@@ -14,6 +31,12 @@ public class ExpressionParser {
         this.variableResolver = variableResolver;
     }
 
+    /**
+     * Evaluates a full expression starting at the current lexer position.
+     *
+     * @return evaluated numeric result
+     * @throws InterpreterException if syntax is invalid
+     */
     public double evaluate() throws InterpreterException {
         BasicToken token = lexer.nextToken();
         if (token.type() == BasicTokenType.EOP) {
@@ -21,11 +44,15 @@ public class ExpressionParser {
         }
 
         lexer.putBack(token);
-        return evalExp1();
+        return parseRelational();
     }
 
-    private double evalExp1() throws InterpreterException {
-        double result = evalExp2();
+    /**
+     * Parses relational expressions (<, >, <=, >=, =, <>).
+     * This is the top-level entry for expression parsing.
+     */
+    private double parseRelational() throws InterpreterException {
+        double result = parseAddSub();
         BasicToken token = lexer.nextToken();
 
         if (token.type() == BasicTokenType.EOP || token.type() == BasicTokenType.EOL) {
@@ -36,7 +63,7 @@ public class ExpressionParser {
         char op = token.text().charAt(0);
         if (isRelationalOperator(op)) {
             double left = result;
-            double right = evalExp1();
+            double right = parseRelational();
 
             return switch (op) {
                 case '<' -> left < right ? 1.0 : 0.0;
@@ -53,8 +80,11 @@ public class ExpressionParser {
         return result;
     }
 
-    private double evalExp2() throws InterpreterException {
-        double result = evalExp3();
+    /**
+     * Parses addition and subtraction expressions (+, -).
+     */
+    private double parseAddSub() throws InterpreterException {
+        double result = parseMulDivMod();
 
         while (true) {
             BasicToken token = lexer.nextToken();
@@ -64,13 +94,16 @@ public class ExpressionParser {
                 return result;
             }
 
-            double partial = evalExp3();
+            double partial = parseMulDivMod();
             result = token.isText("+") ? result + partial : result - partial;
         }
     }
 
-    private double evalExp3() throws InterpreterException {
-        double result = evalExp4();
+    /**
+     * Parses multiplication, division, and modulo (*, /, %).
+     */
+    private double parseMulDivMod() throws InterpreterException {
+        double result = parseExponent();
 
         while (true) {
             BasicToken token = lexer.nextToken();
@@ -80,7 +113,7 @@ public class ExpressionParser {
                 return result;
             }
 
-            double partial = evalExp4();
+            double partial = parseExponent();
 
             if ((token.isText("/") || token.isText("%")) && partial == 0.0) {
                 throw new InterpreterException("Division by Zero");
@@ -95,8 +128,11 @@ public class ExpressionParser {
         }
     }
 
-    private double evalExp4() throws InterpreterException {
-        double result = evalExp5();
+    /**
+     * Parses exponentiation (^) with right associativity.
+     */
+    private double parseExponent() throws InterpreterException {
+        double result = parseUnary();
         BasicToken token = lexer.nextToken();
 
         if (!token.isText("^")) {
@@ -104,7 +140,7 @@ public class ExpressionParser {
             return result;
         }
 
-        double partial = evalExp4();
+        double partial = parseExponent();
         if (partial == 0.0) {
             return 1.0;
         }
@@ -117,7 +153,10 @@ public class ExpressionParser {
         return result;
     }
 
-    private double evalExp5() throws InterpreterException {
+    /**
+     * Parses unary operators (+, -).
+     */
+    private double parseUnary() throws InterpreterException {
         BasicToken token = lexer.nextToken();
         String unary = "";
 
@@ -127,15 +166,18 @@ public class ExpressionParser {
             lexer.putBack(token);
         }
 
-        double result = evalExp6();
+        double result = parsePrimary();
         return "-".equals(unary) ? -result : result;
     }
 
-    private double evalExp6() throws InterpreterException {
+    /**
+     * Parses primary expressions such as parentheses.
+     */
+    private double parsePrimary() throws InterpreterException {
         BasicToken token = lexer.nextToken();
 
         if (token.isText("(")) {
-            double result = evalExp1();
+            double result = parseRelational();
             BasicToken closing = lexer.nextToken();
 
             if (!closing.isText(")")) {
@@ -146,10 +188,13 @@ public class ExpressionParser {
         }
 
         lexer.putBack(token);
-        return atom();
+        return parseAtom();
     }
 
-    private double atom() throws InterpreterException {
+    /**
+     * Parses atomic values: numbers and variables.
+     */
+    private double parseAtom() throws InterpreterException {
         BasicToken token = lexer.nextToken();
 
         return switch (token.type()) {

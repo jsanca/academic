@@ -12,6 +12,7 @@ package jsanca.artofjava.cap3;
  *     <li>{@link #EOL}: end of line. This marks the boundary between BASIC statements.</li>
  *     <li>{@link #EOP}: end of program. This marks that the lexer has consumed all input.</li>
  * </ul>
+ * @author jsanca & elo
  */
 public enum BasicTokenType {
 
