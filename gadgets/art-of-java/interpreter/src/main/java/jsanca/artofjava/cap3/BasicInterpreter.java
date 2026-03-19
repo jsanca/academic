@@ -10,6 +10,31 @@ import java.util.Deque;
 import java.util.Map;
 import java.util.TreeMap;
 
+/**
+ * A simple interpreter for a BASIC-like language.
+ *
+ * <p>This class coordinates the execution of a BASIC program by combining
+ * lexical analysis ({@link BasicLexer}), expression evaluation
+ * ({@link ExpressionParser}), and runtime state management.</p>
+ *
+ * <p>The interpreter supports core BASIC constructs such as:</p>
+ * <ul>
+ *   <li>Variable assignment</li>
+ *   <li>PRINT and INPUT</li>
+ *   <li>Conditional execution (IF / THEN)</li>
+ *   <li>Control flow (GOTO, GOSUB, RETURN)</li>
+ *   <li>Loops (FOR / NEXT)</li>
+ * </ul>
+ *
+ * <p>The runtime model is intentionally simple and uses:</p>
+ * <ul>
+ *   <li>A fixed array for variables (A-Z)</li>
+ *   <li>A label table for line numbers</li>
+ *   <li>Stacks for FOR loops and GOSUB calls</li>
+ * </ul>
+ *
+ * <p>This implementation is educational and inspired by classic interpreter designs.</p>
+ */
 public class BasicInterpreter {
 
     private static final int PROG_SIZE = 10000;
@@ -23,12 +48,25 @@ public class BasicInterpreter {
     private final Deque<ForInfo> forStack = new ArrayDeque<>();
     private final Deque<Integer> gosubStack = new ArrayDeque<>();
 
+    /**
+     * Creates a new interpreter instance by loading a BASIC program from a file.
+     *
+     * @param programFile path to the BASIC program file
+     * @throws InterpreterException if the program cannot be loaded
+     */
     public BasicInterpreter(String programFile) throws InterpreterException {
         this.program = loadProgram(programFile);
         this.lexer = new BasicLexer(program);
         this.expressionParser = new ExpressionParser(lexer, this::findVar);
     }
 
+    /**
+     * Executes the loaded BASIC program.
+     *
+     * <p>This method resets runtime state, scans labels, and starts interpretation.</p>
+     *
+     * @throws InterpreterException if a runtime or syntax error occurs
+     */
     public void run() throws InterpreterException {
         resetRuntimeState();
         scanLabels();
@@ -36,6 +74,14 @@ public class BasicInterpreter {
         interpret();
     }
 
+    /**
+     * Main interpreter loop.
+     *
+     * <p>Continuously reads tokens from the lexer and dispatches execution
+     * based on token type or keyword.</p>
+     *
+     * @throws InterpreterException if a syntax or runtime error occurs
+     */
     private void interpret() throws InterpreterException {
         while (true) {
             BasicToken token = lexer.nextToken();
@@ -75,6 +121,13 @@ public class BasicInterpreter {
         }
     }
 
+    /**
+     * Handles variable assignment statements.
+     *
+     * <p>Expected syntax: VARIABLE = expression</p>
+     *
+     * @throws InterpreterException if syntax is invalid
+     */
     private void assignment() throws InterpreterException {
         BasicToken variableToken = lexer.nextToken();
         char variableName = variableToken.text().charAt(0);
@@ -94,6 +147,14 @@ public class BasicInterpreter {
         vars[variableIndex] = value;
     }
 
+    /**
+     * Executes the PRINT statement.
+     *
+     * <p>Supports printing expressions and quoted strings, with BASIC-style
+     * formatting using ',' and ';' delimiters.</p>
+     *
+     * @throws InterpreterException if syntax is invalid
+     */
     private void print() throws InterpreterException {
         String lastDelimiter = "";
         int len = 0;
@@ -141,6 +202,13 @@ public class BasicInterpreter {
         }
     }
 
+    /**
+     * Executes a GOTO statement.
+     *
+     * <p>Transfers control to a labeled line.</p>
+     *
+     * @throws InterpreterException if the label is undefined
+     */
     private void execGoto() throws InterpreterException {
         BasicToken label = lexer.nextToken();
         Integer location = labelTable.get(label.text());
@@ -152,6 +220,14 @@ public class BasicInterpreter {
         lexer.setIndex(location);
     }
 
+    /**
+     * Executes an IF statement.
+     *
+     * <p>If the condition evaluates to non-zero, execution continues.
+     * Otherwise, the rest of the line is skipped.</p>
+     *
+     * @throws InterpreterException if syntax is invalid
+     */
     private void execIf() throws InterpreterException {
         double result = expressionParser.evaluate();
 
@@ -165,6 +241,13 @@ public class BasicInterpreter {
         }
     }
 
+    /**
+     * Executes a FOR loop initialization.
+     *
+     * <p>Initializes the loop variable and pushes loop metadata onto the stack.</p>
+     *
+     * @throws InterpreterException if syntax is invalid
+     */
     private void execFor() throws InterpreterException {
         BasicToken variableToken = lexer.nextToken();
         char variableName = variableToken.text().charAt(0);
@@ -199,6 +282,13 @@ public class BasicInterpreter {
         }
     }
 
+    /**
+     * Executes a NEXT statement.
+     *
+     * <p>Advances the loop variable and either repeats the loop or exits it.</p>
+     *
+     * @throws InterpreterException if no matching FOR exists
+     */
     private void next() throws InterpreterException {
         ForInfo info = forStack.pollFirst();
         if (info == null) {
@@ -215,6 +305,13 @@ public class BasicInterpreter {
         lexer.setIndex(info.loopStartIndex());
     }
 
+    /**
+     * Executes a GOSUB statement.
+     *
+     * <p>Pushes the current execution position onto a stack and jumps to a label.</p>
+     *
+     * @throws InterpreterException if the label is undefined
+     */
     private void gosub() throws InterpreterException {
         BasicToken label = lexer.nextToken();
         Integer location = labelTable.get(label.text());
@@ -227,6 +324,13 @@ public class BasicInterpreter {
         lexer.setIndex(location);
     }
 
+    /**
+     * Executes a RETURN statement.
+     *
+     * <p>Restores execution to the last GOSUB call.</p>
+     *
+     * @throws InterpreterException if there is no matching GOSUB
+     */
     private void greturn() throws InterpreterException {
         Integer returnLocation = gosubStack.pollFirst();
         if (returnLocation == null) {
@@ -236,6 +340,13 @@ public class BasicInterpreter {
         lexer.setIndex(returnLocation);
     }
 
+    /**
+     * Executes an INPUT statement.
+     *
+     * <p>Reads a numeric value from standard input and assigns it to a variable.</p>
+     *
+     * @throws InterpreterException if input fails or syntax is invalid
+     */
     private void input() throws InterpreterException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
@@ -263,6 +374,13 @@ public class BasicInterpreter {
         }
     }
 
+    /**
+     * Scans the program and builds the label table.
+     *
+     * <p>Labels are numeric tokens at the start of lines.</p>
+     *
+     * @throws InterpreterException if duplicate labels are found
+     */
     private void scanLabels() throws InterpreterException {
         lexer.setIndex(0);
 
@@ -285,6 +403,11 @@ public class BasicInterpreter {
         }
     }
 
+    /**
+     * Advances the lexer to the next line.
+     *
+     * @throws InterpreterException if a lexer error occurs
+     */
     private void skipToNextLine() throws InterpreterException {
         while (true) {
             BasicToken token = lexer.nextToken();
@@ -294,6 +417,13 @@ public class BasicInterpreter {
         }
     }
 
+    /**
+     * Skips tokens until a NEXT statement or end-of-program is found.
+     *
+     * <p>Used to bypass FOR loops that should not execute.</p>
+     *
+     * @throws InterpreterException if a lexer error occurs
+     */
     private void skipUntilNext() throws InterpreterException {
         while (true) {
             BasicToken token = lexer.nextToken();
@@ -306,6 +436,13 @@ public class BasicInterpreter {
         }
     }
 
+    /**
+     * Resolves the value of a variable.
+     *
+     * @param variableName variable identifier
+     * @return current value of the variable
+     * @throws InterpreterException if the variable name is invalid
+     */
     private double findVar(String variableName) throws InterpreterException {
         if (!Character.isLetter(variableName.charAt(0))) {
             throw new InterpreterException("Syntax Error");
@@ -313,6 +450,11 @@ public class BasicInterpreter {
         return vars[Character.toUpperCase(variableName.charAt(0)) - 'A'];
     }
 
+    /**
+     * Resets the runtime state of the interpreter.
+     *
+     * <p>Clears variables, labels, and control stacks.</p>
+     */
     private void resetRuntimeState() {
         for (int i = 0; i < vars.length; i++) {
             vars[i] = 0.0;
@@ -322,6 +464,13 @@ public class BasicInterpreter {
         gosubStack.clear();
     }
 
+    /**
+     * Loads a BASIC program from a file into memory.
+     *
+     * @param fileName file path
+     * @return program as a character array
+     * @throws InterpreterException if the file cannot be read
+     */
     private char[] loadProgram(String fileName) throws InterpreterException {
         char[] buffer = new char[PROG_SIZE];
         int size;
@@ -345,6 +494,13 @@ public class BasicInterpreter {
         return result;
     }
 
+    /**
+     * Holds metadata for a FOR loop.
+     *
+     * @param varIndex index of the loop variable
+     * @param target loop termination value
+     * @param loopStartIndex position to return to for the next iteration
+     */
     private record ForInfo(int varIndex, double target, int loopStartIndex) {
     }
 }
