@@ -43,6 +43,7 @@ public final class PathPreparer {
      * @throws IOException if the parent directory cannot be created
      */
     public static void prepareParentDirectory(final Path targetPath) throws IOException {
+
         Objects.requireNonNull(targetPath, "targetPath must not be null");
 
         final Path parent = targetPath.getParent();

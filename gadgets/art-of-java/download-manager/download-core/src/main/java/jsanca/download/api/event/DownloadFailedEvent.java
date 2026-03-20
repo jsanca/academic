@@ -19,7 +19,8 @@ public record DownloadFailedEvent(
         String errorMessage,
         Throwable cause,
         Duration duration,
-        Instant occurredAt
+        Instant occurredAt,
+        DownloadErrorCode errorCode
 ) implements DownloadEvent {
 
     /**

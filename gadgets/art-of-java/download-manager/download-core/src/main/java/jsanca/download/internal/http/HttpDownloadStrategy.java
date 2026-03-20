@@ -1,12 +1,10 @@
 
 package jsanca.download.internal.http;
 
-import jsanca.download.api.event.DownloadCompletedEvent;
-import jsanca.download.api.event.DownloadEvent;
-import jsanca.download.api.event.DownloadFailedEvent;
-import jsanca.download.api.event.DownloadProgressEvent;
+import jsanca.download.api.event.*;
 import jsanca.download.api.model.DownloadInfo;
 import jsanca.download.internal.strategy.DownloadStrategy;
+import jsanca.download.internal.util.MapperExceptionUtil;
 import jsanca.download.internal.util.PathPreparer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +54,7 @@ public final class HttpDownloadStrategy implements DownloadStrategy {
      */
     public HttpDownloadStrategy(final HttpClient httpClient,
                                 final int bufferSize) {
-        
+
         this.httpClient = Objects.requireNonNull(httpClient, "httpClient must not be null");
         if (bufferSize <= 0) {
             throw new IllegalArgumentException("bufferSize must be > 0");
@@ -65,27 +63,26 @@ public final class HttpDownloadStrategy implements DownloadStrategy {
     }
 
     @Override
-    public void download(DownloadInfo info, Consumer<DownloadEvent> emitter) {
+    public void download(final DownloadInfo info, final Consumer<DownloadEvent> emitter) {
+
         DownloadStrategy.validate(info, emitter);
 
-        Instant startedAt = Instant.now();
+        final Instant startedAt = Instant.now();
         log.debug("Starting HTTP download for {} from {}", info.downloadId(), info.sourceUri());
 
         try {
+
             PathPreparer.prepareParentDirectory(info.targetPath());
 
-            HttpRequest request = HttpRequest.newBuilder(info.sourceUri())
-                    .GET()
-                    .build();
+            final HttpResponse<InputStream> response = doGet(info);
+            final int statusCode = response.statusCode();
 
-            HttpResponse<InputStream> response = httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
-            int statusCode = response.statusCode();
+            if (isInvalidResponseStatus(statusCode)) {
 
-            if (statusCode < 200 || statusCode >= 300) {
                 throw new IOException("Unexpected HTTP status code: " + statusCode);
             }
 
-            long totalBytes = response.headers()
+            final long totalBytes = response.headers()
                     .firstValueAsLong("Content-Length")
                     .orElse(0L);
 
@@ -94,51 +91,91 @@ public final class HttpDownloadStrategy implements DownloadStrategy {
             try (InputStream inputStream = response.body();
                  OutputStream outputStream = Files.newOutputStream(info.targetPath())) {
 
-                byte[] buffer = new byte[bufferSize];
-                long downloadedBytes = 0L;
-                int bytesRead;
-
-                while ((bytesRead = inputStream.read(buffer)) != -1) {
-                    outputStream.write(buffer, 0, bytesRead);
-                    downloadedBytes += bytesRead;
-
-                    log.debug("HTTP progress {}: {}/{} bytes",
-                            info.downloadId(), downloadedBytes, totalBytes);
-
-                    emitter.accept(new DownloadProgressEvent(
-                            info,
-                            downloadedBytes,
-                            totalBytes,
-                            Instant.now()
-                    ));
-                }
-
+                final long downloadedBytes = doDownload(info, emitter, inputStream, outputStream, totalBytes);
                 outputStream.flush();
 
-                Duration duration = Duration.between(startedAt, Instant.now());
-                log.debug("HTTP download completed for {} in {} ms",
-                        info.downloadId(), duration.toMillis());
-
-                emitter.accept(new DownloadCompletedEvent(
-                        info,
-                        info.targetPath(),
-                        downloadedBytes,
-                        null,
-                        duration,
-                        Instant.now()
-                ));
+                onComplete(info, emitter, startedAt, downloadedBytes);
             }
         } catch (Exception e) {
-            Duration duration = Duration.between(startedAt, Instant.now());
-            log.error("HTTP download failed for {}", info.downloadId(), e);
 
-            emitter.accept(new DownloadFailedEvent(
+            onError(info, emitter, e, startedAt);
+        }
+    }
+
+    private static void onComplete(final DownloadInfo info,
+                                   final Consumer<DownloadEvent> emitter,
+                                   final Instant startedAt,
+                                   final long downloadedBytes) {
+
+        final Duration duration = Duration.between(startedAt, Instant.now());
+        log.debug("HTTP download completed for {} in {} ms", info.downloadId(), duration.toMillis());
+
+        emitter.accept(new DownloadCompletedEvent(
+                info,
+                info.targetPath(),
+                downloadedBytes,
+                null,
+                duration,
+                Instant.now()
+        ));
+    }
+
+    private long doDownload(final DownloadInfo info,
+                            final Consumer<DownloadEvent> emitter,
+                            final InputStream inputStream,
+                            final OutputStream outputStream,
+                            final long totalBytes) throws IOException {
+
+        final byte[] buffer = new byte[bufferSize];
+        long downloadedBytes = 0L;
+        int bytesRead;
+
+        while ((bytesRead = inputStream.read(buffer)) != -1) {
+            outputStream.write(buffer, 0, bytesRead);
+            downloadedBytes += bytesRead;
+
+            log.debug("HTTP progress {}: {}/{} bytes",
+                    info.downloadId(), downloadedBytes, totalBytes);
+
+            emitter.accept(new DownloadProgressEvent(
                     info,
-                    e.getMessage(),
-                    e,
-                    duration,
+                    downloadedBytes,
+                    totalBytes,
                     Instant.now()
             ));
         }
+        return downloadedBytes;
+    }
+
+    private static void onError(final DownloadInfo info,
+                                final Consumer<DownloadEvent> emitter,
+                                final Exception e,
+                                final Instant startedAt) {
+
+        final Duration duration = Duration.between(startedAt, Instant.now());
+        log.error("HTTP download failed for {}", info.downloadId(), e);
+        final DownloadErrorCode errorCode = MapperExceptionUtil.mapExceptionToErrorCode(e);
+
+        emitter.accept(new DownloadFailedEvent(
+                info,
+                e.getMessage() != null ? e.getMessage() : "Download failed",
+                e,
+                duration,
+                Instant.now(),
+                errorCode
+        ));
+    }
+
+    private static boolean isInvalidResponseStatus(final int statusCode) {
+        return statusCode < 200 || statusCode >= 300;
+    }
+
+    private HttpResponse<InputStream> doGet(final DownloadInfo info) throws IOException, InterruptedException {
+
+        final HttpRequest request = HttpRequest.newBuilder(info.sourceUri())
+                .GET()
+                .build();
+
+        return this.httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
     }
 }

@@ -6,6 +6,10 @@ import jsanca.download.api.model.DownloadInfo;
 import jsanca.download.api.model.DownloadRequest;
 import jsanca.download.internal.execution.DownloadExecutor;
 import jsanca.download.internal.execution.DownloadExecutors;
+import jsanca.download.internal.strategy.DownloadStrategy;
+import jsanca.download.internal.strategy.DownloadStrategyResolver;
+import jsanca.download.internal.strategy.DefaultDownloadStrategyResolver;
+import jsanca.download.internal.util.MapperExceptionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,10 +62,18 @@ public final class DownloadManagers {
         private final DownloadConfig config;
         private final DownloadExecutor executor;
         private final List<Consumer<DownloadEvent>> listeners = new CopyOnWriteArrayList<>();
+        private final DownloadStrategyResolver strategyResolver;
 
         DefaultDownloadManager(final DownloadConfig config, final DownloadExecutor executor) {
+            this(config, executor, new DefaultDownloadStrategyResolver());
+        }
+
+        DefaultDownloadManager(final DownloadConfig config,
+                               final DownloadExecutor executor,
+                               final DownloadStrategyResolver strategyResolver) {
             this.config = Objects.requireNonNull(config, "config must not be null");
             this.executor = Objects.requireNonNull(executor, "executor must not be null");
+            this.strategyResolver = Objects.requireNonNull(strategyResolver, "strategyResolver must not be null");
         }
 
         @Override
@@ -103,53 +115,24 @@ public final class DownloadManagers {
             log.debug("Download started: {}", info.downloadId());
 
             try {
-                long totalBytes = 100L;
-                log.debug("Simulating download for {} bytes", totalBytes);
-                long downloaded = 0L;
 
-                final Instant startTime = occurredAt;
+                final DownloadStrategy strategy = this.strategyResolver.resolve(info);
+                log.debug("Resolved strategy {} for {}", strategy.getClass().getSimpleName(), info.downloadId());
 
-                while (downloaded < totalBytes) {
-                    // simulate work
-                    Thread.sleep(100);
-
-                    downloaded += 20;
-                    if (downloaded > totalBytes) {
-                        downloaded = totalBytes;
-                    }
-
-                    log.debug("Progress {}: {}/{} bytes", info.downloadId(), downloaded, totalBytes);
-
-                    this.emit(new DownloadProgressEvent(
-                            info,
-                            downloaded,
-                            totalBytes,
-                            Instant.now()
-                    ));
-                }
-
-                final Duration duration = Duration.between(startTime, Instant.now());
-                log.debug("Download completed: {} in {} ms", info.downloadId(), duration.toMillis());
-
-                this.emit(new DownloadCompletedEvent(
-                        info,
-                        info.targetPath(),
-                        totalBytes,
-                        null,
-                        duration,
-                        Instant.now()
-                ));
-
+                strategy.download(info, this::emit);
             } catch (Exception e) {
-                Duration duration = Duration.between(occurredAt, Instant.now());
+
+                final Duration duration = Duration.between(occurredAt, Instant.now());
                 log.error("Download failed: {}", info.downloadId(), e);
+                final DownloadErrorCode errorCode = MapperExceptionUtil.mapExceptionToErrorCode(e);
 
                 this.emit(new DownloadFailedEvent(
                         info,
                         e.getMessage(),
                         e,
                         duration,
-                        Instant.now()
+                        Instant.now(),
+                        errorCode
                 ));
             }
         }
