@@ -2,6 +2,7 @@ package jsanca.download.api.manager;
 
 import jsanca.download.api.event.*;
 import jsanca.download.api.model.DownloadConfig;
+import jsanca.download.api.model.DownloadControlResult;
 import jsanca.download.api.model.DownloadInfo;
 import jsanca.download.api.model.DownloadRequest;
 import jsanca.download.internal.execution.DownloadExecutor;
@@ -144,6 +145,21 @@ public final class DownloadManagers {
 
                 listener.accept(event);
             }
+        }
+
+        @Override
+        public DownloadControlResult cancel(final String downloadId) {
+            return null;
+        }
+
+        @Override
+        public DownloadControlResult pause(final String downloadId) {
+            return null;
+        }
+
+        @Override
+        public DownloadControlResult resume(final String downloadId) {
+            return null;
         }
     }
 }
