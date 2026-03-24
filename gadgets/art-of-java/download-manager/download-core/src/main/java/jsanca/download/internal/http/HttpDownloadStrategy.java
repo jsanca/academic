@@ -1,8 +1,10 @@
-
 package jsanca.download.internal.http;
 
 import jsanca.download.api.event.*;
 import jsanca.download.api.model.DownloadInfo;
+import jsanca.download.internal.exception.DownloadCancelledException;
+import jsanca.download.internal.exception.HttpDownloadStatusException;
+import jsanca.download.internal.model.DownloadTask;
 import jsanca.download.internal.strategy.DownloadStrategy;
 import jsanca.download.internal.util.MapperExceptionUtil;
 import jsanca.download.internal.util.PathPreparer;
@@ -33,7 +35,6 @@ public final class HttpDownloadStrategy implements DownloadStrategy {
 
     private static final Logger log = LoggerFactory.getLogger(HttpDownloadStrategy.class);
     private static final int DEFAULT_BUFFER_SIZE = 8 * 1024;
-
     private final HttpClient httpClient;
     private final int bufferSize;
 
@@ -63,9 +64,11 @@ public final class HttpDownloadStrategy implements DownloadStrategy {
     }
 
     @Override
-    public void download(final DownloadInfo info, final Consumer<DownloadEvent> emitter) {
+    public void download(DownloadTask task, final Consumer<DownloadEvent> emitter) {
 
-        DownloadStrategy.validate(info, emitter);
+        DownloadStrategy.validate(task, emitter);
+
+        final DownloadInfo info = task.info();
 
         final Instant startedAt = Instant.now();
         log.debug("Starting HTTP download for {} from {}", info.downloadId(), info.sourceUri());
@@ -79,7 +82,7 @@ public final class HttpDownloadStrategy implements DownloadStrategy {
 
             if (isInvalidResponseStatus(statusCode)) {
 
-                throw new IOException("Unexpected HTTP status code: " + statusCode);
+                throw new HttpDownloadStatusException(info, statusCode);
             }
 
             final long totalBytes = response.headers()
@@ -91,11 +94,13 @@ public final class HttpDownloadStrategy implements DownloadStrategy {
             try (InputStream inputStream = response.body();
                  OutputStream outputStream = Files.newOutputStream(info.targetPath())) {
 
-                final long downloadedBytes = doDownload(info, emitter, inputStream, outputStream, totalBytes);
+                final long downloadedBytes = doDownload(task, inputStream, outputStream, totalBytes, emitter);
                 outputStream.flush();
-
                 onComplete(info, emitter, startedAt, downloadedBytes);
             }
+        } catch (DownloadCancelledException e) {
+
+            onCancelled(info, emitter, e);
         } catch (Exception e) {
 
             onError(info, emitter, e, startedAt);
@@ -120,17 +125,34 @@ public final class HttpDownloadStrategy implements DownloadStrategy {
         ));
     }
 
-    private long doDownload(final DownloadInfo info,
-                            final Consumer<DownloadEvent> emitter,
+    private long doDownload(final DownloadTask task,
                             final InputStream inputStream,
                             final OutputStream outputStream,
-                            final long totalBytes) throws IOException {
+                            final long totalBytes,
+                            final Consumer<DownloadEvent> emitter) throws IOException {
 
         final byte[] buffer = new byte[bufferSize];
         long downloadedBytes = 0L;
         int bytesRead;
+        final DownloadInfo info = task.info();
 
         while ((bytesRead = inputStream.read(buffer)) != -1) {
+
+            if (task.isCancellationRequested()) {
+
+                log.info("Cancelling the current download: {}", info.downloadId());
+                final double progress = totalBytes > 0
+                        ? Math.min(1.0d, (double) downloadedBytes / totalBytes)
+                        : 0.0d;
+
+                throw new DownloadCancelledException(
+                        info,
+                        downloadedBytes,
+                        totalBytes,
+                        progress,
+                        Instant.now()
+                );
+            }
             outputStream.write(buffer, 0, bytesRead);
             downloadedBytes += bytesRead;
 
@@ -147,6 +169,21 @@ public final class HttpDownloadStrategy implements DownloadStrategy {
         return downloadedBytes;
     }
 
+    private static void onCancelled(final DownloadInfo info,
+                                    final Consumer<DownloadEvent> emitter,
+                                    final DownloadCancelledException e) {
+
+        log.info("HTTP download cancelled for {}", info.downloadId());
+
+        emitter.accept(new DownloadCancelledEvent(
+                info,
+                e.cancelledAt(),
+                e.bytesRead(),
+                e.totalBytes(),
+                e.progress()
+        ));
+    }
+
     private static void onError(final DownloadInfo info,
                                 final Consumer<DownloadEvent> emitter,
                                 final Exception e,
@@ -154,7 +191,7 @@ public final class HttpDownloadStrategy implements DownloadStrategy {
 
         final Duration duration = Duration.between(startedAt, Instant.now());
         log.error("HTTP download failed for {}", info.downloadId(), e);
-        final DownloadErrorCode errorCode = MapperExceptionUtil.mapExceptionToErrorCode(e);
+        final DownloadErrorCode errorCode = mapErrorCode(e);
 
         emitter.accept(new DownloadFailedEvent(
                 info,
@@ -164,6 +201,13 @@ public final class HttpDownloadStrategy implements DownloadStrategy {
                 Instant.now(),
                 errorCode
         ));
+    }
+
+    private static DownloadErrorCode mapErrorCode(final Exception e) {
+        if (e instanceof HttpDownloadStatusException httpStatusException) {
+            return httpStatusException.mapHttpStatusToErrorCode();
+        }
+        return MapperExceptionUtil.mapExceptionToErrorCode(e);
     }
 
     private static boolean isInvalidResponseStatus(final int statusCode) {

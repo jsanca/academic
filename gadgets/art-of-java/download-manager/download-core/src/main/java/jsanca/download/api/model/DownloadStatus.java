@@ -20,6 +20,11 @@ public enum DownloadStatus {
     IN_PROGRESS,
 
     /**
+     * The download is currently paused
+     */
+    PAUSED,
+
+    /**
      * The download completed successfully.
      */
     COMPLETED,

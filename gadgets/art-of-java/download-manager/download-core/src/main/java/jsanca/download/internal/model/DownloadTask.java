@@ -1,9 +1,10 @@
-package jsanca.download.api.manager;
+package jsanca.download.internal.model;
 
 import jsanca.download.api.model.DownloadInfo;
 import jsanca.download.api.model.DownloadStatus;
 import jsanca.download.api.model.DownloadTaskSnapshot;
 import jsanca.download.internal.execution.CancellationToken;
+import jsanca.download.internal.execution.PauseToken;
 
 import java.time.Instant;
 import java.util.Objects;
@@ -28,6 +29,7 @@ public final class DownloadTask {
     private final AtomicLong totalBytes;
     private final AtomicReference<Instant> updatedAt;
     private final AtomicReference<String> errorMessage;
+    private final PauseToken pauseToken;
 
     /**
      * Creates a new download task in {@link DownloadStatus#PENDING} state.
@@ -44,6 +46,7 @@ public final class DownloadTask {
         this.totalBytes = new AtomicLong(0L);
         this.updatedAt = new AtomicReference<>(this.createdAt);
         this.errorMessage = new AtomicReference<>(null);
+        this.pauseToken = new PauseToken();
     }
 
     /**
@@ -65,6 +68,15 @@ public final class DownloadTask {
     }
 
     /**
+     * Returns the pause token associated with this task.
+     *
+     * @return the cooperative pause token
+     */
+    public PauseToken pauseToken() {
+        return pauseToken;
+    }
+
+    /**
      * Returns whether cancellation has been requested for this task.
      *
      * @return {@code true} if cancellation was requested; {@code false} otherwise
@@ -79,6 +91,31 @@ public final class DownloadTask {
     public void requestCancellation() {
         cancellationToken.cancel();
         touch();
+    }
+
+    /**
+     * Returns whether pause has been requested for this task.
+     *
+     * @return {@code true} if pause has been requested; {@code false} otherwise
+     */
+    public boolean isPauseRequested() {
+        return pauseToken.isPauseRequested();
+    }
+
+    /**
+     * Requests pause for this task.
+     */
+    public void requestPause() {
+        pauseToken.pause();
+        updateStatus(DownloadStatus.PAUSED);
+    }
+
+    /**
+     * Requests resume for this task and wakes any waiting execution thread.
+     */
+    public void requestResume() {
+        pauseToken.resume();
+        updateStatus(DownloadStatus.IN_PROGRESS);
     }
 
     /**

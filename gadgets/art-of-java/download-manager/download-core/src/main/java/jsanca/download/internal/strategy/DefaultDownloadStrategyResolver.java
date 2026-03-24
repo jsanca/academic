@@ -54,7 +54,7 @@ public final class DefaultDownloadStrategyResolver implements DownloadStrategyRe
                     "Download source URI must define a scheme: " + info.sourceUri());
         }
 
-        switch (Scheme.from(scheme.toUpperCase(Locale.ROOT))) {
+        switch (Scheme.from(scheme)) {
             case HTTP, HTTPS -> {
                 return httpDownloadStrategy;
             }

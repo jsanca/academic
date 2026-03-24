@@ -1,15 +1,16 @@
 package jsanca.download.api.manager;
 
-import jsanca.download.api.event.*;
-import jsanca.download.api.model.DownloadConfig;
-import jsanca.download.api.model.DownloadControlResult;
-import jsanca.download.api.model.DownloadInfo;
-import jsanca.download.api.model.DownloadRequest;
+import jsanca.download.api.event.DownloadErrorCode;
+import jsanca.download.api.event.DownloadEvent;
+import jsanca.download.api.event.DownloadFailedEvent;
+import jsanca.download.api.event.DownloadStartedEvent;
+import jsanca.download.api.model.*;
 import jsanca.download.internal.execution.DownloadExecutor;
 import jsanca.download.internal.execution.DownloadExecutors;
+import jsanca.download.internal.model.DownloadTask;
+import jsanca.download.internal.strategy.DefaultDownloadStrategyResolver;
 import jsanca.download.internal.strategy.DownloadStrategy;
 import jsanca.download.internal.strategy.DownloadStrategyResolver;
-import jsanca.download.internal.strategy.DefaultDownloadStrategyResolver;
 import jsanca.download.internal.util.MapperExceptionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
@@ -65,6 +67,8 @@ public final class DownloadManagers {
         private final List<Consumer<DownloadEvent>> listeners = new CopyOnWriteArrayList<>();
         private final DownloadStrategyResolver strategyResolver;
 
+        private final DownloadRegistry downloadRegistry = new DownloadRegistry();
+
         DefaultDownloadManager(final DownloadConfig config, final DownloadExecutor executor) {
             this(config, executor, new DefaultDownloadStrategyResolver());
         }
@@ -78,20 +82,20 @@ public final class DownloadManagers {
         }
 
         @Override
-        public DownloadInfo submit(final DownloadRequest request) {
+        public DownloadSubmissionResult download(final DownloadRequest request) {
 
             Objects.requireNonNull(request, "request must not be null");
+            final String downloadId = UUID.randomUUID().toString();
+            final DownloadTask task = new DownloadTask(
+                    new DownloadInfo(downloadId, request.sourceUri(), request.targetPath()));
 
-            final DownloadInfo info = new DownloadInfo(
-                    UUID.randomUUID().toString(),
-                    request.sourceUri(),
-                    request.targetPath()
-            );
+            log.debug("Submitting download: {}", request);
 
-            log.debug("Submitting download: {}", info);
+            final Instant createdAt = Instant.now();
+            this.downloadRegistry.register(task);
+            this.executor.execute(() -> runDownload(task));
 
-            this.executor.execute(() -> runDownload(info));
-            return info;
+            return new DownloadSubmissionResult(downloadId, DownloadStatus.PENDING, createdAt);
         }
 
         @Override
@@ -107,11 +111,12 @@ public final class DownloadManagers {
             this.listeners.remove(listener);
         }
 
-        private void runDownload(final DownloadInfo info) {
+        private void runDownload(final DownloadTask task) {
 
-            Objects.requireNonNull(info, "info must not be null");
-            log.debug("Starting download: {}", info);
+            Objects.requireNonNull(task, "task must not be null");
+            log.debug("Starting download: {}", task);
             final Instant occurredAt = Instant.now();
+            final DownloadInfo info = task.info();
             this.emit(new DownloadStartedEvent(info, occurredAt));
             log.debug("Download started: {}", info.downloadId());
 
@@ -120,7 +125,7 @@ public final class DownloadManagers {
                 final DownloadStrategy strategy = this.strategyResolver.resolve(info);
                 log.debug("Resolved strategy {} for {}", strategy.getClass().getSimpleName(), info.downloadId());
 
-                strategy.download(info, this::emit);
+                strategy.download(task, this::emit);
             } catch (Exception e) {
 
                 final Duration duration = Duration.between(occurredAt, Instant.now());
@@ -135,6 +140,8 @@ public final class DownloadManagers {
                         Instant.now(),
                         errorCode
                 ));
+            } finally {
+                this.downloadRegistry.remove(info.downloadId());
             }
         }
 
@@ -149,7 +156,30 @@ public final class DownloadManagers {
 
         @Override
         public DownloadControlResult cancel(final String downloadId) {
-            return null;
+
+            Objects.requireNonNull(downloadId, "downloadId must not be null");
+            final Optional<DownloadTask>  maybeTask = this.downloadRegistry.findTask(downloadId);
+
+            log.debug("Download Id: {}", downloadId);
+            if (maybeTask.isPresent()) {
+
+                final DownloadTask task = maybeTask.get();
+                final DownloadControlAction action = DownloadControlAction.CANCEL;
+                final DownloadControlStatus status = DownloadControlStatus.REQUESTED;
+                final String message =  "Cancellation requested for download " + downloadId;
+                task.requestCancellation();
+                final DownloadTaskSnapshot snapshot  = task.snapshot();
+
+                return new DownloadControlResult(downloadId, action, status, message, snapshot);
+            }
+
+            return new DownloadControlResult(
+                    downloadId,
+                    DownloadControlAction.CANCEL,
+                    DownloadControlStatus.NOT_FOUND,
+                    "Download not found: " + downloadId,
+                    null
+            );
         }
 
         @Override

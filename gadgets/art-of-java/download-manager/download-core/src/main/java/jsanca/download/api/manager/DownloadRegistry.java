@@ -1,8 +1,8 @@
 package jsanca.download.api.manager;
 
 import jsanca.download.api.model.DownloadTaskSnapshot;
+import jsanca.download.internal.model.DownloadTask;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;

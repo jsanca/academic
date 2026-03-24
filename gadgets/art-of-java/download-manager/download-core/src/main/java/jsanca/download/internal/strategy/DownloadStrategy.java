@@ -1,7 +1,7 @@
 package jsanca.download.internal.strategy;
 
 import jsanca.download.api.event.DownloadEvent;
-import jsanca.download.api.model.DownloadInfo;
+import jsanca.download.internal.model.DownloadTask;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -20,26 +20,26 @@ import java.util.function.Consumer;
 public interface DownloadStrategy {
 
     /**
-     * Executes a download for the given {@link DownloadInfo}.
+     * Executes a download for the given {@link DownloadTask}.
      *
      * <p>The implementation is responsible for emitting {@link DownloadEvent}
      * instances to report progress and state changes.
      *
-     * @param info    immutable identifying information for the download
+     * @param task immutable identifying information for the download
      * @param emitter consumer used to emit download events
      * @throws NullPointerException if any argument is {@code null}
      */
-    void download(DownloadInfo info, Consumer<DownloadEvent> emitter);
+    void download(DownloadTask task, Consumer<DownloadEvent> emitter);
 
     /**
      * Validates that the required arguments are not {@code null}.
      *
-     * @param info    the download information
+     * @param task immutable identifying information for the download
      * @param emitter the event emitter
      * @throws NullPointerException if any argument is {@code null}
      */
-    static void validate(DownloadInfo info, Consumer<DownloadEvent> emitter) {
-        Objects.requireNonNull(info, "info must not be null");
+    static void validate(DownloadTask task, Consumer<DownloadEvent> emitter) {
+        Objects.requireNonNull(task, "task must not be null");
         Objects.requireNonNull(emitter, "emitter must not be null");
     }
 }
