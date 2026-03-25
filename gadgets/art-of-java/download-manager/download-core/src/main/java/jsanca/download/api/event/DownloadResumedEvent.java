@@ -6,10 +6,10 @@ import jsanca.download.api.model.DownloadStatus;
 import java.time.Instant;
 
 /**
- * Event emitted when a download enters a paused state.
+ * Event emitted when a paused download is resumed and continues execution.
  * @author jsanca & elo
  */
-public record DownloadPausedEvent(
+public record DownloadResumedEvent(
         DownloadInfo info,
         long downloadedBytes,
         long totalBytes,
@@ -18,6 +18,6 @@ public record DownloadPausedEvent(
 
     @Override
     public DownloadStatus status() {
-        return DownloadStatus.PAUSED;
+        return DownloadStatus.IN_PROGRESS;
     }
 }

@@ -25,7 +25,7 @@ public enum DownloadStatus {
     PAUSED,
 
     /**
-     * The download completed successfully.
+     * The download completed successfully. (terminal state)
      */
     COMPLETED,
 
@@ -37,5 +37,13 @@ public enum DownloadStatus {
     /**
      * The download was cancelled before completion.
      */
-    CANCELLED
+    CANCELLED;
+
+    public boolean isTerminal() {
+        return this == COMPLETED || this == FAILED || this == CANCELLED;
+    }
+
+    public boolean isActive() {
+        return this == IN_PROGRESS;
+    }
 }

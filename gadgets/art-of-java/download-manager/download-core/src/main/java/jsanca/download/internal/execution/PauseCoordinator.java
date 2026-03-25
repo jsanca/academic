@@ -71,19 +71,23 @@ public final class PauseCoordinator {
      *
      * @param downloadId the download identifier
      * @param cancellationToken the cancellation token associated with the running download
+     * @param pauseListener monitor callbacks to handle the pause and resume
      * @throws InterruptedException if the waiting thread is interrupted
      */
     public void awaitIfPaused(final String downloadId,
-                              final CancellationToken cancellationToken) throws InterruptedException {
+                              final CancellationToken cancellationToken,
+                              final PauseListener pauseListener) throws InterruptedException {
+
         Objects.requireNonNull(downloadId, "downloadId must not be null");
         Objects.requireNonNull(cancellationToken, "cancellationToken must not be null");
+        Objects.requireNonNull(pauseListener, "pauseListener must not be null");
 
         final PauseState state = this.states.get(downloadId);
         if (state == null) {
             return;
         }
 
-        state.awaitIfPaused(cancellationToken);
+        state.awaitIfPaused(cancellationToken, pauseListener);
     }
 
     /**
@@ -138,18 +142,54 @@ public final class PauseCoordinator {
             }
         }
 
-        private void awaitIfPaused(final CancellationToken cancellationToken) throws InterruptedException {
+        private void awaitIfPaused(final CancellationToken cancellationToken,
+                                   final PauseListener pauseListener) throws InterruptedException {
+
+            boolean enteredPausedWait = false;
+            boolean resumedNormally = false;
+            boolean pauseNotified = false;
+
             this.lock.lock();
             try {
                 while (this.pauseRequested) {
+                    if (!enteredPausedWait) {
+                        enteredPausedWait = true;
+                    }
+
+                    pauseNotified = emitPauseIfNeeded(pauseListener, pauseNotified);
+
                     if (cancellationToken.isCancelled()) {
                         return;
                     }
+
                     this.resumed.await(PAUSE_POLL_MILLIS, TimeUnit.MILLISECONDS);
+                }
+
+                if (enteredPausedWait) {
+                    resumedNormally = true;
                 }
             } finally {
                 this.lock.unlock();
             }
+
+            if (enteredPausedWait && resumedNormally) {
+                pauseListener.onResumed();
+            }
+        }
+
+        private boolean emitPauseIfNeeded(final PauseListener pauseListener,
+                                          final boolean pauseNotified) {
+            if (!pauseNotified) {
+
+                this.lock.unlock();
+                try {
+                    pauseListener.onPaused();
+                } finally {
+                    this.lock.lock();
+                }
+                return true;
+            }
+            return pauseNotified;
         }
     }
 }

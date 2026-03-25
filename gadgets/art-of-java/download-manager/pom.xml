@@ -15,6 +15,7 @@
     <modules>
         <module>download-core</module>
         <module>download-cli</module>
+        <module>download-ui</module>
     </modules>
 
     <properties>

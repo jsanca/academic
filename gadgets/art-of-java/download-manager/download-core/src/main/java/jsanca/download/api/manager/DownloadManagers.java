@@ -5,8 +5,10 @@ import jsanca.download.api.event.DownloadEvent;
 import jsanca.download.api.event.DownloadFailedEvent;
 import jsanca.download.api.event.DownloadStartedEvent;
 import jsanca.download.api.model.*;
+import jsanca.download.internal.execution.DownloadExecutionContext;
 import jsanca.download.internal.execution.DownloadExecutor;
 import jsanca.download.internal.execution.DownloadExecutors;
+import jsanca.download.internal.execution.PauseCoordinator;
 import jsanca.download.internal.model.DownloadTask;
 import jsanca.download.internal.strategy.DefaultDownloadStrategyResolver;
 import jsanca.download.internal.strategy.DownloadStrategy;
@@ -69,6 +71,8 @@ public final class DownloadManagers {
 
         private final DownloadRegistry downloadRegistry = new DownloadRegistry();
 
+        private final PauseCoordinator pauseCoordinator = new PauseCoordinator();
+
         DefaultDownloadManager(final DownloadConfig config, final DownloadExecutor executor) {
             this(config, executor, new DefaultDownloadStrategyResolver());
         }
@@ -125,7 +129,7 @@ public final class DownloadManagers {
                 final DownloadStrategy strategy = this.strategyResolver.resolve(info);
                 log.debug("Resolved strategy {} for {}", strategy.getClass().getSimpleName(), info.downloadId());
 
-                strategy.download(task, this::emit);
+                strategy.download(task, new DownloadExecutionContext(this.pauseCoordinator), this::emit);
             } catch (Exception e) {
 
                 final Duration duration = Duration.between(occurredAt, Instant.now());
